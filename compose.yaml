@@ -1,0 +1,25 @@
+# Local development database only.
+# Roles are applied by `make db-up` via `podman exec`, not a bind mount: this project often lives on
+# a volume that containers cannot mount under SELinux.
+name: collectiq
+services:
+  db:
+    image: docker.io/library/postgres:16-alpine
+    container_name: collectiq-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:54329:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?run make env first}
+      POSTGRES_DB: postgres
+    volumes:
+      - collectiq_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  collectiq_pgdata:
+    name: collectiq_pgdata

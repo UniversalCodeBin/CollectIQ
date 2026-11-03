@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { colors: { "surface-tint": "#226678", "on-background": "#1b1c19", "surface-container-lowest": "#ffffff", "inverse-primary": "#91d0e4", "surface": "#fbf9f4", "on-secondary-fixed": "#131c29", "secondary-fixed": "#dae3f5", "outline-variant": "#bfc8cb", "on-tertiary-container": "#c5beff", "surface-container": "#f0eee9", "on-secondary-container": "#5a6372", "surface-variant": "#e4e2dd", "on-surface": "#1b1c19", "surface-bright": "#fbf9f4", "background": "#fbf9f4", "primary-fixed-dim": "#91d0e4", "on-tertiary-fixed": "#17075d", "on-error": "#ffffff", "on-surface-variant": "#40484b", "surface-dim": "#dbdad5", "tertiary-fixed-dim": "#c6bfff", "primary-fixed": "#b0ecff", "inverse-surface": "#30312e", "surface-container-low": "#f5f3ee", "on-primary-container": "#91cfe3", "secondary-container": "#d7e0f2", "tertiary": "#382f7d", "on-primary": "#ffffff", "primary-container": "#0e5a6b", "on-primary-fixed": "#001f27", "tertiary-fixed": "#e4dfff", "surface-container-high": "#eae8e3", "error-container": "#ffdad6", "secondary": "#565f6e", "inverse-on-surface": "#f2f1ec", "secondary-fixed-dim": "#bec7d8", "surface-container-highest": "#e4e2dd", "on-secondary": "#ffffff", "on-secondary-fixed-variant": "#3e4756", "on-primary-fixed-variant": "#004e5e", "on-error-container": "#93000a", "error": "#ba1a1a", "tertiary-container": "#504796", "on-tertiary": "#ffffff", "outline": "#70787c", "on-tertiary-fixed-variant": "#443b8a", "primary": "#00414f" }, borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, spacing: { "gutter-desktop": "1.5rem", "margin-desktop": "2rem", "margin-tablet": "1.5rem", "space-sm": "0.5rem", "gutter": "1rem", "space-2xl": "3rem", "space-xs": "0.25rem", "space-md": "1rem", "margin": "1rem", "space-lg": "1.5rem", "space-xl": "2rem" }, fontFamily: { "label-sm": ["IBM Plex Sans"], "body-lg": ["IBM Plex Sans"], "body-sm": ["IBM Plex Sans"], "numeral-lg": ["IBM Plex Mono"], "headline-md": ["IBM Plex Sans"], "headline-lg-mobile": ["IBM Plex Sans"], "numeral-sm": ["IBM Plex Mono"], "display": ["IBM Plex Sans"], "headline-lg": ["IBM Plex Sans"], "numeral-md": ["IBM Plex Mono"], "code-sm": ["IBM Plex Mono"], "display-mobile": ["IBM Plex Sans"], "headline-sm": ["IBM Plex Sans"], "label-md": ["IBM Plex Sans"], "body-md": ["IBM Plex Sans"] }, fontSize: { "label-sm": ["11px", { lineHeight: "14px", letterSpacing: "0.05em", fontWeight: "600" }], "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }], "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }], "numeral-lg": ["24px", { lineHeight: "32px", letterSpacing: "-0.02em", fontWeight: "600" }], "headline-md": ["20px", { lineHeight: "28px", letterSpacing: "-0.01em", fontWeight: "600" }], "headline-lg-mobile": ["22px", { lineHeight: "30px", letterSpacing: "-0.01em", fontWeight: "600" }], "numeral-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }], "display": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "600" }], "headline-lg": ["28px", { lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600" }], "numeral-md": ["14px", { lineHeight: "20px", fontWeight: "500" }], "code-sm": ["11px", { lineHeight: "16px", fontWeight: "400" }], "display-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "600" }], "headline-sm": ["16px", { lineHeight: "24px", letterSpacing: "-0.005em", fontWeight: "600" }], "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.04em", fontWeight: "600" }], "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }] } } } };</script></head><body class="bg-surface text-on-surface font-body-md text-body-md"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low z-50 flex flex-col shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 px-space-lg flex items-center gap-space-sm bg-surface-container-low"><img alt="CollectIQ Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XumjTQwvh2YIHAdb9QPIF0Bozff3lBMbcAg7GCfoBSLsCNHXhhj0Gak1iX4jPlh2Q2diPVFZR37i-6BDTYjtaO29OE4lHqszhrjGgjVMM_rYy_rSefq6bwohXFINe5NOKGtQLBKF4jXu55ZNoMy1VMJdWbha6U5W3o7LGgMulgCTMKgpiqXnrPvxuMAuhWUaiQ0gl03S6zFPf97v-UNrV7XvUCaS5q1Zr48MBE30tl"/><div class="flex flex-col ml-space-xs"><span class="font-headline-sm text-headline-sm text-primary leading-tight tracking-tight">CollectIQ</span><span class="font-label-sm text-label-sm uppercase text-on-surface-variant tracking-wider">Receivables OS</span></div></div><div class="px-space-md py-space-sm"><div class="px-space-sm pb-space-xs font-label-sm text-label-sm uppercase text-secondary">Ledger Navigation</div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-label-md rounded-lg"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="dashboard" href="#"><span class="material-symbols-outlined text-[18px]">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="receivables" href="#"><span class="material-symbols-outlined text-[18px]">receipt_long</span><span>Receivables</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="reconciliation" href="#"><span class="material-symbols-outlined text-[18px]">balance</span><span>Reconciliation</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="conversations" href="#"><span class="material-symbols-outlined text-[18px]">forum</span><span>Conversations</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="disputes-and-blockers" href="#"><span class="material-symbols-outlined text-[18px]">report_problem</span><span>Disputes &amp; Blockers</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="follow-ups" href="#"><span class="material-symbols-outlined text-[18px]">notification_important</span><span>Follow-ups</span></a></nav></div><div class="mt-auto px-space-md py-space-md bg-surface-container-low"><div class="px-space-sm pb-space-xs font-label-sm text-label-sm uppercase text-secondary">Settings &amp; Audit</div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-label-md rounded-lg"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="integrations" href="#"><span class="material-symbols-outlined text-[18px]">hub</span><span>Integrations</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="automation" href="#"><span class="material-symbols-outlined text-[18px]">smart_toy</span><span>Automation</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="audit-history" href="#"><span class="material-symbols-outlined text-[18px]">history</span><span>Audit History</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-label-md text-label-md" data-path="workspace-settings" href="#"><span class="material-symbols-outlined text-[18px]">tune</span><span>Workspace Settings</span></a></nav><div class="mt-space-md pt-space-md bg-surface-container px-space-md py-space-sm rounded-lg flex items-center justify-between"><div class="flex flex-col"><span class="font-label-sm text-label-sm uppercase text-secondary">Ledger Sync</span><span class="font-numeral-sm text-numeral-sm text-on-surface">v2.8.4 (Active)</span></div><span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span></div></div></aside><div class="pl-72 min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/90 backdrop-blur-xl z-40 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-lg flex-1"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm text-on-surface">CollectIQ Workspace</span><span class="material-symbols-outlined text-secondary text-[16px]">unfold_more</span></div><div class="relative w-72 max-w-sm"><input class="w-full h-9 pl-9 pr-8 bg-surface-container-lowest rounded-lg font-body-sm text-body-sm text-on-surface placeholder:text-secondary focus:bg-surface-container-lowest shadow-[0_1px_3px_rgba(27,31,39,0.04)] outline-none" placeholder="Search counter-parties, invoices, claims..." type="text"/><span class="material-symbols-outlined absolute left-2.5 top-2 text-[18px] text-secondary">search</span><span class="absolute right-2.5 top-2 bg-surface-container px-1.5 py-0.5 rounded font-code-sm text-code-sm text-secondary">/</span></div><button class="flex items-center gap-1 bg-surface-container-lowest hover:bg-surface-container-high text-on-surface hover:text-on-surface px-space-md py-1.5 rounded-lg shadow-[0_1px_3px_rgba(27,31,39,0.04)] font-label-md text-label-md transition-colors"><span class="material-symbols-outlined text-[16px] text-primary">add</span><span>Add</span><span class="material-symbols-outlined text-[14px] text-secondary">expand_more</span></button></div><div class="flex items-center gap-space-md"><div class="hidden xl:flex items-center gap-1.5 bg-secondary-fixed text-on-secondary-fixed px-2.5 py-1 rounded font-label-sm text-label-sm uppercase"><span class="material-symbols-outlined text-[14px] text-primary">verified</span><span>Evidence current to 28 Oct</span></div><div class="flex items-center gap-space-sm bg-surface-container-lowest px-3 py-1 rounded-lg shadow-[0_1px_3px_rgba(27,31,39,0.04)]"><span class="font-label-sm text-label-sm text-on-surface">Pause automation</span><label class="relative inline-flex items-center cursor-pointer"><input class="sr-only peer" type="checkbox"/><div class="w-8 h-4.5 bg-surface-container-highest peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-surface-container-lowest after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-container-lowest after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-error"></div></label></div><button class="relative p-1.5 text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span></button><div class="flex items-center gap-space-xs pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover shadow-[0_1px_3px_rgba(27,31,39,0.04)]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOSwS4onsVt3ALwMmkWN1wEV2JluVnw1S4mK15raeRz6qbbkn6lzkphB6wzyMv3VSte2fgFj4Iq89UuupvXxTnAlcuKoKjxJAaT-i6YgmQPaMYmk5XZvrJreB6EjUg1Dmos9b-uE9KpWngWAOD2hpq1QSZXh5qIZWmiqpsCzJvsiYpdh9uPhmrsjlaWmc1OxrniRiVCqDM_3KHZubim6NYx3-8-qQqDKe3OUlE2eVy"/></div></div></div></header><main class="relative pt-16 bg-surface w-full px-gutter-desktop min-h-[calc(100vh-4rem)]"><div class="flex flex-col w-full pb-space-2xl">
+<!-- Top Breadcrumb & Quick Actions Bar -->
+<div class="flex flex-wrap items-center justify-between gap-space-md py-space-md">
+<div class="flex items-center gap-space-xs font-body-sm text-body-sm text-secondary">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">receipt_long</span>
+<span>Receivables</span>
+</a>
+<span class="text-outline-variant">/</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Invoice INV-2041</span>
+<span class="ml-space-xs px-2 py-0.5 rounded bg-surface-container-high text-on-surface font-code-sm text-code-sm uppercase">Rev #2</span>
+</div>
+<!-- Status Dimensions Rail (Shape-Coded Chips) -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<!-- Invoice Status -->
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-surface-container-highest text-on-surface-variant font-label-sm text-label-sm uppercase">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+        Invoice: Active
+      </span>
+<!-- Payment Status (Awaiting Verification) -->
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#E4EBFB] text-[#1E3A8A] font-label-sm text-label-sm uppercase shadow-sm">
+<span class="material-symbols-outlined text-[13px] animate-spin">hourglass_empty</span>
+        Payment: Awaiting Verification
+      </span>
+<!-- Dispute Status -->
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-container text-secondary font-label-sm text-label-sm uppercase">
+        Dispute: None
+      </span>
+<!-- Follow-up Status (Paused) -->
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-[#FFF2C7] text-[#6B4A00] font-label-sm text-label-sm uppercase shadow-sm">
+<span class="material-symbols-outlined text-[14px]">pause_circle</span>
+        Reminders Paused
+      </span>
+<!-- Evidence Coverage Token -->
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-surface-container-lowest text-on-surface-variant shadow-sm font-label-sm text-label-sm">
+<span class="w-2 h-2 rounded-full border-2 border-primary"></span>
+        Covered to 28 Oct
+      </span>
+</div>
+</div>
+<!-- Persistent Critical Level 3 Pause Banner -->
+<div class="relative overflow-hidden rounded-xl bg-gradient-to-r from-[#FFF8E6] via-[#FFF3D6] to-[#FCEEC5] p-space-md shadow-md mb-space-lg">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md relative z-10">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-[#F3D78A] text-[#6B4A00] flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-[24px]">pause_circle_filled</span>
+</div>
+<div class="space-y-0.5">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-sm text-headline-sm text-[#4A3200]">Reminders are paused</span>
+<span class="px-1.5 py-0.2 rounded bg-[#FFE494] text-[#4A3200] font-code-sm text-code-sm">POL-SUPPRESS-G7</span>
+</div>
+<p class="font-body-md text-body-md text-[#5E4204] max-w-4xl">
+            A customer message indicates payment was sent on <strong>3 Nov 2026</strong> (<em>“We transferred it this morning”</em>). Routine follow-ups are suppressed until verified against bank statements to maintain auditable trust.
+          </p>
+</div>
+</div>
+<div class="flex items-center gap-space-sm shrink-0 pl-14 lg:pl-0">
+<button class="px-space-md py-2 rounded-lg bg-primary-container text-on-primary font-label-md text-label-md hover:bg-primary transition-all shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">rule</span>
+<span>Review Claim &amp; Matches</span>
+</button>
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-[#6B4A00] hover:bg-surface-container hover:text-on-surface font-label-md text-label-md transition-all shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span>Inspect Evidence Why</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Primary Tab Bar Navigation -->
+<div class="flex items-center gap-space-xs bg-surface-container-low p-1 rounded-xl mb-space-lg">
+<button class="px-space-md py-2 rounded-lg bg-surface-container-lowest text-primary font-label-md text-label-md shadow-sm flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">dashboard</span>
+<span>Overview</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+<span>Payments &amp; Matches</span>
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">forum</span>
+<span>Conversation</span>
+<span class="px-1.5 py-0.5 rounded-full bg-[#E4EBFB] text-[#1E3A8A] font-code-sm text-code-sm">1 unverified</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">send_time_extension</span>
+<span>Follow-ups &amp; Drafts</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">folder_special</span>
+<span>Cases (0)</span>
+</button>
+<button class="px-space-md py-2 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">manage_search</span>
+<span>History &amp; Audit</span>
+</button>
+</div>
+<!-- 2-Column Ledger & Margin Structure (70% Ledger / 30% Margin Rail) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start">
+<!-- LEFT / MAIN LEDGER WORK SURFACE (8 Columns ~ 67-70%) -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg min-w-0">
+<!-- Mathematical Balance Block (Read-only Server Numbers) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-md bg-surface-container-low px-space-md py-2 rounded-lg">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-primary">account_balance</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Ledger Balance Summary</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary">Currency: INR (₹) • Verified Precision</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Gross Amount -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Gross Invoiced</span>
+<span class="material-symbols-outlined text-[16px] text-secondary">tag</span>
+</div>
+<div class="mt-space-sm">
+<span class="font-numeral-lg text-numeral-lg text-on-surface">₹ 2,50,000.00</span>
+</div>
+<span class="font-code-sm text-code-sm text-secondary mt-1">2 Line items aggregated</span>
+</div>
+<!-- Confirmed Payments -->
+<div class="bg-surface-container-low p-space-md rounded-lg flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Confirmed Payments</span>
+<span class="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+</div>
+<div class="mt-space-sm">
+<span class="font-numeral-lg text-numeral-lg text-secondary">₹ 0.00</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-[#C2570C] font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[13px]">pending</span>
+<span>1 Unmatched Bank Entry Found</span>
+</div>
+</div>
+<!-- Total Outstanding -->
+<div class="bg-[#FBF4E8] p-space-md rounded-lg flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase text-[#8A1C2B]">Total Outstanding</span>
+<span class="material-symbols-outlined text-[16px] text-error">priority_high</span>
+</div>
+<div class="mt-space-sm">
+<span class="font-numeral-lg text-numeral-lg text-[#8A1C2B]">₹ 2,50,000.00</span>
+</div>
+<div class="flex items-center gap-1 mt-1 text-[#8A1C2B] font-code-sm text-code-sm">
+<span class="material-symbols-outlined text-[13px]">schedule</span>
+<span>Due: 12 Oct 2026 (22 days overdue)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Provenance & Metadata Details Matrix -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">fingerprint</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Invoice Provenance &amp; Metadata</h2>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container font-code-sm text-code-sm text-secondary">ID: 884-INV-2041-IN</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-y-space-md gap-x-space-lg text-left">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Counter-Party</span>
+<p class="font-body-md text-body-md font-semibold text-on-surface">Example Client Ltd</p>
+<span class="font-code-sm text-code-sm text-secondary">GSTIN: 27AAACE2289F1Z3</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Payer Alias Group</span>
+<p class="font-body-md text-body-md text-on-surface">ECL India / ECL Corp</p>
+<span class="font-code-sm text-code-sm text-secondary">Linked aliases: 3 records</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Issue Date</span>
+<p class="font-numeral-md text-numeral-md text-on-surface">12 Sep 2026</p>
+<span class="font-code-sm text-code-sm text-secondary">Net-30 Standard</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Due Date</span>
+<p class="font-numeral-md text-numeral-md text-error font-semibold">12 Oct 2026</p>
+<span class="font-code-sm text-code-sm text-error">22 days past term</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Purchase Order Ref</span>
+<p class="font-numeral-md text-numeral-md text-on-surface font-semibold">PO-9921</p>
+<span class="font-code-sm text-code-sm text-secondary">Matched with SOW #42</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Source Ingestion</span>
+<p class="font-body-md text-body-md text-on-surface">Import Batch #14</p>
+<span class="font-code-sm text-code-sm text-secondary">Row 7 • Synced via ERP</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Delivery Method</span>
+<p class="font-body-md text-body-md text-on-surface">Email Dispatch</p>
+<span class="font-code-sm text-code-sm text-secondary">Delivered 12 Sep 10:02</span>
+</div>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Currency &amp; Terms</span>
+<p class="font-body-md text-body-md text-on-surface">INR (₹) / Direct Bank</p>
+<span class="font-code-sm text-code-sm text-secondary">HDFC Current A/C ...9012</span>
+</div>
+</div>
+</div>
+<!-- Collapsible Deliverables Line Items Table -->
+<div class="bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden">
+<div class="p-space-md bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-secondary">format_list_bulleted</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">Line Items &amp; Deliverables</span>
+<span class="ml-space-xs px-2 py-0.5 rounded bg-surface-container font-label-sm text-label-sm text-secondary">2 Items</span>
+</div>
+<button class="text-secondary hover:text-on-surface flex items-center gap-1 font-label-md text-label-md">
+<span>Collapse</span>
+<span class="material-symbols-outlined text-[16px]">expand_less</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container text-secondary font-label-sm text-label-sm uppercase">
+<th class="py-2.5 px-space-md font-semibold">#</th>
+<th class="py-2.5 px-space-md font-semibold">Deliverable Description</th>
+<th class="py-2.5 px-space-md font-semibold text-right">Qty</th>
+<th class="py-2.5 px-space-md font-semibold text-right">Unit Rate</th>
+<th class="py-2.5 px-space-md font-semibold text-right">Amount (₹)</th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-space-md px-space-md font-code-sm text-code-sm text-secondary">01</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md font-medium text-on-surface">Enterprise UX Design Sprint</div>
+<div class="font-code-sm text-code-sm text-secondary">SOW Milestone 1: Multi-entity reconciliation matrix research &amp; wireframes</div>
+</td>
+<td class="py-space-md px-space-md text-right font-numeral-md text-numeral-md text-secondary">1</td>
+<td class="py-space-md px-space-md text-right font-numeral-md text-numeral-md text-on-surface">₹ 1,50,000.00</td>
+<td class="py-space-md px-space-md text-right font-numeral-md text-numeral-md font-semibold text-on-surface">₹ 1,50,000.00</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors bg-surface/50">
+<td class="py-space-md px-space-md font-code-sm text-code-sm text-secondary">02</td>
+<td class="py-space-md px-space-md">
+<div class="font-body-md text-body-md font-medium text-on-surface">Design System Architecture Token Spec</div>
+<div class="font-code-sm text-code-sm text-secondary">SOW Milestone 2: Enterprise tokens, high-density ledger grid specs &amp; components</div>
+</td>
+<td class="py-space-md px-space-md text-right font-numeral-md text-numeral-md text-secondary">1</td>
+<td class="py-space-md px-space-md text-right font-numeral-md text-numeral-md text-on-surface">₹ 1,00,000.00</td>
+<td class="py-space-md px-space-md text-right font-numeral-md text-numeral-md font-semibold text-on-surface">₹ 1,00,000.00</td>
+</tr>
+</tbody>
+<tfoot>
+<tr class="bg-surface-container-low font-headline-sm text-headline-sm">
+<td class="py-3 px-space-md text-right text-secondary uppercase font-label-md text-label-md" colspan="4">Total Gross Deliverables</td>
+<td class="py-3 px-space-md text-right font-numeral-md text-numeral-md text-primary font-semibold">₹ 2,50,000.00</td>
+</tr>
+</tfoot>
+</table>
+</div>
+</div>
+<!-- Recent Touchpoint & Customer Payment Claim Card -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm relative overflow-hidden">
+<div class="flex flex-wrap items-center justify-between gap-space-xs pb-space-sm mb-space-md">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-[18px] text-tertiary">chat</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Latest Counter-party Touchpoint</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded bg-[#EDEBF7] text-[#3B3280] font-label-sm text-label-sm uppercase flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">psychology</span>
+            AI Interpretation: Payment Claim (Medium Confidence)
+          </span>
+</div>
+<!-- Inbound Message Content -->
+<div class="bg-surface-container-low p-space-md rounded-lg">
+<div class="flex items-center justify-between mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="w-6 h-6 rounded-full bg-secondary-container flex items-center justify-center font-code-sm text-code-sm text-on-secondary-fixed">EC</span>
+<span class="font-body-md text-body-md font-medium text-on-surface">accounts@example-client.test</span>
+<span class="font-code-sm text-code-sm text-secondary">(Payer AP Finance Dept)</span>
+</div>
+<span class="font-numeral-sm text-numeral-sm text-secondary">3 Nov 2026, 10:14 IST</span>
+</div>
+<!-- Customer Quote -->
+<blockquote class="bg-surface-container-lowest p-space-md rounded-lg font-body-md text-body-md text-on-surface italic shadow-sm">
+            “Hi, we transferred the amount this morning. Please check your account.”
+          </blockquote>
+<!-- AI Extraction Details Strip -->
+<div class="mt-space-sm flex flex-wrap items-center gap-space-md font-code-sm text-code-sm text-secondary">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">data_object</span>
+<span>Extracted Intent: Transfer Notification</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-tertiary">schedule</span>
+<span>Claim Timestamp: 03-11-2026 10:14 IST</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-error">gpp_maybe</span>
+<span>Coverage Gap: 6 days un-reconciled</span>
+</div>
+</div>
+</div>
+<div class="mt-space-md flex items-center justify-between">
+<a class="text-tertiary hover:underline font-label-md text-label-md flex items-center gap-1" href="#">
+<span>View Full Conversation Thread (6 previous messages)</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+<button class="px-space-md py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">tune</span>
+<span>Re-evaluate Intent</span>
+</button>
+</div>
+</div>
+<!-- Contextual Action Bar (CRITICAL: Routine reminder replaced by review; NO "Mark as paid") -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-wrap items-center justify-between gap-space-sm">
+<div class="flex flex-wrap items-center gap-space-sm">
+<!-- Primary Contextual Action (Replaces routine reminder) -->
+<button class="px-space-lg py-2.5 rounded-lg bg-primary-container text-on-primary hover:bg-primary font-label-md text-label-md transition-all shadow-md flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">compare_arrows</span>
+<span>Review Bank Matches</span>
+<span class="px-1.5 py-0.2 rounded bg-primary text-on-primary font-code-sm text-code-sm">1 Pending</span>
+</button>
+<!-- Record Manual Payment -->
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-low text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px] text-secondary">edit_note</span>
+<span>Record Manual Payment</span>
+</button>
+<!-- Attest 'Checked — nothing received' -->
+<button class="px-space-md py-2.5 rounded-lg bg-[#FBE5E8] text-[#8A1C2B] hover:bg-[#F7D3D8] font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+<span>Attest: ‘Checked — Nothing Received’</span>
+</button>
+</div>
+<div class="flex items-center gap-space-xs">
+<!-- Add Customer Note / Reply -->
+<button class="px-space-md py-2.5 rounded-lg bg-surface-container-low text-secondary hover:text-on-surface hover:bg-surface-container font-label-md text-label-md transition-colors flex items-center gap-1.5 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">reply</span>
+<span>Add Note / Reply</span>
+</button>
+<!-- More Actions Dropdown -->
+<button class="p-2.5 rounded-lg bg-surface-container-low text-secondary hover:text-on-surface hover:bg-surface-container transition-colors shadow-sm">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<!-- RIGHT / EVIDENCE & REASONING MARGIN RAIL (CMP-19, 4 Columns ~ 30-33%) -->
+<aside class="lg:col-span-4 flex flex-col gap-space-lg min-w-0">
+<!-- Header & Active Engine Indicator -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">policy</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Evidence &amp; Reasoning</h2>
+</div>
+<div class="flex items-center gap-1.5 font-label-sm text-label-sm text-secondary">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span>Live Audit</span>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-secondary">
+          Deterministic execution model preventing unverified dunning sequences.
+        </p>
+</div>
+<!-- Current Policy Gate Evaluation Module -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between pb-space-xs mb-space-md">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Gate Evaluation Pipeline</span>
+<span class="font-code-sm text-code-sm text-secondary">RuleSet v4.1</span>
+</div>
+<div class="space-y-space-md">
+<!-- Gate G7 (Payment Verification) -->
+<div class="bg-[#FFF4E5] p-space-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-semibold text-[#8F3900]">Gate G7: Payment Verification</span>
+<span class="px-2 py-0.5 rounded bg-[#FFE2C2] text-[#8F3900] font-code-sm text-code-sm font-semibold">ON HOLD</span>
+</div>
+<p class="font-body-sm text-body-sm text-[#733004] mt-1">
+              Unverified customer claim detected on 3 Nov. System has halted automated follow-ups until manual attestation or bank match.
+            </p>
+<div class="mt-2 flex items-center gap-1 font-code-sm text-code-sm text-[#8F3900]">
+<span class="material-symbols-outlined text-[13px]">lock</span>
+<span>Triggered: Follow-up Suppression</span>
+</div>
+</div>
+<!-- Gate G2 (Dispute Check) -->
+<div class="bg-surface-container-low p-space-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-medium text-on-surface">Gate G2: Dispute Status</span>
+<span class="px-2 py-0.5 rounded bg-[#E3F3E8] text-[#14532D] font-code-sm text-code-sm font-semibold">PASSED</span>
+</div>
+<p class="font-body-sm text-body-sm text-secondary mt-1">
+              No active dispute ticket or blocker logged against deliverables in SOW #42.
+            </p>
+</div>
+<!-- Gate G4 (Freshness Check) -->
+<div class="bg-[#FFFBEB] p-space-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md font-semibold text-[#855B00]">Gate G4: Statement Freshness</span>
+<span class="px-2 py-0.5 rounded bg-[#FDEEBA] text-[#855B00] font-code-sm text-code-sm font-semibold">WARNING</span>
+</div>
+<p class="font-body-sm text-body-sm text-[#664600] mt-1">
+              Bank statement coverage ends <strong>28 Oct 2026</strong>. Claim was made on <strong>3 Nov 2026</strong> (6-day gap in bank telemetry).
+            </p>
+<button class="mt-2 text-primary font-label-sm text-label-sm hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">cloud_sync</span>
+<span>Trigger Manual Statement Ingest</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Potential Matching Transactions (Unconfirmed Bank Entry Detected) -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between pb-space-xs mb-space-sm">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">swap_horiz</span>
+<span class="font-label-sm text-label-sm uppercase text-secondary">Matching Bank Candidates</span>
+</div>
+<span class="px-1.5 py-0.5 rounded bg-[#E4EBFB] text-[#1E3A8A] font-code-sm text-code-sm">1 Match Found</span>
+</div>
+<!-- Detected Candidate Card -->
+<div class="bg-surface-container-low p-space-md rounded-lg space-y-2">
+<div class="flex items-center justify-between">
+<span class="font-numeral-md text-numeral-md font-semibold text-primary">₹ 2,50,000.00</span>
+<span class="px-2 py-0.5 rounded bg-[#E3F3E8] text-[#14532D] font-code-sm text-code-sm">94% Confidence</span>
+</div>
+<div class="space-y-0.5">
+<div class="font-code-sm text-code-sm text-on-surface font-medium truncate">NEFT ECL-CORP-9844</div>
+<div class="font-code-sm text-code-sm text-secondary">Received: 2 Nov 2026 (HDFC Import)</div>
+</div>
+<div class="pt-space-xs flex items-center justify-between">
+<a class="text-primary hover:underline font-label-sm text-label-sm flex items-center gap-1" href="#">
+<span>Go to Reconciliation</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+<button class="px-space-sm py-1 rounded bg-primary-container text-on-primary hover:bg-primary font-label-sm text-label-sm transition-colors">
+              Confirm Link
+            </button>
+</div>
+</div>
+</div>
+<!-- Client Sensitivity & Cadence Settings Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<span class="font-label-sm text-label-sm uppercase text-secondary">Counter-Party Sensitivity Profile</span>
+<div class="mt-space-sm space-y-space-sm font-body-sm text-body-sm">
+<div class="flex items-center justify-between">
+<span class="text-secondary">Sensitivity Level:</span>
+<span class="px-2 py-0.5 rounded bg-surface-container text-on-surface font-label-sm text-label-sm">Standard</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary">Dunning Cadence:</span>
+<span class="font-numeral-sm text-numeral-sm text-on-surface">Every 7 calendar days</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary">Communication Tone:</span>
+<span class="font-label-sm text-label-sm text-on-surface">Institutional Neutral</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-secondary">Escalation Threshold:</span>
+<span class="font-numeral-sm text-numeral-sm text-error">45 days overdue</span>
+</div>
+</div>
+</div>
+<!-- Policy Invariance Guarantee Footer Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl">
+<div class="flex items-start gap-space-xs text-secondary">
+<span class="material-symbols-outlined text-[18px] text-primary shrink-0 mt-0.5">verified</span>
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm uppercase text-on-surface font-semibold">Deterministic Policy Invariant</span>
+<p class="font-code-sm text-code-sm text-secondary leading-relaxed">
+              “Follow-up sequences remain strictly suppressed until either an explicit bank entry is reconciled or a certified manual attestation is logged.”
+            </p>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div></main></div></body></html>

@@ -1,0 +1,28 @@
+# secrets and local state
+.env
+.env.local
+var/
+# python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.import_linter_cache/
+.hypothesis/
+.coverage
+htmlcov/
+.mutmut-cache
+mutants/
+# node
+node_modules/
+frontend/dist/
+frontend/coverage/
+frontend/test-results/
+frontend/playwright-report/
+*.tsbuildinfo
+# tooling
+.superpowers/
+# source archive that duplicates the stitch folder
+stitch_collectiq_receivables_copilot.zip

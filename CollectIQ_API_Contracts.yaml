@@ -1,0 +1,5956 @@
+openapi: 3.1.0
+info:
+  title: CollectIQ API contracts (target specification)
+  version: 1.0.0-draft
+  description: 'Generated from the TSD endpoint registry. NO endpoint is implemented: no repository was supplied. x-origin=confirmed means the route is specified
+    in SAD v0.1 section 10.2; x-origin=proposed-new means introduced by this TSD and requires approval. Request/response bodies are schematic: field lists follow
+    SAD/PRD; full response DTOs are to be finalised during M1-M2 and must not be assumed beyond SAD section 10.3 samples. Money is {amount_minor:int64, currency:ISO-4217};
+    never floating point.'
+servers:
+- url: /api/v1
+  description: Relative base path; hostnames intentionally unspecified (no domain invented)
+security:
+- sessionCookie: []
+  csrfHeader: []
+paths:
+  /auth/register:
+    post:
+      operationId: post_auth_register
+      tags:
+      - Auth
+      summary: Create account
+      description: 'Endpoint E001. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Public. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E001
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Public
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              additionalProperties: false
+              required:
+              - email
+              - password
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /auth/verify-email:
+    post:
+      operationId: post_auth_verify_email
+      tags:
+      - Auth
+      summary: Verify email token
+      description: 'Endpoint E002. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Public. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E002
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Public
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+              additionalProperties: false
+              required:
+              - token
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /auth/login:
+    post:
+      operationId: post_auth_login
+      tags:
+      - Auth
+      summary: Start session
+      description: 'Endpoint E003. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Public. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E003
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Public
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              additionalProperties: false
+              required:
+              - email
+              - password
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /auth/logout:
+    post:
+      operationId: post_auth_logout
+      tags:
+      - Auth
+      summary: End session
+      description: 'Endpoint E004. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Session. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E004
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Session
+      parameters: []
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /auth/password-reset/request:
+    post:
+      operationId: post_auth_password_reset_request
+      tags:
+      - Auth
+      summary: Request reset (always 204)
+      description: 'Endpoint E005. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Public. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E005
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Public
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+              additionalProperties: false
+              required:
+              - email
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /auth/password-reset/confirm:
+    post:
+      operationId: post_auth_password_reset_confirm
+      tags:
+      - Auth
+      summary: Confirm reset
+      description: 'Endpoint E006. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Public. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E006
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Public
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                new_password:
+                  type: string
+              additionalProperties: false
+              required:
+              - token
+              - new_password
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /auth/mfa/enroll:
+    post:
+      operationId: post_auth_mfa_enroll
+      tags:
+      - Auth
+      summary: Start TOTP enrolment
+      description: 'Endpoint E007. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Session. Priority P1. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E007
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Session
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /auth/mfa/verify:
+    post:
+      operationId: post_auth_mfa_verify
+      tags:
+      - Auth
+      summary: Verify TOTP code
+      description: 'Endpoint E008. Status: CONFIRMED (SAD v0.1 §10.2). Module M01. Roles: Session. Priority P1. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E008
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Session
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+              additionalProperties: false
+              required:
+              - code
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /auth/session:
+    get:
+      operationId: get_auth_session
+      tags:
+      - Auth
+      summary: Current user, memberships and CSRF token
+      description: 'Endpoint E009. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M01. Roles: Session. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E009
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M01
+      x-audited: false
+      x-roles:
+      - Session
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces:
+    post:
+      operationId: post_workspaces
+      tags:
+      - Workspace
+      summary: Create workspace
+      description: 'Endpoint E010. Status: CONFIRMED (SAD v0.1 §10.2). Module M02. Roles: Session. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E010
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M02
+      x-audited: true
+      x-roles:
+      - Session
+      parameters:
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                country:
+                  type: string
+                timezone:
+                  type: string
+                default_currency:
+                  type: string
+                business_hours:
+                  type: object
+                  additionalProperties: true
+              additionalProperties: false
+              required:
+              - name
+              - country
+              - timezone
+              - default_currency
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}:
+    get:
+      operationId: get_ws
+      tags:
+      - Workspace
+      summary: Read workspace settings
+      description: 'Endpoint E011. Status: CONFIRMED (SAD v0.1 §10.2). Module M02. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E011
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M02
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    patch:
+      operationId: patch_ws
+      tags:
+      - Workspace
+      summary: Update workspace settings
+      description: 'Endpoint E012. Status: CONFIRMED (SAD v0.1 §10.2). Module M02. Roles: O. Priority P0. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E012
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M02
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                timezone:
+                  type: string
+                default_currency:
+                  type: string
+                business_hours:
+                  type: object
+                  additionalProperties: true
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/members:
+    get:
+      operationId: get_ws_members
+      tags:
+      - Workspace
+      summary: List members
+      description: 'Endpoint E013. Status: CONFIRMED (SAD v0.1 §10.2). Module M03. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E013
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M03
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/invitations:
+    post:
+      operationId: post_ws_invitations
+      tags:
+      - Workspace
+      summary: Invite member
+      description: 'Endpoint E014. Status: CONFIRMED (SAD v0.1 §10.2). Module M03. Roles: O. Priority P0. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E014
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M03
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string
+              additionalProperties: false
+              required:
+              - email
+              - role
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/members/{member_id}:
+    delete:
+      operationId: delete_ws_members_member_id
+      tags:
+      - Workspace
+      summary: Remove member (not last owner)
+      description: 'Endpoint E015. Status: CONFIRMED (SAD v0.1 §10.2). Module M03. Roles: O. Priority P0. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E015
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M03
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: member_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/policy:
+    get:
+      operationId: get_ws_policy
+      tags:
+      - Policy
+      summary: Read active policy
+      description: 'Endpoint E016. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E016
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    put:
+      operationId: put_ws_policy
+      tags:
+      - Policy
+      summary: Create new policy version
+      description: 'Endpoint E017. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E017
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode:
+                  type: string
+                auto_snooze_enabled:
+                  type: boolean
+                cadence:
+                  type: object
+                  additionalProperties: true
+                limits:
+                  type: object
+                  additionalProperties: true
+                business_hours:
+                  type: object
+                  additionalProperties: true
+                sensitivity_defaults:
+                  type: object
+                  additionalProperties: true
+                consent_text_version:
+                  type: string
+              additionalProperties: false
+              required:
+              - mode
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/policy/versions:
+    get:
+      operationId: get_ws_policy_versions
+      tags:
+      - Policy
+      summary: List policy versions
+      description: 'Endpoint E018. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E018
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/automation/pause:
+    post:
+      operationId: post_ws_automation_pause
+      tags:
+      - Policy
+      summary: Emergency pause
+      description: 'Endpoint E019. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E019
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/automation/resume:
+    post:
+      operationId: post_ws_automation_resume
+      tags:
+      - Policy
+      summary: Resume automation
+      description: 'Endpoint E020. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E020
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/clients:
+    get:
+      operationId: get_ws_clients
+      tags:
+      - Clients
+      summary: List clients
+      description: 'Endpoint E021. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E021
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    post:
+      operationId: post_ws_clients
+      tags:
+      - Clients
+      summary: Create client
+      description: 'Endpoint E022. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E022
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                sensitivity:
+                  type: string
+                tone:
+                  type: string
+              additionalProperties: false
+              required:
+              - display_name
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/clients/{client_id}:
+    get:
+      operationId: get_ws_clients_client_id
+      tags:
+      - Clients
+      summary: Client profile (SCR-14)
+      description: 'Endpoint E023. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M07. Roles: O, F, L. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E023
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M07
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    patch:
+      operationId: patch_ws_clients_client_id
+      tags:
+      - Clients
+      summary: Update client (sensitivity, tone)
+      description: 'Endpoint E024. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E024
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                display_name:
+                  type: string
+                sensitivity:
+                  type: string
+                tone:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/clients/{client_id}/contacts:
+    post:
+      operationId: post_ws_clients_client_id_contacts
+      tags:
+      - Clients
+      summary: Add approved contact
+      description: 'Endpoint E025. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E025
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+              additionalProperties: false
+              required:
+              - email
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/clients/{client_id}/contacts/{contact_id}:
+    patch:
+      operationId: patch_ws_clients_client_id_contacts_contact_id
+      tags:
+      - Clients
+      summary: Update contact
+      description: 'Endpoint E026. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E026
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: client_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/contacts/{contact_id}/suppression:
+    post:
+      operationId: post_ws_contacts_contact_id_suppression
+      tags:
+      - Clients
+      summary: Suppress contact
+      description: 'Endpoint E027. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E027
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+    delete:
+      operationId: delete_ws_contacts_contact_id_suppression
+      tags:
+      - Clients
+      summary: Clear suppression
+      description: 'Endpoint E028. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E028
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: contact_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/payment-accounts:
+    get:
+      operationId: get_ws_payment_accounts
+      tags:
+      - Payment accounts
+      summary: List receiving accounts
+      description: 'Endpoint E029. Status: CONFIRMED (SAD v0.1 §10.2). Module M08. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E029
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M08
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    post:
+      operationId: post_ws_payment_accounts
+      tags:
+      - Payment accounts
+      summary: Declare receiving account
+      description: 'Endpoint E030. Status: CONFIRMED (SAD v0.1 §10.2). Module M08. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E030
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M08
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                kind:
+                  type: string
+                label:
+                  type: string
+                currency:
+                  type: string
+              additionalProperties: false
+              required:
+              - kind
+              - label
+              - currency
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/payment-accounts/{account_id}:
+    patch:
+      operationId: patch_ws_payment_accounts_account_id
+      tags:
+      - Payment accounts
+      summary: Update/deactivate account
+      description: 'Endpoint E031. Status: CONFIRMED (SAD v0.1 §10.2). Module M08. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E031
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M08
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                label:
+                  type: string
+                status:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/payment-accounts/{account_id}/coverage:
+    get:
+      operationId: get_ws_payment_accounts_account_id_coverage
+      tags:
+      - Payment accounts
+      summary: Coverage timeline and freshness (SCR-15)
+      description: 'Endpoint E032. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M08. Roles: O, F. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E032
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M08
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: account_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/imports/invoices:
+    post:
+      operationId: post_ws_imports_invoices
+      tags:
+      - Imports
+      summary: Upload invoice CSV, create preview batch
+      description: 'Endpoint E033. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E033
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              additionalProperties: false
+              required:
+              - file
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/imports/{import_id}/mapping:
+    put:
+      operationId: put_ws_imports_import_id_mapping
+      tags:
+      - Imports
+      summary: Set mapping and date format
+      description: 'Endpoint E034. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E034
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: import_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mapping:
+                  type: object
+                  additionalProperties: true
+                date_format:
+                  type: string
+                coverage_from:
+                  type: string
+                  format: date
+                coverage_to:
+                  type: string
+                  format: date
+              additionalProperties: false
+              required:
+              - mapping
+              - date_format
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/imports/{import_id}/commit:
+    post:
+      operationId: post_ws_imports_import_id_commit
+      tags:
+      - Imports
+      summary: Commit confirmed rows
+      description: 'Endpoint E035. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E035
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: import_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decisions:
+                  type: object
+                  additionalProperties: true
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/imports/{import_id}:
+    delete:
+      operationId: delete_ws_imports_import_id
+      tags:
+      - Imports
+      summary: Discard uncommitted preview
+      description: 'Endpoint E036. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E036
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: import_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+    get:
+      operationId: get_ws_imports_import_id
+      tags:
+      - Imports
+      summary: Read batch/preview
+      description: 'Endpoint E037. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M05. Roles: O, F. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E037
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M05
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: import_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/invoices/pdf:
+    post:
+      operationId: post_ws_invoices_pdf
+      tags:
+      - Imports
+      summary: Upload PDF for AI extraction (AI opt-in required)
+      description: 'Endpoint E038. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0 cond.. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E038
+      x-origin: confirmed
+      x-priority: P0 cond.
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              additionalProperties: false
+              required:
+              - file
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/extractions/{extraction_id}:
+    get:
+      operationId: get_ws_extractions_extraction_id
+      tags:
+      - Imports
+      summary: Read extraction for review
+      description: 'Endpoint E039. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0 cond.. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E039
+      x-origin: confirmed
+      x-priority: P0 cond.
+      x-module: M05
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: extraction_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    patch:
+      operationId: patch_ws_extractions_extraction_id
+      tags:
+      - Imports
+      summary: Edit extracted fields
+      description: 'Endpoint E040. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0 cond.. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E040
+      x-origin: confirmed
+      x-priority: P0 cond.
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: extraction_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fields:
+                  type: object
+                  additionalProperties: true
+              additionalProperties: false
+              required:
+              - fields
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/extractions/{extraction_id}/confirm:
+    post:
+      operationId: post_ws_extractions_extraction_id_confirm
+      tags:
+      - Imports
+      summary: Create ACTIVE invoice from extraction
+      description: 'Endpoint E041. Status: CONFIRMED (SAD v0.1 §10.2). Module M05. Roles: O, F. Priority P0 cond.. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E041
+      x-origin: confirmed
+      x-priority: P0 cond.
+      x-module: M05
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: extraction_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decisions:
+                  type: object
+                  additionalProperties: true
+              additionalProperties: false
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices:
+    get:
+      operationId: get_ws_invoices
+      tags:
+      - Invoices
+      summary: List invoices
+      description: 'Endpoint E042. Status: CONFIRMED (SAD v0.1 §10.2). Module M06. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E042
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M06
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/invoices/{invoice_id}:
+    get:
+      operationId: get_ws_invoices_invoice_id
+      tags:
+      - Invoices
+      summary: Invoice detail with state, evidence, reasons
+      description: 'Endpoint E043. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E043
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    patch:
+      operationId: patch_ws_invoices_invoice_id
+      tags:
+      - Invoices
+      summary: Correct invoice fields (reason required)
+      description: 'Endpoint E044. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E044
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                changes:
+                  type: object
+                  additionalProperties: true
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - changes
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/cancel:
+    post:
+      operationId: post_ws_invoices_invoice_id_cancel
+      tags:
+      - Invoices
+      summary: Cancel invoice
+      description: 'Endpoint E045. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E045
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/archive:
+    post:
+      operationId: post_ws_invoices_invoice_id_archive
+      tags:
+      - Invoices
+      summary: Archive invoice
+      description: 'Endpoint E046. Status: CONFIRMED (SAD v0.1 §10.2). Module M07. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E046
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M07
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/queue:
+    get:
+      operationId: get_ws_queue
+      tags:
+      - Queue
+      summary: Exception-first queue
+      description: 'Endpoint E047. Status: CONFIRMED (SAD v0.1 §10.2). Module M06. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E047
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M06
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/dashboard:
+    get:
+      operationId: get_ws_dashboard
+      tags:
+      - Queue
+      summary: Dashboard tiles and aging
+      description: 'Endpoint E048. Status: CONFIRMED (SAD v0.1 §10.2). Module M06. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E048
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M06
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/payments:
+    post:
+      operationId: post_ws_payments
+      tags:
+      - Payments
+      summary: Record manual payment with allocations
+      description: 'Endpoint E049. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E049
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                method:
+                  type: string
+                amount:
+                  $ref: '#/components/schemas/Money'
+                value_date:
+                  type: string
+                  format: date
+                reference:
+                  type: string
+                payer:
+                  type: string
+                notes:
+                  type: string
+                allocations:
+                  type: array
+                  items: &id001
+                    type: object
+                    additionalProperties: true
+              additionalProperties: false
+              required:
+              - method
+              - amount
+              - value_date
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+    get:
+      operationId: get_ws_payments
+      tags:
+      - Payments
+      summary: List payments
+      description: 'Endpoint E050. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E050
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/payments/{payment_id}:
+    get:
+      operationId: get_ws_payments_payment_id
+      tags:
+      - Payments
+      summary: Payment detail with allocations and matches
+      description: 'Endpoint E051. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E051
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/payments/{payment_id}/void:
+    post:
+      operationId: post_ws_payments_payment_id_void
+      tags:
+      - Payments
+      summary: Void a mistaken manual transaction
+      description: 'Endpoint E052. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E052
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: payment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/imports/transactions:
+    post:
+      operationId: post_ws_imports_transactions
+      tags:
+      - Imports
+      summary: Upload statement/export CSV
+      description: 'Endpoint E053. Status: CONFIRMED (SAD v0.1 §10.2). Module M09. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E053
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M09
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                source_type:
+                  type: string
+                payment_account_id:
+                  type: string
+              additionalProperties: false
+              required:
+              - file
+              - source_type
+              - payment_account_id
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/attestations:
+    post:
+      operationId: post_ws_attestations
+      tags:
+      - Payment accounts
+      summary: Attest checked, nothing received
+      description: 'Endpoint E054. Status: CONFIRMED (SAD v0.1 §10.2). Module M08. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E054
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M08
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scope:
+                  type: string
+                invoice_ids:
+                  type: array
+                  items: *id001
+                account_id:
+                  type: string
+                as_of:
+                  type: string
+                  format: date-time
+                note:
+                  type: string
+              additionalProperties: false
+              required:
+              - scope
+              - as_of
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/transactions/unmatched:
+    get:
+      operationId: get_ws_transactions_unmatched
+      tags:
+      - Payments
+      summary: Unallocated transactions
+      description: 'Endpoint E055. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E055
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/reconciliation/proposals:
+    get:
+      operationId: get_ws_reconciliation_proposals
+      tags:
+      - Reconciliation
+      summary: List match proposals with factors
+      description: 'Endpoint E056. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E056
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/reconciliation/proposals/{proposal_id}/confirm:
+    post:
+      operationId: post_ws_reconciliation_proposals_proposal_id_confirm
+      tags:
+      - Reconciliation
+      summary: Confirm match (human only)
+      description: 'Endpoint E057. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E057
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: proposal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                allocations:
+                  type: array
+                  items: *id001
+              additionalProperties: false
+              required:
+              - allocations
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reconciliation/proposals/{proposal_id}/reject:
+    post:
+      operationId: post_ws_reconciliation_proposals_proposal_id_reject
+      tags:
+      - Reconciliation
+      summary: Reject proposal
+      description: 'Endpoint E058. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E058
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: proposal_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/allocations:
+    post:
+      operationId: post_ws_allocations
+      tags:
+      - Reconciliation
+      summary: Manual allocation of unmatched transaction
+      description: 'Endpoint E059. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E059
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                transaction_id:
+                  type: string
+                allocations:
+                  type: array
+                  items: *id001
+              additionalProperties: false
+              required:
+              - transaction_id
+              - allocations
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/allocations/{allocation_id}/reverse:
+    post:
+      operationId: post_ws_allocations_allocation_id_reverse
+      tags:
+      - Reconciliation
+      summary: Reverse allocation (additive)
+      description: 'Endpoint E060. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E060
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: allocation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/transactions/{transaction_id}/mark-duplicate:
+    post:
+      operationId: post_ws_transactions_transaction_id_mark_duplicate
+      tags:
+      - Reconciliation
+      summary: Mark cross-source duplicate
+      description: 'Endpoint E061. Status: CONFIRMED (SAD v0.1 §10.2). Module M10. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E061
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M10
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: transaction_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                duplicate_of:
+                  type: string
+              additionalProperties: false
+              required:
+              - duplicate_of
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/messages:
+    post:
+      operationId: post_ws_messages
+      tags:
+      - Conversations
+      summary: Capture customer reply (paste/.eml/.txt)
+      description: 'Endpoint E062. Status: CONFIRMED (SAD v0.1 §10.2). Module M11. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E062
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M11
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                text:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+                sender:
+                  type: string
+                subject:
+                  type: string
+                received_at:
+                  type: string
+                  format: date-time
+                invoice_ids:
+                  type: array
+                  items: *id001
+              additionalProperties: false
+              required:
+              - source
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+    get:
+      operationId: get_ws_messages
+      tags:
+      - Conversations
+      summary: Conversation index (DC-1)
+      description: 'Endpoint E063. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M11. Roles: O, F. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E063
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M11
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/messages/{message_id}:
+    get:
+      operationId: get_ws_messages_message_id
+      tags:
+      - Conversations
+      summary: Read message
+      description: 'Endpoint E064. Status: CONFIRMED (SAD v0.1 §10.2). Module M11. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E064
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M11
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/invoices/{invoice_id}/messages:
+    get:
+      operationId: get_ws_invoices_invoice_id_messages
+      tags:
+      - Conversations
+      summary: Conversation timeline for invoice
+      description: 'Endpoint E065. Status: CONFIRMED (SAD v0.1 §10.2). Module M11. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E065
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M11
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/messages/{message_id}/associations:
+    post:
+      operationId: post_ws_messages_message_id_associations
+      tags:
+      - Conversations
+      summary: Confirm invoice association, enqueue interpretation
+      description: 'Endpoint E066. Status: CONFIRMED (SAD v0.1 §10.2). Module M11. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E066
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M11
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoice_ids:
+                  type: array
+                  items: *id001
+              additionalProperties: false
+              required:
+              - invoice_ids
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/messages/{message_id}/interpretation:
+    get:
+      operationId: get_ws_messages_message_id_interpretation
+      tags:
+      - Interpretation
+      summary: Latest validated interpretation (AI-derived)
+      description: 'Endpoint E067. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E067
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: message_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/interpretations/{interpretation_id}/accept:
+    post:
+      operationId: post_ws_interpretations_interpretation_id_accept
+      tags:
+      - Interpretation
+      summary: Accept interpretation
+      description: 'Endpoint E068. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E068
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: interpretation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/interpretations/{interpretation_id}/dismiss:
+    post:
+      operationId: post_ws_interpretations_interpretation_id_dismiss
+      tags:
+      - Interpretation
+      summary: Dismiss interpretation
+      description: 'Endpoint E069. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E069
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: interpretation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/interpretations/{interpretation_id}/correct:
+    post:
+      operationId: post_ws_interpretations_interpretation_id_correct
+      tags:
+      - Interpretation
+      summary: Correct interpretation (triggers reversal)
+      description: 'Endpoint E070. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E070
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: interpretation_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                intent:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                invoice_ids:
+                  type: array
+                  items: *id001
+                note:
+                  type: string
+              additionalProperties: false
+              required:
+              - note
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/commitments:
+    get:
+      operationId: get_ws_invoices_invoice_id_commitments
+      tags:
+      - Commitments
+      summary: List commitments
+      description: 'Endpoint E071. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E071
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/commitments:
+    post:
+      operationId: post_ws_commitments
+      tags:
+      - Commitments
+      summary: Record manual commitment
+      description: 'Endpoint E072. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E072
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoice_id:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                window_start:
+                  type: string
+                  format: date
+                window_end:
+                  type: string
+                  format: date
+                strength:
+                  type: string
+                note:
+                  type: string
+              additionalProperties: false
+              required:
+              - invoice_id
+              - strength
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/commitments/{commitment_id}:
+    patch:
+      operationId: patch_ws_commitments_commitment_id
+      tags:
+      - Commitments
+      summary: Withdraw/modify commitment
+      description: 'Endpoint E073. Status: CONFIRMED (SAD v0.1 §10.2). Module M12. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E073
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M12
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: commitment_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                note:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/snooze/approve:
+    post:
+      operationId: post_ws_invoices_invoice_id_snooze_approve
+      tags:
+      - Commitments
+      summary: Approve proposed snooze
+      description: 'Endpoint E074. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E074
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approval_id:
+                  type: string
+              additionalProperties: false
+              required:
+              - approval_id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/snooze/undo:
+    post:
+      operationId: post_ws_invoices_invoice_id_snooze_undo
+      tags:
+      - Commitments
+      summary: Undo snooze
+      description: 'Endpoint E075. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E075
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/cases:
+    get:
+      operationId: get_ws_cases
+      tags:
+      - Cases
+      summary: List cases
+      description: 'Endpoint E076. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E076
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    post:
+      operationId: post_ws_cases
+      tags:
+      - Cases
+      summary: Open manual dispute/blocker
+      description: 'Endpoint E078. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E078
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoice_id:
+                  type: string
+                type:
+                  type: string
+                summary:
+                  type: string
+              additionalProperties: false
+              required:
+              - invoice_id
+              - type
+              - summary
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/cases/{case_id}:
+    get:
+      operationId: get_ws_cases_case_id
+      tags:
+      - Cases
+      summary: Case detail
+      description: 'Endpoint E077. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E077
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    patch:
+      operationId: patch_ws_cases_case_id
+      tags:
+      - Cases
+      summary: Assign/status/note
+      description: 'Endpoint E079. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E079
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                assignee_id:
+                  type: string
+                status:
+                  type: string
+                note:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/cases/{case_id}/resolve:
+    post:
+      operationId: post_ws_cases_case_id_resolve
+      tags:
+      - Cases
+      summary: Record outcome (human only)
+      description: 'Endpoint E080. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E080
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                outcome:
+                  type: string
+                note:
+                  type: string
+              additionalProperties: false
+              required:
+              - outcome
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/cases/{case_id}/reopen:
+    post:
+      operationId: post_ws_cases_case_id_reopen
+      tags:
+      - Cases
+      summary: Reopen case
+      description: 'Endpoint E081. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E081
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: case_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+              required:
+              - reason
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/followups/resume:
+    post:
+      operationId: post_ws_invoices_invoice_id_followups_resume
+      tags:
+      - Cases
+      summary: Resume reminders after resolution
+      description: 'Endpoint E082. Status: CONFIRMED (SAD v0.1 §10.2). Module M13. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E082
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M13
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                approval_id:
+                  type: string
+              additionalProperties: false
+              required:
+              - approval_id
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reminders:
+    get:
+      operationId: get_ws_reminders
+      tags:
+      - Reminders
+      summary: List drafts and history
+      description: 'Endpoint E083. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E083
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/reminders/{reminder_id}:
+    get:
+      operationId: get_ws_reminders_reminder_id
+      tags:
+      - Reminders
+      summary: Reminder with gate results
+      description: 'Endpoint E084. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E084
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    patch:
+      operationId: patch_ws_reminders_reminder_id
+      tags:
+      - Reminders
+      summary: Edit draft text (linter, fact block immutable)
+      description: 'Endpoint E086. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E086
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IfMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                body:
+                  type: string
+              additionalProperties: false
+              required:
+              - body
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/invoices/{invoice_id}/reminders/evaluate:
+    post:
+      operationId: post_ws_invoices_invoice_id_reminders_evaluate
+      tags:
+      - Reminders
+      summary: Manual evaluation point; draft if eligible
+      description: 'Endpoint E085. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E085
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reminders/{reminder_id}/approve:
+    post:
+      operationId: post_ws_reminders_reminder_id_approve
+      tags:
+      - Reminders
+      summary: Approve draft (does not send in P0)
+      description: 'Endpoint E087. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E087
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reminders/{reminder_id}/reject:
+    post:
+      operationId: post_ws_reminders_reminder_id_reject
+      tags:
+      - Reminders
+      summary: Reject draft
+      description: 'Endpoint E088. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E088
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason:
+                  type: string
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reminders/{reminder_id}/mark-sent:
+    post:
+      operationId: post_ws_reminders_reminder_id_mark_sent
+      tags:
+      - Reminders
+      summary: Record manual sending
+      description: 'Endpoint E089. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E089
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sent_at:
+                  type: string
+                  format: date-time
+                method:
+                  type: string
+              additionalProperties: false
+              required:
+              - sent_at
+              - method
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reminders/{reminder_id}/send:
+    post:
+      operationId: post_ws_reminders_reminder_id_send
+      tags:
+      - Reminders
+      summary: Send via connected mailbox (202)
+      description: 'Endpoint E090. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P1. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E090
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '202':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/reminders/{reminder_id}/confirm-unknown:
+    post:
+      operationId: post_ws_reminders_reminder_id_confirm_unknown
+      tags:
+      - Reminders
+      summary: Resolve SUBMISSION_UNKNOWN
+      description: 'Endpoint E091. Status: CONFIRMED (SAD v0.1 §10.2). Module M14. Roles: O, F. Priority P1. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E091
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: reminder_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                outcome:
+                  type: string
+              additionalProperties: false
+              required:
+              - outcome
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/approvals/{approval_id}/decide:
+    post:
+      operationId: post_ws_approvals_approval_id_decide
+      tags:
+      - Approvals
+      summary: Generic approval decision
+      description: 'Endpoint E092. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E092
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: approval_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                decision:
+                  type: string
+              additionalProperties: false
+              required:
+              - decision
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/integrations:
+    get:
+      operationId: get_ws_integrations
+      tags:
+      - Integrations
+      summary: List connections and status
+      description: 'Endpoint E093. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E093
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M16
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/integrations/gmail/connect:
+    post:
+      operationId: post_ws_integrations_gmail_connect
+      tags:
+      - Integrations
+      summary: Start send-only Gmail OAuth
+      description: 'Endpoint E094. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: O. Priority P1. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E094
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M16
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /integrations/gmail/callback:
+    get:
+      operationId: get_integrations_gmail_callback
+      tags:
+      - Integrations
+      summary: OAuth redirect (state+PKCE check)
+      description: 'Endpoint E095. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: Session. Priority P1. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E095
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M16
+      x-audited: true
+      x-roles:
+      - Session
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/integrations/gmail/monitoring:
+    post:
+      operationId: post_ws_integrations_gmail_monitoring
+      tags:
+      - Integrations
+      summary: Enable reply monitoring (separate consent)
+      description: 'Endpoint E096. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: O. Priority P1. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E096
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M16
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                consent_version:
+                  type: string
+              additionalProperties: false
+              required:
+              - consent_version
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/integrations/{integration_id}:
+    delete:
+      operationId: delete_ws_integrations_integration_id
+      tags:
+      - Integrations
+      summary: Disconnect integration
+      description: 'Endpoint E097. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: O. Priority P1. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E097
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M16
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: integration_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /webhooks/paypal:
+    post:
+      operationId: post_webhooks_paypal
+      tags:
+      - Integrations
+      summary: PayPal webhook (signature, not session)
+      description: 'Endpoint E098. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: Webhook. Priority P1. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E098
+      x-origin: confirmed
+      x-priority: P1
+      x-module: M16
+      x-audited: true
+      x-roles:
+      - Webhook
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /workspaces/{ws}/audit-events:
+    get:
+      operationId: get_ws_audit_events
+      tags:
+      - Audit
+      summary: Search audit events
+      description: 'Endpoint E099. Status: CONFIRMED (SAD v0.1 §10.2). Module M18. Roles: O, F, L. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E099
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M18
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/audit-events/exports:
+    post:
+      operationId: post_ws_audit_events_exports
+      tags:
+      - Audit
+      summary: Export audit events
+      description: 'Endpoint E100. Status: CONFIRMED (SAD v0.1 §10.2). Module M18. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E100
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M18
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filters:
+                  type: object
+                  additionalProperties: true
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/policy-decisions/{decision_id}:
+    get:
+      operationId: get_ws_policy_decisions_decision_id
+      tags:
+      - Audit
+      summary: Why-view for a policy decision
+      description: 'Endpoint E101. Status: CONFIRMED (SAD v0.1 §10.2). Module M15. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E101
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M15
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: decision_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/exports:
+    post:
+      operationId: post_ws_exports
+      tags:
+      - Privacy
+      summary: Request workspace export
+      description: 'Endpoint E102. Status: CONFIRMED (SAD v0.1 §10.2). Module M19. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E102
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M19
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scope:
+                  type: string
+              additionalProperties: false
+              required:
+              - scope
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/exports/{export_id}:
+    get:
+      operationId: get_ws_exports_export_id
+      tags:
+      - Privacy
+      summary: Export status and signed URL
+      description: 'Endpoint E103. Status: CONFIRMED (SAD v0.1 §10.2). Module M19. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E103
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M19
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: export_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/deletion:
+    post:
+      operationId: post_ws_deletion
+      tags:
+      - Privacy
+      summary: Request workspace deletion
+      description: 'Endpoint E104. Status: CONFIRMED (SAD v0.1 §10.2). Module M19. Roles: O. Priority P0. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E104
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M19
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                confirmation_text:
+                  type: string
+              additionalProperties: false
+              required:
+              - confirmation_text
+      responses:
+        '201':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/ai/payloads:
+    get:
+      operationId: get_ws_ai_payloads
+      tags:
+      - Privacy
+      summary: AI payload inspector (redacted as sent)
+      description: 'Endpoint E105. Status: CONFIRMED (SAD v0.1 §10.2). Module M19. Roles: O, F. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E105
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M19
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/notifications:
+    get:
+      operationId: get_ws_notifications
+      tags:
+      - Notifications
+      summary: In-app notifications
+      description: 'Endpoint E106. Status: CONFIRMED (SAD v0.1 §10.2). Module M17. Roles: Self. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E106
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M17
+      x-audited: false
+      x-roles:
+      - Self
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/Limit'
+      - $ref: '#/components/parameters/Cursor'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/notifications/{notification_id}/read:
+    post:
+      operationId: post_ws_notifications_notification_id_read
+      tags:
+      - Notifications
+      summary: Mark notification read
+      description: 'Endpoint E107. Status: CONFIRMED (SAD v0.1 §10.2). Module M17. Roles: Self. Priority P0. Implementation status: NOT IMPLEMENTED (no repository
+        supplied).'
+      x-endpoint-id: E107
+      x-origin: confirmed
+      x-priority: P0
+      x-module: M17
+      x-audited: false
+      x-roles:
+      - Self
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: notification_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /workspaces/{ws}/review-inbox:
+    get:
+      operationId: get_ws_review_inbox
+      tags:
+      - Notifications
+      summary: Aggregated review items (proposed; no new table)
+      description: 'Endpoint E108. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M17. Roles: O, F, L. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E108
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M17
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD (P1, assigned only)
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+  /workspaces/{ws}/ai/settings:
+    get:
+      operationId: get_ws_ai_settings
+      tags:
+      - Privacy
+      summary: Read AI opt-ins and kill-switch state
+      description: 'Endpoint E109. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M19. Roles: O, F. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E109
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M19
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '429':
+          $ref: '#/components/responses/Problem429'
+    put:
+      operationId: put_ws_ai_settings
+      tags:
+      - Privacy
+      summary: Set AI opt-ins and tenant kill switch
+      description: 'Endpoint E110. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M19. Roles: O. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E110
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M19
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                pdf_extraction_enabled:
+                  type: boolean
+                reply_interpretation_enabled:
+                  type: boolean
+                kill_switch:
+                  type: boolean
+              additionalProperties: false
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '404':
+          $ref: '#/components/responses/Problem404'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+        csrfHeader: []
+  /health/live:
+    get:
+      operationId: get_health_live
+      tags:
+      - Operations
+      summary: Liveness probe
+      description: 'Endpoint E111. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M20. Roles: Infra. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E111
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M20
+      x-audited: false
+      x-roles:
+      - Infra
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /health/ready:
+    get:
+      operationId: get_health_ready
+      tags:
+      - Operations
+      summary: Readiness probe (DB, queue)
+      description: 'Endpoint E112. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M20. Roles: Infra. Priority P0. Implementation
+        status: NOT IMPLEMENTED (no repository supplied).'
+      x-endpoint-id: E112
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M20
+      x-audited: false
+      x-roles:
+      - Infra
+      parameters: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: sessionid
+      description: HttpOnly, Secure, SameSite session cookie. Cookie name is an implementation choice [PROP].
+    csrfHeader:
+      type: apiKey
+      in: header
+      name: X-CSRFToken
+      description: Required on mutating requests. Header name is a Django default [PROP].
+  parameters:
+    Workspace:
+      name: ws
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    IfMatch:
+      name: If-Match
+      in: header
+      required: true
+      schema:
+        type: string
+      description: Aggregate version; mismatch -> 409 CONFLICT_VERSION
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: true
+      schema:
+        type: string
+        maxLength: 128
+      description: Same key+body replays stored result; different body -> 422 IDEMPOTENCY_MISMATCH
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 200
+        default: 50
+    Cursor:
+      name: cursor
+      in: query
+      schema:
+        type: string
+  schemas:
+    Money:
+      type: object
+      required:
+      - amount_minor
+      - currency
+      properties:
+        amount_minor:
+          type: integer
+          format: int64
+          description: Minor units; never a float
+        currency:
+          type: string
+          pattern: ^[A-Z]{3}$
+    Problem:
+      type: object
+      required:
+      - type
+      - title
+      - status
+      - code
+      - correlation_id
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        code:
+          type: string
+          enum:
+          - AUTH_REQUIRED
+          - FORBIDDEN
+          - NOT_FOUND
+          - VALIDATION_FAILED
+          - CONFLICT_VERSION
+          - STATE_TRANSITION_INVALID
+          - DUPLICATE_RESOURCE
+          - IDEMPOTENCY_MISMATCH
+          - POLICY_BLOCKED
+          - IMPORT_VALIDATION_FAILED
+          - PAYLOAD_TOO_LARGE
+          - UNSUPPORTED_MEDIA_TYPE
+          - RATE_LIMITED
+          - INTEGRATION_UNAVAILABLE
+          - AI_UNAVAILABLE
+          - INTERNAL_ERROR
+        detail:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+        gate_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateResult'
+        decision_id:
+          type: string
+          format: uuid
+        correlation_id:
+          type: string
+    GateResult:
+      type: object
+      required:
+      - gate
+      - passed
+      properties:
+        gate:
+          type: string
+          pattern: ^G(1[0-5]|[1-9])$
+        passed:
+          type: boolean
+        reason:
+          type: string
+    PaymentStatus:
+      type: string
+      enum:
+      - OUTSTANDING
+      - PARTIALLY_PAID
+      - AWAITING_VERIFICATION
+      - UNCERTAIN
+      - PAID_VERIFIED
+      description: Derived only; there is no mark-paid action.
+    PolicyOutcome:
+      type: string
+      enum:
+      - ALLOW_AUTOMATIC
+      - REQUIRE_APPROVAL
+      - DENY
+      - DEFER
+      - PAUSE_FOR_REVIEW
+      - CANCEL
+    Page:
+      type: object
+      properties:
+        items:
+          type: array
+          items: {}
+        next_cursor:
+          type:
+          - string
+          - 'null'
+  responses:
+    Problem400:
+      description: Bad request
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem401:
+      description: AUTH_REQUIRED
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem403:
+      description: FORBIDDEN
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem404:
+      description: NOT_FOUND (also used for cross-tenant IDs)
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem409:
+      description: Conflict / POLICY_BLOCKED / STATE_TRANSITION_INVALID / CONFLICT_VERSION
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem422:
+      description: VALIDATION_FAILED / IDEMPOTENCY_MISMATCH
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
+    Problem429:
+      description: RATE_LIMITED
+      content:
+        application/problem+json:
+          schema:
+            $ref: '#/components/schemas/Problem'
