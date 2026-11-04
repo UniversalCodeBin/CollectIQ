@@ -5,8 +5,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 ## Resume point
 
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
-- **Done:** M0 (Tasks 1 to 3), Task 4.
-- **Next:** Task 5, audit write path.
+- **Done:** M0 (Tasks 1 to 3), Tasks 4 and 5.
+- **Next:** Task 6, idempotency, jobs, outbox, logging, storage and crypto.
 
 ## T1 spike outcome
 
@@ -24,7 +24,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T1 Toolchain spike | Done | `5cd78f1` |
 | T2 Scaffold and quality gate | Done; `make check` passing | `a1448f4` |
 | T3 Audit and traceability | Done; `make check` passing | `1facbae` |
-| T4 Tenant-scoped database layer | Done; `tests/rls` passing against Postgres as the app role | See `git log` |
+| T4 Tenant-scoped database layer | Done; `tests/rls` passing against Postgres as the app role | `5e96de0` |
+| T5 Audit write path | Done; `tests/integration` passing against Postgres as the app role | See `git log` |
 
 ## Open items carried forward
 

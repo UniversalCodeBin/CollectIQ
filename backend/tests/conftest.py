@@ -64,6 +64,13 @@ def _truncate_all() -> None:
 
 
 @pytest.fixture
+def owner_db(django_db_setup) -> Iterator[psycopg.Connection]:
+    """An owner connection, for checks that must hold against the owner role too."""
+    with psycopg.connect(_owner_conninfo(TEST_DB), autocommit=True) as owner:
+        yield owner
+
+
+@pytest.fixture
 def pg(django_db_setup, django_db_blocker) -> Iterator[None]:
     """Real commits as the app role. Use this, not `django_db`: its wrapping atomic would hide resets."""
     with django_db_blocker.unblock():
