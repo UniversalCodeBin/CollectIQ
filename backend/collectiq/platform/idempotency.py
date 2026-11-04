@@ -1,4 +1,5 @@
 """`@idempotent`: one user intent, one effect. A retry replays the stored response (TSD 666, 799, 1050)."""
+
 import hashlib
 import json
 from collections.abc import Callable
@@ -30,12 +31,28 @@ def require_key(request: Any) -> UUID:
         ) from None
 
 
+def _hash_multipart(digest: Any, request: Any) -> None:
+    # CSRF has already parsed a multipart body by now, so its raw bytes can no longer be read.
+    for name, value in sorted(request.POST.items()):
+        digest.update(f"{name}={value}".encode())
+        digest.update(b"\x00")
+    for name, upload in sorted(request.FILES.items()):
+        digest.update(f"{name}:{upload.name}".encode())
+        digest.update(b"\x00")
+        for chunk in upload.chunks():
+            digest.update(chunk)
+        upload.seek(0)
+
+
 def _request_hash(request: Any, ctx: RequestContext) -> bytes:
     digest = hashlib.sha256()
     for part in (request.method, request.get_full_path(), str(ctx.user_id)):
         digest.update(part.encode())
         digest.update(b"\x00")
-    digest.update(request.body)
+    if (request.content_type or "").startswith("multipart/"):
+        _hash_multipart(digest, request)
+    else:
+        digest.update(request.body)
     return digest.digest()
 
 

@@ -53,6 +53,7 @@ MIDDLEWARE = [
     "collectiq.platform.middleware.CorrelationIdMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "collectiq.platform.middleware.UploadLimitMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
 ]
 
@@ -130,6 +131,8 @@ FEATURE_PAYPAL_WEBHOOK = env_bool("FEATURE_PAYPAL_WEBHOOK")
 # Provisional defaults (OD-16, OD-17). Workspace policy overrides these where the spec allows it.
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 MAX_IMPORT_ROWS = 10_000
+# The upload plus room for the multipart envelope; a larger declared body is refused unread.
+COLLECTIQ_MAX_REQUEST_BYTES = MAX_UPLOAD_BYTES + 1024 * 1024
 IDEMPOTENCY_TTL = timedelta(hours=24)
 
 # [PROP] Configurable defaults for the auth limits. The specs fix the behavior, not these values.

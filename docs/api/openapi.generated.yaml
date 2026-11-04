@@ -566,6 +566,201 @@ paths:
         '204':
           description: No response body
       x-endpoint-id: E028
+  /api/v1/workspaces/{ws}/imports/{import_id}:
+    get:
+      operationId: E037
+      parameters:
+      - in: query
+        name: after_row
+        schema:
+          type: integer
+      - in: path
+        name: import_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatchOut'
+          description: ''
+      x-endpoint-id: E037
+    delete:
+      operationId: E036
+      parameters:
+      - in: path
+        name: import_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E036
+  /api/v1/workspaces/{ws}/imports/{import_id}/commit:
+    post:
+      operationId: E035
+      description: The failure is recorded outside the rolled-back transaction, so
+        that it survives.
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: import_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportCommitInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportCommitInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatchOut'
+          description: ''
+      x-endpoint-id: E035
+  /api/v1/workspaces/{ws}/imports/{import_id}/error-report:
+    get:
+      operationId: E116
+      parameters:
+      - in: path
+        name: import_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            text/csv:
+              schema:
+                type: string
+          description: ''
+      x-endpoint-id: E116
+  /api/v1/workspaces/{ws}/imports/{import_id}/mapping:
+    put:
+      operationId: E034
+      parameters:
+      - in: path
+        name: import_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ImportMappingInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ImportMappingInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatchOut'
+          description: ''
+      x-endpoint-id: E034
+  /api/v1/workspaces/{ws}/imports/invoices:
+    post:
+      operationId: E033
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImportBatchOut'
+          description: ''
+      x-endpoint-id: E033
   /api/v1/workspaces/{ws}/invitations:
     post:
       operationId: E014
@@ -706,6 +901,20 @@ components:
       - id
       - kind
       - text
+    AllowedActionOut:
+      type: object
+      properties:
+        action:
+          type: string
+        allowed:
+          type: boolean
+        reason:
+          type: string
+          nullable: true
+      required:
+      - action
+      - allowed
+      - reason
     ClientInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -891,6 +1100,257 @@ components:
         status:
           type: string
       required:
+      - status
+    ImportBatchOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        status:
+          type: string
+        file_name:
+          type: string
+        scan_status:
+          type: string
+        headers:
+          type: array
+          items:
+            type: string
+        suggested_mapping:
+          type: object
+          additionalProperties:
+            type: string
+        date_format_options:
+          type: array
+          items:
+            type: string
+        mapping:
+          type: object
+          additionalProperties:
+            type: string
+          nullable: true
+        date_format:
+          type: string
+          nullable: true
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+        rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportRowOut'
+        next_row:
+          type: integer
+          nullable: true
+        client_matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportClientMatchOut'
+        failure_reason:
+          type: string
+          nullable: true
+        allowed_actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowedActionOut'
+      required:
+      - allowed_actions
+      - client_matches
+      - counts
+      - date_format
+      - date_format_options
+      - failure_reason
+      - file_name
+      - headers
+      - id
+      - kind
+      - mapping
+      - next_row
+      - rows
+      - scan_status
+      - status
+      - suggested_mapping
+    ImportCandidateOut:
+      type: object
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        reason:
+          type: string
+      required:
+      - client_id
+      - display_name
+      - reason
+    ImportClientDecisionInActionEnum:
+      enum:
+      - LINK
+      - SAME_AS
+      - NEW
+      type: string
+      description: |-
+        * `LINK` - LINK
+        * `SAME_AS` - SAME_AS
+        * `NEW` - NEW
+    ImportClientDecisionInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        action:
+          $ref: '#/components/schemas/ImportClientDecisionInActionEnum'
+        client_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - action
+    ImportClientMatchOut:
+      type: object
+      properties:
+        name:
+          type: string
+        display_name:
+          type: string
+        rows:
+          type: integer
+        candidates:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportCandidateOut'
+        in_file:
+          type: array
+          items:
+            type: string
+        decision_required:
+          type: boolean
+      required:
+      - candidates
+      - decision_required
+      - display_name
+      - in_file
+      - name
+      - rows
+    ImportCommitInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        decisions:
+          $ref: '#/components/schemas/ImportDecisionsInRequest'
+    ImportDecisionsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        skip_invalid:
+          type: boolean
+        rows:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ImportRowDecisionInRequest'
+        clients:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ImportClientDecisionInRequest'
+    ImportFieldErrorOut:
+      type: object
+      properties:
+        field:
+          type: string
+        message:
+          type: string
+      required:
+      - field
+      - message
+    ImportMappingInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        mapping:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+        date_format:
+          type: string
+          nullable: true
+          minLength: 1
+      required:
+      - mapping
+    ImportRowDecisionInActionEnum:
+      enum:
+      - UPDATE
+      - IGNORE
+      - KEEP_BOTH
+      - MERGE
+      type: string
+      description: |-
+        * `UPDATE` - UPDATE
+        * `IGNORE` - IGNORE
+        * `KEEP_BOTH` - KEEP_BOTH
+        * `MERGE` - MERGE
+    ImportRowDecisionInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        action:
+          $ref: '#/components/schemas/ImportRowDecisionInActionEnum'
+        total_source:
+          $ref: '#/components/schemas/TotalSourceEnum'
+    ImportRowOut:
+      type: object
+      properties:
+        row:
+          type: integer
+        status:
+          type: string
+        invoice_number:
+          type: string
+          nullable: true
+        client_name:
+          type: string
+          nullable: true
+        currency:
+          type: string
+          nullable: true
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ImportFieldErrorOut'
+        diffs:
+          type: array
+          items: {}
+        matches:
+          type: array
+          items: {}
+        allowed_decisions:
+          type: array
+          items:
+            type: string
+        conflict:
+          nullable: true
+      required:
+      - allowed_decisions
+      - client_name
+      - conflict
+      - currency
+      - diffs
+      - errors
+      - invoice_number
+      - matches
+      - row
       - status
     InvitationAcceptedOut:
       type: object
@@ -1123,6 +1583,14 @@ components:
         * `NEUTRAL` - NEUTRAL
         * `FRIENDLY` - FRIENDLY
         * `FORMAL` - FORMAL
+    TotalSourceEnum:
+      enum:
+      - TOTAL
+      - SUM
+      type: string
+      description: |-
+        * `TOTAL` - TOTAL
+        * `SUM` - SUM
     UserOut:
       type: object
       properties:

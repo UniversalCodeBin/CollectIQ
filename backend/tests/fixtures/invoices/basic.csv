@@ -1,0 +1,4 @@
+Invoice No,Client,Due,Currency,Total,Issued,Email
+INV-1001,Northwind Traders,30/04/2026,INR,"2,50,000.00",01/04/2026,billing@northwind.example.test
+INV-1002,Blue Harbor Studio,15/05/2026,INR,"₹1,000.50",15/04/2026,accounts@blueharbor.example.test
+INV-1003,Northwind Traders,31/05/2026,USD,1200.00,01/05/2026,billing@northwind.example.test

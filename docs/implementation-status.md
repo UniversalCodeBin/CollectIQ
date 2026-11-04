@@ -5,8 +5,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 ## Resume point
 
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
-- **Done:** Tasks 1-10 (M0, M1 identity and web foundation, clients).
-- **Next:** Task 11, invoice CSV import.
+- **Done:** invoice CSV upload, mapping, preview, atomic commit, discard and error report (E033-E037, E116).
+- **Next:** Task 12, invoice queue and dashboard read models.
 
 ## T1 spike outcome
 
@@ -30,7 +30,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T7 Identity, workspaces and roles | Done; full suite passing against Postgres as the app role; 11 injected security faults all caught | `2697f90` |
 | T8 Frontend foundation | 78 vitest, build, `make check` 12 of 12, fault injection all killed | `508c302` |
 | T9 Auth screens, onboarding start, E2E harness | `make e2e` 3 passed, vitest 132 passed, build ok, `make check` 12 of 12, fault injection 0 survivors | `66e6e3e` |
-| T10 Clients, contacts, suppression | E021-E028 live; 23 client tests, 13 fault injections killed, make test 434 + 132 passed, make check 12/12 | See `git log` |
+| T10 Clients, contacts, suppression | E021-E028 live; 23 client tests, 13 fault injections killed, make test 434 + 132 passed, make check 12/12 | `fc7d7f8` |
+| T11 Invoice CSV import | import tests green, 571 pytest + 132 vitest, make check 12 of 12, fault injection 9 of 9, 1,000-row preview and 10,000-row commit both well inside budget (10,000 rows 5.1 s) | See `git log` |
 
 ## Open items carried forward
 
@@ -41,3 +42,6 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 - Endpoint gaps in the audit are added as `proposed-new` by T7, T25 and T31, then listed in the final report for approval.
 - `X-Forwarded-For` is not trusted yet, and stale `auth_throttles` rows are not purged. Revisit at T40.
 - T14: proposed-new endpoint to add a client alias (SCR-14 'add alias'), plus contact rules (FR-149).
+- T17/T19: updating gross_minor on an invoice with allocations must be handled once allocations exist
+- T13: COMMIT allowed_actions reflects no decisions; the UI works out readiness from local decisions
+- Next free endpoint id is E117

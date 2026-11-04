@@ -3,6 +3,7 @@
 Opening at the service boundary means an exception rolls back before DRF handles it. The two callers above
 a service, @idempotent and the job runner, open the same scope first; the service then joins as a savepoint.
 """
+
 from collections.abc import Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager
 from contextvars import ContextVar
@@ -66,3 +67,8 @@ def execute(sql: str, params: _Params = ()) -> int:
     with connection.cursor() as cursor:
         cursor.execute(sql, params)
         return cursor.rowcount
+
+
+def execute_many(sql: str, rows: Sequence[_Params]) -> None:
+    with connection.cursor() as cursor:
+        cursor.executemany(sql, rows)

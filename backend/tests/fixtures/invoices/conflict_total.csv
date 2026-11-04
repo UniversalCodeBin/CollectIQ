@@ -1,0 +1,3 @@
+Invoice No,Client,Due,Currency,Total,Subtotal,Tax
+INV-5001,Kestrel Labs,2026-06-30,INR,118.01,100.00,18.00
+INV-5002,Kestrel Labs,2026-06-30,INR,118.02,100.00,18.00

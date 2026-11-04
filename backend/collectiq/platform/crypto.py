@@ -1,7 +1,9 @@
 """Envelope encryption: a per-workspace data key, wrapped by the deployment's master key (plan A9)."""
+
 import base64
 import binascii
 import os
+from collections.abc import Sequence
 from typing import Protocol
 
 from cryptography.exceptions import InvalidTag
@@ -25,6 +27,10 @@ class CipherPort(Protocol):
     def encrypt(self, ctx: RequestContext, plaintext: bytes, aad: bytes = b"") -> bytes: ...
 
     def decrypt(self, ctx: RequestContext, ciphertext: bytes, aad: bytes = b"") -> bytes: ...
+
+    def encrypt_many(
+        self, ctx: RequestContext, plaintexts: Sequence[bytes], aads: Sequence[bytes]
+    ) -> list[bytes]: ...
 
 
 def _seal(key: bytes, plaintext: bytes, aad: bytes) -> bytes:
@@ -73,6 +79,16 @@ class EnvelopeCipher:
 
     def encrypt(self, ctx: RequestContext, plaintext: bytes, aad: bytes = b"") -> bytes:
         return _VERSION + _seal(self._data_key(ctx), plaintext, self._aad(ctx, aad))
+
+    def encrypt_many(
+        self, ctx: RequestContext, plaintexts: Sequence[bytes], aads: Sequence[bytes]
+    ) -> list[bytes]:
+        """For a batch: the data key is fetched once, each value still gets its own nonce and binding."""
+        key = self._data_key(ctx)
+        return [
+            _VERSION + _seal(key, text, self._aad(ctx, aad))
+            for text, aad in zip(plaintexts, aads, strict=True)
+        ]
 
     def decrypt(self, ctx: RequestContext, ciphertext: bytes, aad: bytes = b"") -> bytes:
         if not ciphertext.startswith(_VERSION):

@@ -5922,6 +5922,48 @@ paths:
       security:
       - sessionCookie: []
       - csrfHeader: []
+  /workspaces/{ws}/imports/{import_id}/error-report:
+    get:
+      operationId: get_ws_imports_import_id_error_report
+      tags:
+      - Imports
+      summary: Download per-row import problems as CSV
+      description: 'Endpoint E116. Status: PROPOSED-NEW (P0 screen SCR-05 needs a downloadable error report, FR-005). Module M05. Roles: O, F. Priority P0.'
+      x-endpoint-id: E116
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M05
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: import_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: One line per row problem, safe to open in a spreadsheet.
+          content:
+            text/csv:
+              schema:
+                type: string
+        '400':
+          $ref: '#/components/responses/Problem4xx'
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '409':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
 components:
   securitySchemes:
     sessionCookie:

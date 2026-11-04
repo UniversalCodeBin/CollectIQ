@@ -1,0 +1,4 @@
+Invoice No,Client,Due,Currency,Total
+INV-6001,Kestrel Labs,2026-06-30,INR,100.00
+INV-6002,Kestrel Labs,2026-06-30,XXQ,100.00
+INV-6003,,2026-06-30,INR,-5.00

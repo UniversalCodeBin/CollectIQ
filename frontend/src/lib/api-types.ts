@@ -292,6 +292,87 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/imports/{import_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E037"];
+        put?: never;
+        post?: never;
+        delete: operations["E036"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/imports/{import_id}/commit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description The failure is recorded outside the rolled-back transaction, so that it survives. */
+        post: operations["E035"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/imports/{import_id}/error-report": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E116"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/imports/{import_id}/mapping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: operations["E034"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/imports/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E033"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invitations": {
         parameters: {
             query?: never;
@@ -349,6 +430,11 @@ export interface components {
             id: string;
             text: string;
             kind: string;
+        };
+        AllowedActionOut: {
+            action: string;
+            allowed: boolean;
+            reason: string | null;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ClientInRequest: {
@@ -419,6 +505,109 @@ export interface components {
         };
         HealthOut: {
             status: string;
+        };
+        ImportBatchOut: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            status: string;
+            file_name: string;
+            scan_status: string;
+            headers: string[];
+            suggested_mapping: {
+                [key: string]: string;
+            };
+            date_format_options: string[];
+            mapping: {
+                [key: string]: string;
+            } | null;
+            date_format: string | null;
+            counts: {
+                [key: string]: number;
+            };
+            rows: components["schemas"]["ImportRowOut"][];
+            next_row: number | null;
+            client_matches: components["schemas"]["ImportClientMatchOut"][];
+            failure_reason: string | null;
+            allowed_actions: components["schemas"]["AllowedActionOut"][];
+        };
+        ImportCandidateOut: {
+            /** Format: uuid */
+            client_id: string;
+            display_name: string;
+            reason: string;
+        };
+        /**
+         * @description * `LINK` - LINK
+         *     * `SAME_AS` - SAME_AS
+         *     * `NEW` - NEW
+         * @enum {string}
+         */
+        ImportClientDecisionInActionEnum: "LINK" | "SAME_AS" | "NEW";
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ImportClientDecisionInRequest: {
+            action: components["schemas"]["ImportClientDecisionInActionEnum"];
+            /** Format: uuid */
+            client_id?: string;
+            name?: string;
+        };
+        ImportClientMatchOut: {
+            name: string;
+            display_name: string;
+            rows: number;
+            candidates: components["schemas"]["ImportCandidateOut"][];
+            in_file: string[];
+            decision_required: boolean;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ImportCommitInRequest: {
+            decisions?: components["schemas"]["ImportDecisionsInRequest"];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ImportDecisionsInRequest: {
+            skip_invalid?: boolean;
+            rows?: {
+                [key: string]: components["schemas"]["ImportRowDecisionInRequest"];
+            };
+            clients?: {
+                [key: string]: components["schemas"]["ImportClientDecisionInRequest"];
+            };
+        };
+        ImportFieldErrorOut: {
+            field: string;
+            message: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ImportMappingInRequest: {
+            mapping: {
+                [key: string]: string;
+            };
+            date_format?: string | null;
+        };
+        /**
+         * @description * `UPDATE` - UPDATE
+         *     * `IGNORE` - IGNORE
+         *     * `KEEP_BOTH` - KEEP_BOTH
+         *     * `MERGE` - MERGE
+         * @enum {string}
+         */
+        ImportRowDecisionInActionEnum: "UPDATE" | "IGNORE" | "KEEP_BOTH" | "MERGE";
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ImportRowDecisionInRequest: {
+            action?: components["schemas"]["ImportRowDecisionInActionEnum"];
+            total_source?: components["schemas"]["TotalSourceEnum"];
+        };
+        ImportRowOut: {
+            row: number;
+            status: string;
+            invoice_number: string | null;
+            client_name: string | null;
+            currency: string | null;
+            errors: components["schemas"]["ImportFieldErrorOut"][];
+            diffs: unknown[];
+            matches: unknown[];
+            allowed_decisions: string[];
+            conflict: unknown;
         };
         InvitationAcceptedOut: {
             /** Format: uuid */
@@ -522,6 +711,12 @@ export interface components {
          * @enum {string}
          */
         ToneEnum: "NEUTRAL" | "FRIENDLY" | "FORMAL";
+        /**
+         * @description * `TOTAL` - TOTAL
+         *     * `SUM` - SUM
+         * @enum {string}
+         */
+        TotalSourceEnum: "TOTAL" | "SUM";
         UserOut: {
             /** Format: uuid */
             id: string;
@@ -1102,6 +1297,160 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    E037: {
+        parameters: {
+            query?: {
+                after_row?: number;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                import_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatchOut"];
+                };
+            };
+        };
+    };
+    E036: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    E035: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                import_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ImportCommitInRequest"];
+                "multipart/form-data": components["schemas"]["ImportCommitInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatchOut"];
+                };
+            };
+        };
+    };
+    E116: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+        };
+    };
+    E034: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                import_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportMappingInRequest"];
+                "multipart/form-data": components["schemas"]["ImportMappingInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatchOut"];
+                };
+            };
+        };
+    };
+    E033: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportBatchOut"];
+                };
             };
         };
     };

@@ -11,17 +11,10 @@ from collectiq.platform.context import RequestContext
 from collectiq.platform.db import fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
 
+from .domain.validate import collapse, normalize_name
+
 _CLIENT = "id, display_name, normalized_name, sensitivity, tone, version"
 _CONTACT = "id, client_id, email, name, status, suppression_reason"
-
-
-def collapse(text: str) -> str:
-    return " ".join(text.split())
-
-
-def normalize_name(name: str) -> str:
-    """The form reconciliation compares against (FR-009)."""
-    return collapse(name).casefold()
 
 
 def _not_found() -> ProblemError:
@@ -162,6 +155,29 @@ def add_contact(ctx: RequestContext, client_id: UUID, email: str, name: str | No
             raise _duplicate_contact()
         record(ctx, "contact.added", "contact", str(row["id"]), after={"client_id": str(client_id)})
     return _contact_dto(row)
+
+
+def ensure_contact(ctx: RequestContext, client_id: UUID, email: str) -> None:
+    """For an import, where an address already known is not a mistake. A suppressed one stays suppressed."""
+    row = fetch_one(
+        "INSERT INTO client_contacts (workspace_id, client_id, email) VALUES (%s, %s, %s)"
+        " ON CONFLICT (workspace_id, client_id, email) DO NOTHING RETURNING id",
+        [ctx.workspace_id, client_id, email],
+    )
+    if row is not None:
+        record(ctx, "contact.added", "contact", str(row["id"]), after={"client_id": str(client_id)})
+
+
+def add_alias(ctx: RequestContext, client_id: UUID, text: str, kind: str = "NAME") -> None:
+    """Remembers another name for a client, so the same question is not asked twice (FR-009)."""
+    row = fetch_one(
+        "INSERT INTO client_aliases (workspace_id, client_id, text, normalized_text, kind)"
+        " VALUES (%s, %s, %s, %s, %s)"
+        " ON CONFLICT (workspace_id, client_id, kind, normalized_text) DO NOTHING RETURNING id",
+        [ctx.workspace_id, client_id, collapse(text), normalize_name(text), kind],
+    )
+    if row is not None:
+        record(ctx, "client.alias_added", "client", str(client_id), after={"alias_id": str(row["id"])})
 
 
 def update_contact(

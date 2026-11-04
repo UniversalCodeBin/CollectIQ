@@ -223,3 +223,94 @@ class ClientProfileOut(ClientOut):
     contacts = ContactOut(many=True)
     aliases = AliasOut(many=True)
     summary = ClientSummaryOut()
+
+
+class ImportFieldErrorOut(serializers.Serializer):
+    field = serializers.CharField()
+    message = serializers.CharField()
+
+
+class ImportRowOut(serializers.Serializer):
+    row = serializers.IntegerField()
+    status = serializers.CharField()
+    invoice_number = serializers.CharField(allow_null=True)
+    client_name = serializers.CharField(allow_null=True)
+    currency = serializers.CharField(allow_null=True)
+    errors = ImportFieldErrorOut(many=True)
+    diffs = serializers.ListField(child=serializers.JSONField())
+    matches = serializers.ListField(child=serializers.JSONField())
+    allowed_decisions = serializers.ListField(child=serializers.CharField())
+    conflict = serializers.JSONField(allow_null=True)
+
+
+class ImportCandidateOut(serializers.Serializer):
+    client_id = serializers.UUIDField()
+    display_name = serializers.CharField()
+    reason = serializers.CharField()
+
+
+class ImportClientMatchOut(serializers.Serializer):
+    name = serializers.CharField()
+    display_name = serializers.CharField()
+    rows = serializers.IntegerField()
+    candidates = ImportCandidateOut(many=True)
+    in_file = serializers.ListField(child=serializers.CharField())
+    decision_required = serializers.BooleanField()
+
+
+class AllowedActionOut(serializers.Serializer):
+    action = serializers.CharField()
+    allowed = serializers.BooleanField()
+    reason = serializers.CharField(allow_null=True)
+
+
+class ImportBatchOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    kind = serializers.CharField()
+    status = serializers.CharField()
+    file_name = serializers.CharField()
+    scan_status = serializers.CharField()
+    headers = serializers.ListField(child=serializers.CharField())
+    suggested_mapping = serializers.DictField(child=serializers.CharField())
+    date_format_options = serializers.ListField(child=serializers.CharField())
+    mapping = serializers.DictField(child=serializers.CharField(), allow_null=True)
+    date_format = serializers.CharField(allow_null=True)
+    counts = serializers.DictField(child=serializers.IntegerField())
+    rows = ImportRowOut(many=True)
+    next_row = serializers.IntegerField(allow_null=True)
+    client_matches = ImportClientMatchOut(many=True)
+    failure_reason = serializers.CharField(allow_null=True)
+    allowed_actions = AllowedActionOut(many=True)
+
+
+class ImportMappingIn(StrictSerializer):
+    mapping = serializers.DictField(child=serializers.CharField())
+    date_format = serializers.CharField(required=False, allow_null=True)
+
+
+class ImportRowDecisionIn(StrictSerializer):
+    action = serializers.ChoiceField(["UPDATE", "IGNORE", "KEEP_BOTH", "MERGE"], required=False)
+    total_source = serializers.ChoiceField(["TOTAL", "SUM"], required=False)
+
+
+class ImportClientDecisionIn(StrictSerializer):
+    action = serializers.ChoiceField(["LINK", "SAME_AS", "NEW"])
+    client_id = serializers.UUIDField(required=False)
+    name = serializers.CharField(required=False, max_length=200)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        if attrs["action"] == "LINK" and "client_id" not in attrs:
+            raise serializers.ValidationError({"client_id": "Choose the client to link to."})
+        if attrs["action"] == "SAME_AS" and "name" not in attrs:
+            raise serializers.ValidationError({"name": "Choose the name this one is the same as."})
+        return attrs
+
+
+class ImportDecisionsIn(StrictSerializer):
+    skip_invalid = serializers.BooleanField(required=False)
+    rows = serializers.DictField(child=ImportRowDecisionIn(), required=False)
+    clients = serializers.DictField(child=ImportClientDecisionIn(), required=False)
+
+
+class ImportCommitIn(StrictSerializer):
+    decisions = ImportDecisionsIn(required=False)
