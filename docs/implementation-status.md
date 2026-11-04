@@ -5,8 +5,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 ## Resume point
 
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
-- **Done:** M0 (Tasks 1 to 3), Tasks 4 and 5.
-- **Next:** Task 6, idempotency, jobs, outbox, logging, storage and crypto.
+- **Done:** M0 (Tasks 1 to 3), Tasks 4 to 6.
+- **Next:** Task 7, identity, tenancy, authorization and the endpoint registry.
 
 ## T1 spike outcome
 
@@ -25,10 +25,13 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T2 Scaffold and quality gate | Done; `make check` passing | `a1448f4` |
 | T3 Audit and traceability | Done; `make check` passing | `1facbae` |
 | T4 Tenant-scoped database layer | Done; `tests/rls` passing against Postgres as the app role | `5e96de0` |
-| T5 Audit write path | Done; `tests/integration` passing against Postgres as the app role | See `git log` |
+| T5 Audit write path | Done; `tests/integration` passing against Postgres as the app role | `6744ad5` |
+| T6 Idempotency, jobs, outbox and adapters | Done; `tests/integration` passing against Postgres as the app role | See `git log` |
 
 ## Open items carried forward
 
 - 13 moderate npm audit findings to revisit at T39.
+- Old idempotency rows and finished jobs are not purged yet; only a key's own expired row is removed. Revisit at T37 or T40.
+- `workspace_keys` is select and insert only for the app role, so crypto-shredding in the deletion task needs a privileged path.
 - The CI file exists but has never run (plan A10).
 - Endpoint gaps in the audit are added as `proposed-new` by T7, T25 and T31, then listed in the final report for approval.

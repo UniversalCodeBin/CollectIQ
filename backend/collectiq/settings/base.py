@@ -88,6 +88,20 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "UNAUTHENTICATED_USER": None,
+    "EXCEPTION_HANDLER": "collectiq.platform.problem.problem_exception_handler",
+}
+
+# One handler, one formatter: every route ends in the scrubber (INV-12, SEC-12).
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"scrubbed": {"()": "collectiq.platform.logging.ScrubbingJsonFormatter"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "scrubbed"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "django.server": {"handlers": ["console"], "level": "INFO", "propagate": False},
+    },
 }
 
 SPECTACULAR_SETTINGS = {

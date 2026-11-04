@@ -122,3 +122,23 @@ def test_tenant_tx_sets_user_for_audit_and_policy(pg):
     with tenant_tx(ctx):
         assert _setting("app.workspace_id") == str(ctx.workspace_id)
         assert _setting("app.user_id") == str(ctx.user_id)
+
+
+def test_same_scope_joins_the_open_tenant_tx(pg):
+    ctx = _ctx(uuid.uuid4())
+    with tenant_tx(ctx):
+        _insert(ctx.workspace_id)
+        with pytest.raises(ValueError, match="inner"), tenant_tx(ctx):  # a savepoint: only this part undoes
+            _insert(ctx.workspace_id)
+            raise ValueError("inner")
+        with tenant_tx(ctx):
+            _insert(ctx.workspace_id)
+    with tenant_tx(ctx):
+        assert _count() == 2
+
+
+def test_same_workspace_other_user_is_refused_inside_tenant_tx(pg):
+    workspace_id = uuid.uuid4()
+    with tenant_tx(_ctx(workspace_id)), pytest.raises(RuntimeError, match="already"):
+        with tenant_tx(_ctx(workspace_id)):
+            pass
