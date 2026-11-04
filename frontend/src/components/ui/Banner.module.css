@@ -1,0 +1,15 @@
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--banner-border);
+  background: var(--banner-bg);
+  color: var(--banner-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.banner svg {
+  flex: none;
+}

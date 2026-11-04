@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "gen:tokens": "node scripts/gen-tokens.mjs",
     "gen:api": "openapi-typescript ../docs/api/openapi.generated.yaml -o src/lib/api-types.ts"
   },
   "dependencies": {

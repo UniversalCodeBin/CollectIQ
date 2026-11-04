@@ -6,28 +6,26 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-Task 7, identity, workspaces and roles. See `git log` for the commit.
+Task 8, frontend foundation. See `git log` for the commit.
 
 ## Current task
-Task 8: frontend foundation.
+Task 9: auth screens and first E2E.
 
 ## Relevant files
-- Brief: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/task-8-brief.md`
-- `frontend/`, `docs/api/openapi.generated.yaml`, `frontend/src/lib/api-types.ts`
-- `backend/collectiq/api/registry.py` holds `@endpoint`, the guard and the endpoint specs
+- Brief: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/task-9-brief.md`
+- `frontend/src/app/router.tsx` (`BUILT_SCREENS`), `frontend/src/lib/api.ts`
 
 ## Changes already made
-M0 and Tasks 4 to 7 are committed. Views use `@endpoint("E0xx")`, which authenticates, enforces CSRF and sets `request.ctx`. `@idempotent` goes under it.
-Database tests use the `pg` fixture; `backend/tests/support.py` has `logged_in`, `owner_workspace`, `add_member`, `idem`.
+T1–T8 committed on `build/m0-m8`.
 
 ## Tests actually run
-See the Task 7 line in the ledger. `make check` does not run the database tests.
+T8: vitest 78 passed, `npm run build` ok, `make check` 12 of 12.
 
 ## Outstanding work
-Tasks 8 to 40, in order. Fresh reviewer at the M3 and M4 gates and on the whole branch at the end.
+T9–T40.
 
 ## Next exact action
-Run `task-start` for Task 8 and read its brief.
+`task-start PLAN 9`, read the brief, write failing tests.
 
 ## Unresolved decisions
 - `CollectIQ_Post_Implementation_Audit.md` (root, untracked) predates commit `a1448f4` and is stale on Task 2 and the frontend scaffold. Left untouched and uncommitted; the user decides whether to keep it.

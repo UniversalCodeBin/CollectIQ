@@ -1,0 +1,11 @@
+.wrap {
+  display: inline-grid;
+  justify-items: start;
+  gap: var(--space-1);
+}
+
+.reason {
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}

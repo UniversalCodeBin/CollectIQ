@@ -1,0 +1,201 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid transparent;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 500;
+}
+
+.chip[data-size="sm"] {
+  padding: 0 var(--space-1);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+.icon {
+  flex: none;
+}
+
+.detail {
+  font-weight: 400;
+}
+
+.chip[data-shape="round"] {
+  border-radius: var(--radius-md);
+}
+
+.chip[data-shape="pill"] {
+  border-radius: var(--radius-pill);
+}
+
+.chip[data-shape="tag"] {
+  border-radius: var(--radius-sm);
+}
+
+.chip[data-shape="flag"] {
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  border-left-width: 4px;
+}
+
+.chip[data-shape="outline"] {
+  border-radius: var(--radius-sm);
+  border-color: var(--color-border-control);
+  background: transparent;
+}
+
+.chip[data-shape="ring"] {
+  padding: 0;
+  background: transparent;
+}
+
+.chip[data-tone="verified"] {
+  background: var(--status-verified-bg);
+  color: var(--status-verified-fg);
+}
+
+.chip[data-tone="verified"] .icon {
+  color: var(--status-verified-icon);
+}
+
+.chip[data-tone="verified"][data-shape="flag"] {
+  border-left-color: var(--status-verified-icon);
+}
+
+.chip[data-tone="neutral"] {
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-fg);
+}
+
+.chip[data-tone="neutral"] .icon {
+  color: var(--status-neutral-icon);
+}
+
+.chip[data-tone="neutral"][data-shape="flag"] {
+  border-left-color: var(--status-neutral-icon);
+}
+
+.chip[data-tone="partial"] {
+  background: var(--status-partial-bg);
+  color: var(--status-partial-fg);
+}
+
+.chip[data-tone="partial"] .icon {
+  color: var(--status-partial-icon);
+}
+
+.chip[data-tone="partial"][data-shape="flag"] {
+  border-left-color: var(--status-partial-icon);
+}
+
+.chip[data-tone="awaiting"] {
+  background: var(--status-awaiting-bg);
+  color: var(--status-awaiting-fg);
+}
+
+.chip[data-tone="awaiting"] .icon {
+  color: var(--status-awaiting-icon);
+}
+
+.chip[data-tone="awaiting"][data-shape="flag"] {
+  border-left-color: var(--status-awaiting-icon);
+}
+
+.chip[data-tone="uncertain"] {
+  background: var(--status-uncertain-bg);
+  color: var(--status-uncertain-fg);
+}
+
+.chip[data-tone="uncertain"] .icon {
+  color: var(--status-uncertain-icon);
+}
+
+.chip[data-tone="uncertain"][data-shape="flag"] {
+  border-left-color: var(--status-uncertain-icon);
+}
+
+.chip[data-tone="disputed"] {
+  background: var(--status-disputed-bg);
+  color: var(--status-disputed-fg);
+}
+
+.chip[data-tone="disputed"] .icon {
+  color: var(--status-disputed-icon);
+}
+
+.chip[data-tone="disputed"][data-shape="flag"] {
+  border-left-color: var(--status-disputed-icon);
+}
+
+.chip[data-tone="commitment"] {
+  background: var(--status-commitment-bg);
+  color: var(--status-commitment-fg);
+}
+
+.chip[data-tone="commitment"] .icon {
+  color: var(--status-commitment-icon);
+}
+
+.chip[data-tone="commitment"][data-shape="flag"] {
+  border-left-color: var(--status-commitment-icon);
+}
+
+.chip[data-tone="scheduled"] {
+  background: var(--status-scheduled-bg);
+  color: var(--status-scheduled-fg);
+}
+
+.chip[data-tone="scheduled"] .icon {
+  color: var(--status-scheduled-icon);
+}
+
+.chip[data-tone="scheduled"][data-shape="flag"] {
+  border-left-color: var(--status-scheduled-icon);
+}
+
+.chip[data-tone="paused"] {
+  background: var(--status-paused-bg);
+  color: var(--status-paused-fg);
+}
+
+.chip[data-tone="paused"] .icon {
+  color: var(--status-paused-icon);
+}
+
+.chip[data-tone="paused"][data-shape="flag"] {
+  border-left-color: var(--status-paused-icon);
+}
+
+.chip[data-tone="review"] {
+  background: var(--status-review-bg);
+  color: var(--status-review-fg);
+}
+
+.chip[data-tone="review"] .icon {
+  color: var(--status-review-icon);
+}
+
+.chip[data-tone="review"][data-shape="flag"] {
+  border-left-color: var(--status-review-icon);
+}
+
+.chip[data-tone="error"] {
+  background: var(--status-error-bg);
+  color: var(--status-error-fg);
+}
+
+.chip[data-tone="error"] .icon {
+  color: var(--status-error-icon);
+}
+
+.chip[data-tone="error"][data-shape="flag"] {
+  border-left-color: var(--status-error-icon);
+}
+
+.chip[data-shape="outline"][data-tone],
+.chip[data-shape="ring"][data-tone] {
+  background: transparent;
+  color: var(--color-text);
+}

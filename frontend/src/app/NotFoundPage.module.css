@@ -1,0 +1,13 @@
+.page {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-12) var(--space-4);
+}
+
+.title {
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+}

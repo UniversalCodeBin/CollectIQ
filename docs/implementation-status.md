@@ -5,8 +5,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 ## Resume point
 
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
-- **Done:** M0 (Tasks 1 to 3), Tasks 4 to 7.
-- **Next:** Task 8, frontend foundation.
+- **Done:** T1–T8 (M0 scaffold, tenancy, audit, platform, identity; web foundation).
+- **Next:** T9 auth screens and first E2E.
 
 ## T1 spike outcome
 
@@ -27,7 +27,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T4 Tenant-scoped database layer | Done; `tests/rls` passing against Postgres as the app role | `5e96de0` |
 | T5 Audit write path | Done; `tests/integration` passing against Postgres as the app role | `6744ad5` |
 | T6 Idempotency, jobs, outbox and adapters | Done; `tests/integration` passing against Postgres as the app role | `ae8a8ec` |
-| T7 Identity, workspaces and roles | Done; full suite passing against Postgres as the app role; 11 injected security faults all caught | See `git log` |
+| T7 Identity, workspaces and roles | Done; full suite passing against Postgres as the app role; 11 injected security faults all caught | `2697f90` |
+| T8 Frontend foundation | 78 vitest, build, `make check` 12 of 12, fault injection all killed | See `git log` |
 
 ## Open items carried forward
 
