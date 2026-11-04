@@ -1,0 +1,88 @@
+[importlinter]
+root_package = collectiq
+include_external_packages = True
+
+[importlinter:contract:layers]
+name = Module layers run one way, with no cycles
+type = layers
+layers =
+    collectiq.api
+    collectiq.settings_privacy
+    collectiq.notifications
+    collectiq.integrations
+    collectiq.comms
+    collectiq.conversations
+    collectiq.cases
+    collectiq.evidence
+    collectiq.invoices
+    collectiq.policy
+    collectiq.tenancy
+    collectiq.audit
+    collectiq.identity
+    collectiq.platform
+exhaustive = false
+
+[importlinter:contract:ai-isolated]
+name = AI imports no domain module and has no database handle
+type = forbidden
+source_modules =
+    collectiq.ai
+forbidden_modules =
+    collectiq.api
+    collectiq.settings_privacy
+    collectiq.notifications
+    collectiq.integrations
+    collectiq.comms
+    collectiq.conversations
+    collectiq.cases
+    collectiq.evidence
+    collectiq.invoices
+    collectiq.policy
+    collectiq.tenancy
+    collectiq.audit
+    collectiq.identity
+    collectiq.platform
+
+[importlinter:contract:api-no-orm]
+name = The API layer calls services and never touches the ORM
+type = forbidden
+source_modules =
+    collectiq.api
+forbidden_modules =
+    collectiq.evidence.models
+    collectiq.invoices.models
+    collectiq.cases.models
+    collectiq.comms.models
+    collectiq.conversations.models
+    collectiq.policy.models
+    collectiq.audit.models
+    collectiq.identity.models
+    collectiq.tenancy.models
+    collectiq.notifications.models
+    collectiq.integrations.models
+    collectiq.settings_privacy.models
+allow_indirect_imports = True
+unmatched_ignore_imports_alerting = none
+
+[importlinter:contract:evidence-owns-money]
+name = Only evidence may write payment transactions, allocations and payment state
+type = forbidden
+source_modules =
+    collectiq.api
+    collectiq.settings_privacy
+    collectiq.notifications
+    collectiq.integrations
+    collectiq.comms
+    collectiq.conversations
+    collectiq.cases
+    collectiq.invoices
+    collectiq.policy
+    collectiq.tenancy
+    collectiq.audit
+    collectiq.identity
+    collectiq.platform
+    collectiq.ai
+forbidden_modules =
+    collectiq.evidence.models
+allow_indirect_imports = True
+unmatched_ignore_imports_alerting = none
