@@ -2,5 +2,722 @@ openapi: 3.0.3
 info:
   title: CollectIQ API
   version: 1.0.0
-paths: {}
-components: {}
+paths:
+  /api/v1/auth/login:
+    post:
+      operationId: E003
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialsInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialsInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginOut'
+          description: ''
+      x-endpoint-id: E003
+  /api/v1/auth/logout:
+    post:
+      operationId: E004
+      parameters:
+      - in: query
+        name: scope
+        schema:
+          type: string
+          enum:
+          - all
+          - current
+      tags:
+      - auth
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E004
+  /api/v1/auth/password-reset/confirm:
+    post:
+      operationId: E006
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmInRequest'
+        required: true
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E006
+  /api/v1/auth/password-reset/request:
+    post:
+      operationId: E005
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailInRequest'
+        required: true
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E005
+  /api/v1/auth/register:
+    post:
+      operationId: E001
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialsInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CredentialsInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DetailOut'
+          description: ''
+      x-endpoint-id: E001
+  /api/v1/auth/session:
+    get:
+      operationId: E009
+      tags:
+      - auth
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SessionOut'
+          description: ''
+      x-endpoint-id: E009
+  /api/v1/auth/verify-email:
+    post:
+      operationId: E002
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenInRequest'
+        required: true
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E002
+  /api/v1/auth/verify-email/resend:
+    post:
+      operationId: E113
+      tags:
+      - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailInRequest'
+        required: true
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E113
+  /api/v1/health/live:
+    get:
+      operationId: E111
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthOut'
+          description: ''
+      x-endpoint-id: E111
+  /api/v1/health/ready:
+    get:
+      operationId: E112
+      tags:
+      - health
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthOut'
+          description: ''
+        '503':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthOut'
+          description: ''
+      x-endpoint-id: E112
+  /api/v1/invitations/accept:
+    post:
+      operationId: E114
+      tags:
+      - invitations
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationAcceptedOut'
+          description: ''
+      x-endpoint-id: E114
+  /api/v1/workspaces:
+    post:
+      operationId: E010
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WorkspaceCreateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/WorkspaceCreateInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceOut'
+          description: ''
+      x-endpoint-id: E010
+  /api/v1/workspaces/{ws}:
+    get:
+      operationId: E011
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceOut'
+          description: ''
+      x-endpoint-id: E011
+    patch:
+      operationId: E012
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkspaceUpdateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedWorkspaceUpdateInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WorkspaceOut'
+          description: ''
+      x-endpoint-id: E012
+  /api/v1/workspaces/{ws}/invitations:
+    post:
+      operationId: E014
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvitationInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvitationInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvitationOut'
+          description: ''
+      x-endpoint-id: E014
+  /api/v1/workspaces/{ws}/members:
+    get:
+      operationId: E013
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberPageOut'
+          description: ''
+      x-endpoint-id: E013
+  /api/v1/workspaces/{ws}/members/{member_id}:
+    patch:
+      operationId: E115
+      parameters:
+      - in: path
+        name: member_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRoleInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMemberRoleInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MemberOut'
+          description: ''
+      x-endpoint-id: E115
+    delete:
+      operationId: E015
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: member_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E015
+components:
+  schemas:
+    CredentialsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        password:
+          type: string
+          minLength: 1
+          maxLength: 1024
+      required:
+      - email
+      - password
+    DetailOut:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    EmailInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+      required:
+      - email
+    HealthOut:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+      - status
+    InvitationAcceptedOut:
+      type: object
+      properties:
+        workspace_id:
+          type: string
+          format: uuid
+        role:
+          type: string
+      required:
+      - role
+      - workspace_id
+    InvitationInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - email
+      - role
+    InvitationOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+        status:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - email
+      - expires_at
+      - id
+      - role
+      - status
+    LoginOut:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserOut'
+        workspaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkspaceSummaryOut'
+      required:
+      - user
+      - workspaces
+    MemberOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+          nullable: true
+        email:
+          type: string
+          format: email
+        role:
+          type: string
+        status:
+          type: string
+      required:
+      - email
+      - id
+      - role
+      - status
+      - user_id
+    MemberPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MemberOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    PasswordResetConfirmInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 512
+        new_password:
+          type: string
+          minLength: 1
+          maxLength: 1024
+      required:
+      - new_password
+      - token
+    PatchedMemberRoleInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+    PatchedWorkspaceUpdateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+        default_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        business_hours:
+          type: object
+          additionalProperties: {}
+    RoleEnum:
+      enum:
+      - OWNER
+      - FINANCE_ADMIN
+      type: string
+      description: |-
+        * `OWNER` - OWNER
+        * `FINANCE_ADMIN` - FINANCE_ADMIN
+    SessionOut:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserOut'
+        workspaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkspaceSummaryOut'
+        csrf_token:
+          type: string
+      required:
+      - csrf_token
+      - user
+      - workspaces
+    TokenInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        token:
+          type: string
+          minLength: 1
+          maxLength: 512
+      required:
+      - token
+    UserOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        email_verified:
+          type: boolean
+      required:
+      - email
+      - email_verified
+      - id
+    WorkspaceCreateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        country:
+          type: string
+          minLength: 1
+          pattern: ^[A-Z]{2}$
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 64
+        default_currency:
+          type: string
+          minLength: 1
+          maxLength: 3
+        business_hours:
+          type: object
+          additionalProperties: {}
+      required:
+      - country
+      - default_currency
+      - name
+      - timezone
+    WorkspaceOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        country:
+          type: string
+        timezone:
+          type: string
+        default_currency:
+          type: string
+        business_hours:
+          type: object
+          additionalProperties: {}
+        status:
+          type: string
+        version:
+          type: integer
+      required:
+      - business_hours
+      - country
+      - default_currency
+      - id
+      - name
+      - status
+      - timezone
+      - version
+    WorkspaceSummaryOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        role:
+          type: string
+      required:
+      - id
+      - name
+      - role

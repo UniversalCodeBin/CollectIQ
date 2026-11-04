@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "collectiq.platform.middleware.CorrelationIdMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -70,7 +71,8 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.Argon2PasswordHasher"]
 
 # Sessions: an opaque server-side token in an HttpOnly cookie. See collectiq.identity.session.
 SESSION_COOKIE_NAME = "collectiq_session"
-SESSION_TTL = timedelta(days=7)
+SESSION_ABSOLUTE_TTL = timedelta(hours=12)  # FR-155
+SESSION_IDLE_SENSITIVE = timedelta(minutes=30)  # FR-155
 SESSION_COOKIE_SECURE = True
 SESSION_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_NAME = "collectiq_csrf"
@@ -129,3 +131,13 @@ FEATURE_PAYPAL_WEBHOOK = env_bool("FEATURE_PAYPAL_WEBHOOK")
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 MAX_IMPORT_ROWS = 10_000
 IDEMPOTENCY_TTL = timedelta(hours=24)
+
+# [PROP] Configurable defaults for the auth limits. The specs fix the behavior, not these values.
+AUTH_LOCKOUT_THRESHOLD = 5
+AUTH_LOCKOUT_SECONDS = 900
+AUTH_IP_RATE_LIMIT = 60  # per minute, per address
+AUTH_EMAIL_HOURLY_LIMIT = 5  # per address; over it the request still succeeds and sends nothing
+EMAIL_VERIFY_TTL = timedelta(hours=24)
+PASSWORD_RESET_TTL = timedelta(hours=1)
+INVITATION_TTL = timedelta(days=7)
+APP_BASE_URL = env("APP_BASE_URL", "http://localhost:5173")

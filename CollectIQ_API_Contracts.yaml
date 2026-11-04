@@ -165,7 +165,17 @@ paths:
       x-audited: true
       x-roles:
       - Session
-      parameters: []
+      parameters:
+      - name: scope
+        in: query
+        required: false
+        description: 'current ends this session; all ends every session of this user. PROPOSED-NEW parameter (FR-155), requires approval.'
+        schema:
+          type: string
+          enum:
+          - current
+          - all
+          default: current
       responses:
         '204':
           description: No content
@@ -645,6 +655,70 @@ paths:
       - sessionCookie: []
         csrfHeader: []
   /workspaces/{ws}/members/{member_id}:
+    patch:
+      operationId: patch_workspaces_ws_members_member_id
+      tags:
+      - Workspace
+      summary: Change a member's role
+      description: 'Endpoint E115. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M02. Roles: OWNER. Priority P0.'
+      x-endpoint-id: E115
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M02
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters: 
+      - name: ws
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: member_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - role
+              properties:
+                role:
+                  type: string
+                  enum:
+                  - OWNER
+                  - FINANCE_ADMIN
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+      - csrfHeader: []
     delete:
       operationId: delete_ws_members_member_id
       tags:
@@ -5754,6 +5828,100 @@ paths:
         '429':
           $ref: '#/components/responses/Problem429'
       security: []
+  /auth/verify-email/resend:
+    post:
+      operationId: post_auth_verify_email_resend
+      tags:
+      - Auth
+      summary: Send the verification email again
+      description: 'Endpoint E113. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M01. Roles: Public. Priority P0.'
+      x-endpoint-id: E113
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M01
+      x-audited: true
+      x-roles:
+      - Public
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - email
+              properties:
+                email:
+                  type: string
+                  format: email
+      responses:
+        '204':
+          description: No content
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security: []
+  /invitations/accept:
+    post:
+      operationId: post_invitations_accept
+      tags:
+      - Workspace
+      summary: Accept a workspace invitation
+      description: 'Endpoint E114. Status: PROPOSED-NEW (not in SAD v0.1; requires approval, see Open Decisions). Module M02. Roles: Session. Priority P0.'
+      x-endpoint-id: E114
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M02
+      x-audited: true
+      x-roles:
+      - Session
+      parameters: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - token
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          $ref: '#/components/responses/Problem400'
+        '401':
+          $ref: '#/components/responses/Problem401'
+        '403':
+          $ref: '#/components/responses/Problem403'
+        '409':
+          $ref: '#/components/responses/Problem409'
+        '422':
+          $ref: '#/components/responses/Problem422'
+        '429':
+          $ref: '#/components/responses/Problem429'
+      security:
+      - sessionCookie: []
+      - csrfHeader: []
 components:
   securitySchemes:
     sessionCookie:

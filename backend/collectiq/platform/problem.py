@@ -87,7 +87,7 @@ def _api_exception(exc: exceptions.APIException, request: Any) -> Response:
 def problem_exception_handler(exc: Exception, context: Mapping[str, Any]) -> Response:
     request = context.get("request")
     if isinstance(exc, ProblemError):
-        return _problem(request, exc.code, exc.status, exc.detail, exc.extra)
+        return _problem(request, exc.code, exc.status, exc.detail, exc.extra, exc.headers)
     if isinstance(exc, Http404):
         exc = exceptions.NotFound()
     elif isinstance(exc, PermissionDenied):

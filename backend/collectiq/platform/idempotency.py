@@ -18,7 +18,7 @@ _HEADER = "Idempotency-Key"
 _REPLAYED_HEADERS = ("ETag", "Location")
 
 
-def _key(request: Any) -> UUID:
+def require_key(request: Any) -> UUID:
     try:
         return UUID(request.headers.get(_HEADER, ""))
     except ValueError:
@@ -76,32 +76,47 @@ def _store(ctx: RequestContext, key: UUID, response: Response) -> None:
         )
 
 
-def idempotent(view_method: Callable[..., Response]) -> Callable[..., Response]:
-    """The view's work commits with the stored response. A failure undoes both and frees the key to retry."""
+def idempotent(
+    view_method: Callable[..., Response] | None = None,
+    *,
+    ctx_from: Callable[[Any, UUID], RequestContext] | None = None,
+) -> Any:
+    """The view's work commits with the stored response. A failure undoes both and frees the key to retry.
 
-    @wraps(view_method)
-    def wrapper(view: Any, request: Any, *args: Any, **kwargs: Any) -> Response:
-        ctx = getattr(request, "ctx", None)
-        if ctx is None:
-            raise RuntimeError("@idempotent needs request.ctx, set before the view method runs")
-        key = _key(request)
-        request_hash = _request_hash(request, ctx)
-        with tenant_tx(ctx):
-            stored_hash, status, body, headers = _claim(ctx, key, request_hash)
-            if stored_hash != request_hash:
-                raise ProblemError(
-                    "IDEMPOTENCY_MISMATCH",
-                    422,
-                    "This idempotency key was already used for a different request.",
-                )
-            if status is not None:
-                data = None if body is None else json.loads(body)
-                return Response(data, status=status, headers=json.loads(headers or "{}"))
-            response = view_method(view, request, *args, **kwargs)
-            if response.status_code >= 400:
-                transaction.set_rollback(True)
+    `ctx_from` is for the one request that creates its own tenant: it builds the context from the key.
+    """
+
+    def decorate(method: Callable[..., Response]) -> Callable[..., Response]:
+        @wraps(method)
+        def wrapper(view: Any, request: Any, *args: Any, **kwargs: Any) -> Response:
+            if ctx_from is not None:
+                key = require_key(request)
+                ctx = ctx_from(request, key)
+                request.ctx = ctx
             else:
-                _store(ctx, key, response)
-            return response
+                if getattr(request, "ctx", None) is None:
+                    raise RuntimeError("@idempotent needs request.ctx, set before the view method runs")
+                ctx = request.ctx
+                key = require_key(request)
+            request_hash = _request_hash(request, ctx)
+            with tenant_tx(ctx):
+                stored_hash, status, body, headers = _claim(ctx, key, request_hash)
+                if stored_hash != request_hash:
+                    raise ProblemError(
+                        "IDEMPOTENCY_MISMATCH",
+                        422,
+                        "This idempotency key was already used for a different request.",
+                    )
+                if status is not None:
+                    data = None if body is None else json.loads(body)
+                    return Response(data, status=status, headers=json.loads(headers or "{}"))
+                response = method(view, request, *args, **kwargs)
+                if response.status_code >= 400:
+                    transaction.set_rollback(True)
+                else:
+                    _store(ctx, key, response)
+                return response
 
-    return wrapper
+        return wrapper
+
+    return decorate if view_method is None else decorate(view_method)

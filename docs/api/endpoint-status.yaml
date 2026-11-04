@@ -2,19 +2,6 @@
 # scripts/check_openapi.py reads this. Remove an entry once its view carries x-endpoint-id.
 # planned: endpoint -> plan task. `check_openapi.py --final` fails on anything still here.
 planned:
-  E001: 7
-  E002: 7
-  E003: 7
-  E004: 7
-  E005: 7
-  E006: 7
-  E009: 7
-  E010: 7
-  E011: 7
-  E012: 7
-  E013: 7
-  E014: 7
-  E015: 7
   E016: 21
   E017: 21
   E018: 21
@@ -109,8 +96,6 @@ planned:
   E108: 25
   E109: 31
   E110: 31
-  E111: 7
-  E112: 7
 deferred:
   E007: "MFA enrol is P1 (OD-18, plan A4); P0 auth is email and password."
   E008: "MFA verify is P1 (OD-18, plan A4); P0 auth is email and password."

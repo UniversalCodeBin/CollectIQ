@@ -17,8 +17,8 @@ layers =
     collectiq.invoices
     collectiq.policy
     collectiq.tenancy
-    collectiq.audit
     collectiq.identity
+    collectiq.audit
     collectiq.platform
 exhaustive = false
 
@@ -39,8 +39,8 @@ forbidden_modules =
     collectiq.invoices
     collectiq.policy
     collectiq.tenancy
-    collectiq.audit
     collectiq.identity
+    collectiq.audit
     collectiq.platform
 
 [importlinter:contract:api-no-orm]
@@ -78,8 +78,8 @@ source_modules =
     collectiq.invoices
     collectiq.policy
     collectiq.tenancy
-    collectiq.audit
     collectiq.identity
+    collectiq.audit
     collectiq.platform
     collectiq.ai
 forbidden_modules =

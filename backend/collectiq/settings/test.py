@@ -30,3 +30,4 @@ PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]  # speed on
 EMAIL_BACKEND_KIND = "memory"
 COLLECTIQ_STORAGE_DIR = BASE_DIR / ".test-storage"
 AI_PROVIDER = "none"
+AUTH_IP_RATE_LIMIT = 10_000  # tests share one address; the limit has its own test

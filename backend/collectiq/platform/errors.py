@@ -4,9 +4,17 @@ from typing import Any
 
 
 class ProblemError(Exception):
-    def __init__(self, code: str, status: int, detail: str, extra: Mapping[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        code: str,
+        status: int,
+        detail: str,
+        extra: Mapping[str, Any] | None = None,
+        headers: Mapping[str, str] | None = None,
+    ) -> None:
         super().__init__(f"{code}: {detail}")
         self.code = code
         self.status = status
         self.detail = detail
         self.extra = dict(extra or {})
+        self.headers = dict(headers or {})
