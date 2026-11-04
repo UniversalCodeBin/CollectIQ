@@ -195,6 +195,6 @@ def test_gate_lists_every_required_check():
     names = " ".join(step.name for step in _load_run_check().all_steps())
     for required in (
         "ruff", "mypy", "import-linter", "no-db-imports", "float", "detect-secrets",
-        "openapi", "eslint", "tsc", "pytest", "vitest",
+        "openapi", "traceability", "eslint", "tsc", "pytest", "vitest",
     ):
         assert required in names, required

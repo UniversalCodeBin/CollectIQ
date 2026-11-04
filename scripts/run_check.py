@@ -58,6 +58,7 @@ def all_steps() -> list[Step]:
             REPO,
         ),
         Step("openapi diff", [*uv_run, "python", "../scripts/check_openapi.py"], BACKEND),
+        Step("traceability", [*uv_run, "python", "../scripts/check_traceability.py"], BACKEND),
         Step("eslint", ["npm", "run", "--silent", "lint"], FRONTEND),
         Step("tsc", ["npm", "run", "--silent", "typecheck"], FRONTEND),
         Step("pytest (no database)", [*uv_run, "pytest", "tests/unit", "tests/meta", "-q"], BACKEND),

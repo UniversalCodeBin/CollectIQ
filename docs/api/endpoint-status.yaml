@@ -8,8 +8,6 @@ planned:
   E004: 7
   E005: 7
   E006: 7
-  E007: 7
-  E008: 7
   E009: 7
   E010: 7
   E011: 7
@@ -114,4 +112,6 @@ planned:
   E111: 7
   E112: 7
 deferred:
+  E007: "MFA enrol is P1 (OD-18, plan A4); P0 auth is email and password."
+  E008: "MFA verify is P1 (OD-18, plan A4); P0 auth is email and password."
   E096: "Gmail mailbox monitoring needs Gmail API access (OD-11) and is P1; deferred under plan assumption A4"
