@@ -6,26 +6,27 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-Task 8, frontend foundation. See `git log` for the commit.
+Task 9, auth screens and first E2E. See `git log` for the commit.
 
 ## Current task
-Task 9: auth screens and first E2E.
+Task 10: clients.
 
 ## Relevant files
-- Brief: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/task-9-brief.md`
-- `frontend/src/app/router.tsx` (`BUILT_SCREENS`), `frontend/src/lib/api.ts`
+- Brief: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/task-10-brief.md`
+- `backend/collectiq/api/urls.py`, `backend/collectiq/api/tenancy_views.py` (view pattern)
+- `docs/api/endpoint-status.yaml`
 
 ## Changes already made
-T1–T8 committed on `build/m0-m8`.
+T1–T9 committed on `build/m0-m8`.
 
 ## Tests actually run
-T8: vitest 78 passed, `npm run build` ok, `make check` 12 of 12.
+T9: `make e2e` 3 passed, vitest 132 passed, `npm run build` ok, `make check` 12 of 12.
 
 ## Outstanding work
-T9–T40.
+T10–T40.
 
 ## Next exact action
-`task-start PLAN 9`, read the brief, write failing tests.
+`task-start PLAN 10`, read the brief, write failing tests.
 
 ## Unresolved decisions
 - `CollectIQ_Post_Implementation_Audit.md` (root, untracked) predates commit `a1448f4` and is stale on Task 2 and the frontend scaffold. Left untouched and uncommitted; the user decides whether to keep it.

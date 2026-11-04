@@ -1,4 +1,5 @@
-import type { ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { type ReactNode, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { Button } from "../components/ui/Button";
 import { MutationFeedback } from "../components/ui/MutationFeedback";
@@ -18,7 +19,14 @@ type Props = {
 export function Shell({ workspaceId, workspaceName, sampleData = false, children }: Props) {
   const navigate = useNavigate();
   const signOut = useApiMutation({ method: "post", path: "/api/v1/auth/logout" });
-  if (signOut.status === "success") void navigate("/login", { replace: true });
+  const client = useQueryClient();
+  const signedOut = signOut.status === "success";
+
+  useEffect(() => {
+    if (!signedOut) return;
+    // Everything cached belonged to the person leaving. Cleared after the move so this page never refetches it.
+    void Promise.resolve(navigate("/login", { replace: true })).then(() => client.clear());
+  }, [signedOut, client, navigate]);
 
   return (
     <div className={styles.shell} data-has-nav={NAV_ITEMS.length > 0 || undefined}>

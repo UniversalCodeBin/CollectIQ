@@ -1,4 +1,4 @@
-import type { LucideIcon } from "lucide-react";
+import { LayoutDashboard, type LucideIcon } from "lucide-react";
 
 export const DIRECTIVE_NAV = [
   "Dashboard",
@@ -24,4 +24,6 @@ export type NavItem = {
 };
 
 /** Each task that builds a screen adds its item here, in directive order, so no link is ever dead. */
-export const NAV_ITEMS: NavItem[] = [];
+export const NAV_ITEMS: NavItem[] = [
+  { label: "Dashboard", route: "dashboard", to: "dashboard", icon: LayoutDashboard },
+];

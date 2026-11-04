@@ -194,7 +194,12 @@ function forgetKey(id: string): void {
 
 export type MutationStatus = "idle" | "pending" | "success" | "problem" | "unknown";
 
-type MutationOptions = { idempotent?: boolean; ifMatch?: boolean };
+type MutationOptions = {
+  idempotent?: boolean;
+  ifMatch?: boolean;
+  /** The body holds a secret, so the key stays in memory: its name in storage is derived from the body. */
+  secretBody?: boolean;
+};
 type Attempt<O extends ApiOp> = RequestOf<O> & { version?: number };
 type Sent<O extends ApiOp> = { attempt: Attempt<O>; key?: string; storageId: string };
 
@@ -213,7 +218,7 @@ function saysNothingAboutEarlierAttempt(problem: ApiProblem): boolean {
  * way forward is checkStatus(), which resends the same key and body; a new submission is refused.
  */
 export function useApiMutation<O extends ApiOp>(op: O, options: MutationOptions = {}) {
-  const { idempotent = false, ifMatch = false } = options;
+  const { idempotent = false, ifMatch = false, secretBody = false } = options;
   const [status, setStatus] = useState<MutationStatus>("idle");
   const [problem, setProblem] = useState<ApiProblem | null>(null);
   const [data, setData] = useState<ResponseOf<O> | undefined>(undefined);
@@ -272,14 +277,14 @@ export function useApiMutation<O extends ApiOp>(op: O, options: MutationOptions 
       const storageId = `collectiq.idempotency.${op.method}.${op.path}.${fingerprint(signature)}`;
       let key: string | undefined;
       if (idempotent) {
-        key = readKey(storageId) ?? crypto.randomUUID();
-        writeKey(storageId, key);
+        key = secretBody ? crypto.randomUUID() : (readKey(storageId) ?? crypto.randomUUID());
+        if (!secretBody) writeKey(storageId, key);
       }
       setStatus("pending");
       setProblem(null);
       void send({ attempt, key, storageId }, false);
     },
-    [idempotent, ifMatch, op.method, op.path, send],
+    [idempotent, ifMatch, secretBody, op.method, op.path, send],
   );
 
   const checkStatus = useCallback(() => {
