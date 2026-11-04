@@ -291,6 +291,281 @@ paths:
                 $ref: '#/components/schemas/WorkspaceOut'
           description: ''
       x-endpoint-id: E012
+  /api/v1/workspaces/{ws}/clients:
+    get:
+      operationId: E021
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientPageOut'
+          description: ''
+      x-endpoint-id: E021
+    post:
+      operationId: E022
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ClientInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientOut'
+          description: ''
+      x-endpoint-id: E022
+  /api/v1/workspaces/{ws}/clients/{client_id}:
+    get:
+      operationId: E023
+      parameters:
+      - in: path
+        name: client_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientProfileOut'
+          description: ''
+      x-endpoint-id: E023
+    patch:
+      operationId: E024
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: client_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedClientUpdateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedClientUpdateInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientOut'
+          description: ''
+      x-endpoint-id: E024
+  /api/v1/workspaces/{ws}/clients/{client_id}/contacts:
+    post:
+      operationId: E025
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: client_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContactInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactOut'
+          description: ''
+      x-endpoint-id: E025
+  /api/v1/workspaces/{ws}/clients/{client_id}/contacts/{contact_id}:
+    patch:
+      operationId: E026
+      parameters:
+      - in: path
+        name: client_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: contact_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedContactUpdateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedContactUpdateInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactOut'
+          description: ''
+      x-endpoint-id: E026
+  /api/v1/workspaces/{ws}/contacts/{contact_id}/suppression:
+    post:
+      operationId: E027
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: contact_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SuppressionInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SuppressionInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactOut'
+          description: ''
+      x-endpoint-id: E027
+    delete:
+      operationId: E028
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: contact_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E028
   /api/v1/workspaces/{ws}/invitations:
     post:
       operationId: E014
@@ -417,6 +692,163 @@ paths:
       x-endpoint-id: E015
 components:
   schemas:
+    AliasOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        text:
+          type: string
+        kind:
+          type: string
+      required:
+      - id
+      - kind
+      - text
+    ClientInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sensitivity:
+          $ref: '#/components/schemas/SensitivityEnum'
+        tone:
+          $ref: '#/components/schemas/ToneEnum'
+      required:
+      - display_name
+    ClientOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        normalized_name:
+          type: string
+        sensitivity:
+          type: string
+        tone:
+          type: string
+        version:
+          type: integer
+      required:
+      - display_name
+      - id
+      - normalized_name
+      - sensitivity
+      - tone
+      - version
+    ClientPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ClientOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    ClientProfileOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        display_name:
+          type: string
+        normalized_name:
+          type: string
+        sensitivity:
+          type: string
+        tone:
+          type: string
+        version:
+          type: integer
+        contacts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContactOut'
+        aliases:
+          type: array
+          items:
+            $ref: '#/components/schemas/AliasOut'
+        summary:
+          $ref: '#/components/schemas/ClientSummaryOut'
+      required:
+      - aliases
+      - contacts
+      - display_name
+      - id
+      - normalized_name
+      - sensitivity
+      - summary
+      - tone
+      - version
+    ClientSummaryOut:
+      type: object
+      properties:
+        contacts_total:
+          type: integer
+        contacts_active:
+          type: integer
+        contacts_suppressed:
+          type: integer
+      required:
+      - contacts_active
+      - contacts_suppressed
+      - contacts_total
+    ContactInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+      required:
+      - email
+    ContactOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        client_id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+          nullable: true
+        status:
+          type: string
+        suppression_reason:
+          type: string
+          nullable: true
+      required:
+      - client_id
+      - email
+      - id
+      - name
+      - status
+      - suppression_reason
     CredentialsInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -572,6 +1004,33 @@ components:
       required:
       - new_password
       - token
+    PatchedClientUpdateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        display_name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        sensitivity:
+          $ref: '#/components/schemas/SensitivityEnum'
+        tone:
+          $ref: '#/components/schemas/ToneEnum'
+    PatchedContactUpdateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
     PatchedMemberRoleInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -607,6 +1066,16 @@ components:
       description: |-
         * `OWNER` - OWNER
         * `FINANCE_ADMIN` - FINANCE_ADMIN
+    SensitivityEnum:
+      enum:
+      - STANDARD
+      - LONG_TERM
+      - SENSITIVE
+      type: string
+      description: |-
+        * `STANDARD` - STANDARD
+        * `LONG_TERM` - LONG_TERM
+        * `SENSITIVE` - SENSITIVE
     SessionOut:
       type: object
       properties:
@@ -622,6 +1091,17 @@ components:
       - csrf_token
       - user
       - workspaces
+    SuppressionInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
     TokenInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -633,6 +1113,16 @@ components:
           maxLength: 512
       required:
       - token
+    ToneEnum:
+      enum:
+      - NEUTRAL
+      - FRIENDLY
+      - FORMAL
+      type: string
+      description: |-
+        * `NEUTRAL` - NEUTRAL
+        * `FRIENDLY` - FRIENDLY
+        * `FORMAL` - FORMAL
     UserOut:
       type: object
       properties:

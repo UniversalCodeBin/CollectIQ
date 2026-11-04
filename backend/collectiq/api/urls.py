@@ -1,5 +1,6 @@
 from django.urls import path
 
+from . import client_views as clients
 from . import identity_views as identity
 from . import tenancy_views as tenancy
 
@@ -20,6 +21,20 @@ urlpatterns: list = [
     path(f"{_V1}workspaces/<uuid:ws>/members", tenancy.MemberCollectionView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/members/<uuid:member_id>", tenancy.MemberDetailView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/invitations", tenancy.InvitationCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/clients", clients.ClientCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/clients/<uuid:client_id>", clients.ClientDetailView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/clients/<uuid:client_id>/contacts",
+        clients.ContactCollectionView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/clients/<uuid:client_id>/contacts/<uuid:contact_id>",
+        clients.ContactDetailView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/contacts/<uuid:contact_id>/suppression",
+        clients.ContactSuppressionView.as_view(),
+    ),
     path(f"{_V1}health/live", identity.HealthLiveView.as_view()),
     path(f"{_V1}health/ready", identity.HealthReadyView.as_view()),
 ]

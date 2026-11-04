@@ -6,27 +6,25 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-Task 9, auth screens and first E2E. See `git log` for the commit.
+Task 10
 
 ## Current task
-Task 10: clients.
+Task 11
 
 ## Relevant files
-- Brief: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/task-10-brief.md`
-- `backend/collectiq/api/urls.py`, `backend/collectiq/api/tenancy_views.py` (view pattern)
-- `docs/api/endpoint-status.yaml`
+backend/collectiq/invoices/, backend/collectiq/api/
 
 ## Changes already made
-T1–T9 committed on `build/m0-m8`.
+T10 committed: clients, contacts, suppression.
 
 ## Tests actually run
-T9: `make e2e` 3 passed, vitest 132 passed, `npm run build` ok, `make check` 12 of 12.
+make test: 434 pytest + 132 vitest passed; make check 12/12; fault injection 13 of 13 killed.
 
 ## Outstanding work
-T10–T40.
+Tasks 11-40.
 
 ## Next exact action
-`task-start PLAN 10`, read the brief, write failing tests.
+Read the Task 11 brief; write failing import tests.
 
 ## Unresolved decisions
 - `CollectIQ_Post_Implementation_Audit.md` (root, untracked) predates commit `a1448f4` and is stale on Task 2 and the frontend scaffold. Left untouched and uncommitted; the user decides whether to keep it.

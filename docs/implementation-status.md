@@ -5,8 +5,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 ## Resume point
 
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
-- **Done:** T1–T9 (M0 scaffold, tenancy, audit, platform, identity; web foundation; auth screens and first E2E).
-- **Next:** T10 clients.
+- **Done:** Tasks 1-10 (M0, M1 identity and web foundation, clients).
+- **Next:** Task 11, invoice CSV import.
 
 ## T1 spike outcome
 
@@ -29,7 +29,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T6 Idempotency, jobs, outbox and adapters | Done; `tests/integration` passing against Postgres as the app role | `ae8a8ec` |
 | T7 Identity, workspaces and roles | Done; full suite passing against Postgres as the app role; 11 injected security faults all caught | `2697f90` |
 | T8 Frontend foundation | 78 vitest, build, `make check` 12 of 12, fault injection all killed | `508c302` |
-| T9 Auth screens, onboarding start, E2E harness | `make e2e` 3 passed, vitest 132 passed, build ok, `make check` 12 of 12, fault injection 0 survivors | See `git log` |
+| T9 Auth screens, onboarding start, E2E harness | `make e2e` 3 passed, vitest 132 passed, build ok, `make check` 12 of 12, fault injection 0 survivors | `66e6e3e` |
+| T10 Clients, contacts, suppression | E021-E028 live; 23 client tests, 13 fault injections killed, make test 434 + 132 passed, make check 12/12 | See `git log` |
 
 ## Open items carried forward
 
@@ -39,3 +40,4 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 - The CI file exists but has never run (plan A10).
 - Endpoint gaps in the audit are added as `proposed-new` by T7, T25 and T31, then listed in the final report for approval.
 - `X-Forwarded-For` is not trusted yet, and stale `auth_throttles` rows are not purged. Revisit at T40.
+- T14: proposed-new endpoint to add a client alias (SCR-14 'add alias'), plus contact rules (FR-149).

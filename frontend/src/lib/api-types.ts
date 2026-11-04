@@ -212,6 +212,86 @@ export interface paths {
         patch: operations["E012"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E021"];
+        put?: never;
+        post: operations["E022"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/clients/{client_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E023"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E024"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/clients/{client_id}/contacts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E025"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/clients/{client_id}/contacts/{contact_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E026"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/contacts/{contact_id}/suppression": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E027"];
+        delete: operations["E028"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invitations": {
         parameters: {
             query?: never;
@@ -264,6 +344,65 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AliasOut: {
+            /** Format: uuid */
+            id: string;
+            text: string;
+            kind: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ClientInRequest: {
+            display_name: string;
+            sensitivity?: components["schemas"]["SensitivityEnum"];
+            tone?: components["schemas"]["ToneEnum"];
+        };
+        ClientOut: {
+            /** Format: uuid */
+            id: string;
+            display_name: string;
+            normalized_name: string;
+            sensitivity: string;
+            tone: string;
+            version: number;
+        };
+        ClientPageOut: {
+            items: components["schemas"]["ClientOut"][];
+            next_cursor: string | null;
+        };
+        ClientProfileOut: {
+            /** Format: uuid */
+            id: string;
+            display_name: string;
+            normalized_name: string;
+            sensitivity: string;
+            tone: string;
+            version: number;
+            contacts: components["schemas"]["ContactOut"][];
+            aliases: components["schemas"]["AliasOut"][];
+            summary: components["schemas"]["ClientSummaryOut"];
+        };
+        ClientSummaryOut: {
+            contacts_total: number;
+            contacts_active: number;
+            contacts_suppressed: number;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ContactInRequest: {
+            /** Format: email */
+            email: string;
+            name?: string;
+        };
+        ContactOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            client_id: string;
+            /** Format: email */
+            email: string;
+            name: string | null;
+            status: string;
+            suppression_reason: string | null;
+        };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         CredentialsInRequest: {
             /** Format: email */
@@ -326,6 +465,18 @@ export interface components {
             new_password: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedClientUpdateInRequest: {
+            display_name?: string;
+            sensitivity?: components["schemas"]["SensitivityEnum"];
+            tone?: components["schemas"]["ToneEnum"];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedContactUpdateInRequest: {
+            /** Format: email */
+            email?: string;
+            name?: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedMemberRoleInRequest: {
             role?: components["schemas"]["RoleEnum"];
         };
@@ -344,15 +495,33 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "OWNER" | "FINANCE_ADMIN";
+        /**
+         * @description * `STANDARD` - STANDARD
+         *     * `LONG_TERM` - LONG_TERM
+         *     * `SENSITIVE` - SENSITIVE
+         * @enum {string}
+         */
+        SensitivityEnum: "STANDARD" | "LONG_TERM" | "SENSITIVE";
         SessionOut: {
             user: components["schemas"]["UserOut"];
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
             csrf_token: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        SuppressionInRequest: {
+            reason: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         TokenInRequest: {
             token: string;
         };
+        /**
+         * @description * `NEUTRAL` - NEUTRAL
+         *     * `FRIENDLY` - FRIENDLY
+         *     * `FORMAL` - FORMAL
+         * @enum {string}
+         */
+        ToneEnum: "NEUTRAL" | "FRIENDLY" | "FORMAL";
         UserOut: {
             /** Format: uuid */
             id: string;
@@ -721,6 +890,218 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["WorkspaceOut"];
                 };
+            };
+        };
+    };
+    E021: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientPageOut"];
+                };
+            };
+        };
+    };
+    E022: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ClientInRequest"];
+                "multipart/form-data": components["schemas"]["ClientInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientOut"];
+                };
+            };
+        };
+    };
+    E023: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientProfileOut"];
+                };
+            };
+        };
+    };
+    E024: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                client_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedClientUpdateInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedClientUpdateInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ClientOut"];
+                };
+            };
+        };
+    };
+    E025: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                client_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ContactInRequest"];
+                "multipart/form-data": components["schemas"]["ContactInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+        };
+    };
+    E026: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                client_id: string;
+                contact_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedContactUpdateInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedContactUpdateInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+        };
+    };
+    E027: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                contact_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SuppressionInRequest"];
+                "multipart/form-data": components["schemas"]["SuppressionInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ContactOut"];
+                };
+            };
+        };
+    };
+    E028: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                contact_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

@@ -148,3 +148,78 @@ class InvitationAcceptedOut(serializers.Serializer):
 
 class HealthOut(serializers.Serializer):
     status = serializers.CharField()
+
+
+_SENSITIVITY = ("STANDARD", "LONG_TERM", "SENSITIVE")
+_TONE = ("NEUTRAL", "FRIENDLY", "FORMAL")
+
+
+class ClientIn(StrictSerializer):
+    display_name = serializers.CharField(max_length=200)
+    sensitivity = serializers.ChoiceField(choices=_SENSITIVITY, required=False)
+    tone = serializers.ChoiceField(choices=_TONE, required=False)
+
+
+class ClientUpdateIn(StrictSerializer):
+    display_name = serializers.CharField(max_length=200, required=False)
+    sensitivity = serializers.ChoiceField(choices=_SENSITIVITY, required=False)
+    tone = serializers.ChoiceField(choices=_TONE, required=False)
+
+
+class ContactIn(StrictSerializer):
+    email = _email()
+    name = serializers.CharField(max_length=200, required=False)
+
+
+class ContactUpdateIn(StrictSerializer):
+    email = serializers.EmailField(max_length=254, required=False)
+    name = serializers.CharField(max_length=200, required=False)
+
+
+class SuppressionIn(StrictSerializer):
+    reason = serializers.CharField(max_length=500)
+
+
+class SuppressionClearIn(StrictSerializer):
+    reason = serializers.CharField(max_length=500, required=False)
+
+
+class ClientOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    display_name = serializers.CharField()
+    normalized_name = serializers.CharField()
+    sensitivity = serializers.CharField()
+    tone = serializers.CharField()
+    version = serializers.IntegerField()
+
+
+class ClientPageOut(serializers.Serializer):
+    items = ClientOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class ContactOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    client_id = serializers.UUIDField()
+    email = serializers.EmailField()
+    name = serializers.CharField(allow_null=True)
+    status = serializers.CharField()
+    suppression_reason = serializers.CharField(allow_null=True)
+
+
+class AliasOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    text = serializers.CharField()
+    kind = serializers.CharField()
+
+
+class ClientSummaryOut(serializers.Serializer):
+    contacts_total = serializers.IntegerField()
+    contacts_active = serializers.IntegerField()
+    contacts_suppressed = serializers.IntegerField()
+
+
+class ClientProfileOut(ClientOut):
+    contacts = ContactOut(many=True)
+    aliases = AliasOut(many=True)
+    summary = ClientSummaryOut()
