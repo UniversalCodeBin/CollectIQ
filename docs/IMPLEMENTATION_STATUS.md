@@ -15,7 +15,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** Task 22, disputes and blockers (E076-E082): dispute and blocker cases, reminders suppressed on open, human-only resolution, 24-hour cooling-off and approved resume.
 - **Done (earlier):** Task 21, policy engine (E016-E020, E092, E101): pure gates G1-G15, single-use authorization, immutable policy versions, pause and resume, approvals, header pause control and SCR-10 settings.
 - **Done:** Task 24, reminders and manual handoff (E083-E089, API only): template drafts with a deterministic fact block, content linter, gates re-run at approval and mark-sent, approval never sends, mark-sent records a hand-off, payments and cases cancel pending drafts.
-- **Next:** Task 25, notifications and review inbox (E106-E108).
+- **Done:** Task 25, notifications and review inbox (E106-E108, API only): per-user notifications carrying ids and codes only, deduped; the inbox is derived read-only from cases, reminder drafts, match proposals, payment-claim tasks and approvals; leads see only assigned cases.
+- **Next:** Task 26, Conversations and Disputes UI (SCR-07, SCR-08).
 
 ## T1 spike outcome
 

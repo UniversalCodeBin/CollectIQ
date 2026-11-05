@@ -2099,6 +2099,56 @@ paths:
                 $ref: '#/components/schemas/MessageOut'
           description: ''
       x-endpoint-id: E066
+  /api/v1/workspaces/{ws}/notifications:
+    get:
+      operationId: E106
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPageOut'
+          description: ''
+      x-endpoint-id: E106
+  /api/v1/workspaces/{ws}/notifications/{notification_id}/read:
+    post:
+      operationId: E107
+      parameters:
+      - in: path
+        name: notification_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '204':
+          description: No response body
+      x-endpoint-id: E107
   /api/v1/workspaces/{ws}/payment-accounts:
     get:
       operationId: E029
@@ -2925,6 +2975,26 @@ paths:
                 $ref: '#/components/schemas/ReminderOut'
           description: ''
       x-endpoint-id: E088
+  /api/v1/workspaces/{ws}/review-inbox:
+    get:
+      operationId: E108
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InboxOut'
+          description: ''
+      x-endpoint-id: E108
   /api/v1/workspaces/{ws}/transactions/{transaction_id}/mark-duplicate:
     post:
       operationId: E061
@@ -3335,7 +3405,7 @@ components:
           type: string
           format: uuid
         type:
-          $ref: '#/components/schemas/TypeEnum'
+          $ref: '#/components/schemas/CaseInTypeEnum'
         summary:
           type: string
           minLength: 1
@@ -3349,6 +3419,18 @@ components:
       - invoice_id
       - summary
       - type
+    CaseInTypeEnum:
+      enum:
+      - DISPUTE
+      - MISSING_DOCUMENT
+      - QUESTION
+      - PROPOSAL
+      type: string
+      description: |-
+        * `DISPUTE` - DISPUTE
+        * `MISSING_DOCUMENT` - MISSING_DOCUMENT
+        * `QUESTION` - QUESTION
+        * `PROPOSAL` - PROPOSAL
     CaseNoteOut:
       type: object
       properties:
@@ -4614,6 +4696,56 @@ components:
       - matches
       - row
       - status
+    InboxItemOut:
+      type: object
+      properties:
+        kind:
+          $ref: '#/components/schemas/InboxItemOutKindEnum'
+        subject_ref:
+          type: object
+          additionalProperties:
+            type: string
+        target_route:
+          type: string
+        action:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - action
+      - created_at
+      - kind
+      - subject_ref
+      - target_route
+    InboxItemOutKindEnum:
+      enum:
+      - CASE
+      - REMINDER_DRAFT
+      - MATCH_PROPOSAL
+      - PAYMENT_CLAIM
+      - APPROVAL
+      type: string
+      description: |-
+        * `CASE` - CASE
+        * `REMINDER_DRAFT` - REMINDER_DRAFT
+        * `MATCH_PROPOSAL` - MATCH_PROPOSAL
+        * `PAYMENT_CLAIM` - PAYMENT_CLAIM
+        * `APPROVAL` - APPROVAL
+    InboxOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InboxItemOut'
+        counts:
+          type: object
+          additionalProperties:
+            type: integer
+      required:
+      - counts
+      - items
     InvitationAcceptedOut:
       type: object
       properties:
@@ -5081,6 +5213,58 @@ components:
       required:
       - amount_minor
       - currency
+    NotificationOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/NotificationOutTypeEnum'
+        subject_ref:
+          type: object
+          additionalProperties:
+            type: string
+        target_route:
+          type: string
+        action:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        read_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - action
+      - created_at
+      - id
+      - read_at
+      - subject_ref
+      - target_route
+      - type
+    NotificationOutTypeEnum:
+      enum:
+      - CASE_OPENED
+      - REMINDER_DRAFT_READY
+      type: string
+      description: |-
+        * `CASE_OPENED` - CASE_OPENED
+        * `REMINDER_DRAFT_READY` - REMINDER_DRAFT_READY
+    NotificationPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/NotificationOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
     OutcomeEnum:
       enum:
       - NO_CHANGE
@@ -6621,18 +6805,6 @@ components:
       description: |-
         * `TOTAL` - TOTAL
         * `SUM` - SUM
-    TypeEnum:
-      enum:
-      - DISPUTE
-      - MISSING_DOCUMENT
-      - QUESTION
-      - PROPOSAL
-      type: string
-      description: |-
-        * `DISPUTE` - DISPUTE
-        * `MISSING_DOCUMENT` - MISSING_DOCUMENT
-        * `QUESTION` - QUESTION
-        * `PROPOSAL` - PROPOSAL
     UnmatchedPageOut:
       type: object
       properties:

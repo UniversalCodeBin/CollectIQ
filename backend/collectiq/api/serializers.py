@@ -1091,3 +1091,33 @@ class ReminderRejectIn(StrictSerializer):
 class ReminderSentIn(StrictSerializer):
     sent_at = serializers.DateTimeField()
     method = serializers.ChoiceField(choices=["EMAIL", "WHATSAPP", "PHONE", "OTHER"])
+
+
+class NotificationOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    type = serializers.ChoiceField(choices=["CASE_OPENED", "REMINDER_DRAFT_READY"])
+    subject_ref = serializers.DictField(child=serializers.CharField())
+    target_route = serializers.CharField()
+    action = serializers.CharField()
+    created_at = serializers.DateTimeField()
+    read_at = serializers.DateTimeField(allow_null=True)
+
+
+class NotificationPageOut(serializers.Serializer):
+    items = NotificationOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class InboxItemOut(serializers.Serializer):
+    kind = serializers.ChoiceField(
+        choices=["CASE", "REMINDER_DRAFT", "MATCH_PROPOSAL", "PAYMENT_CLAIM", "APPROVAL"]
+    )
+    subject_ref = serializers.DictField(child=serializers.CharField())
+    target_route = serializers.CharField()
+    action = serializers.CharField()
+    created_at = serializers.DateTimeField()
+
+
+class InboxOut(serializers.Serializer):
+    items = InboxItemOut(many=True)
+    counts = serializers.DictField(child=serializers.IntegerField())

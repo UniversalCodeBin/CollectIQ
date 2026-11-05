@@ -156,3 +156,9 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Task 24: Ruling: The idempotency key (workspace, invoice, SEND_REMINDER, sequence, intended date) is unique only among DRAFT, APPROVED and MARKED_SENT, so a cancelled draft can be re-drafted with fresh facts. The contact window is 7 days per client, counted from MARKED_SENT reminders.
 - Task 24: Ruling: Opening any case cancels pending drafts and ends an active snooze. Business hours read start, end and days from the policy; an empty or unreadable setting means no restriction. There is no scheduler; a person presses Evaluate until T27.
 - Task 24: Ruling: ruff format was run on the new files only.
+
+## Task 25 rulings
+- Notifications are per-user rows holding ids and codes only, deduped by (user, type, subject). Recipients: active owners and finance admins.
+- The review inbox is derived on read from the source tables and writes nothing, so a lost notification never loses an item; resolving at the source removes it.
+- A project lead sees only cases assigned to them and no drafts, matches or approvals.
+- The 90-day notification retention is not enforced by a job yet (T37/T40). Notification preferences (FR-146) are not built.

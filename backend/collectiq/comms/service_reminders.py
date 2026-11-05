@@ -402,6 +402,9 @@ def evaluate_invoice(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
             after={"invoice_id": str(invoice_id), "sequence": sequence, "status": "DRAFT"},
             reason_codes=["TEMPLATE_DRAFT"],
         )
+        outbox.publish(
+            ctx, "ReminderDrafted", {"reminder_id": str(row["id"]), "invoice_id": str(invoice_id)}
+        )
         result["reminder"] = created
         return result
 

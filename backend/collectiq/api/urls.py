@@ -6,6 +6,7 @@ from . import client_views as clients
 from . import conversation_views as conversations
 from . import identity_views as identity
 from . import import_views as imports
+from . import inbox_views as inbox
 from . import invoice_views as invoices
 from . import payment_views as payments
 from . import policy_views as policy
@@ -174,4 +175,10 @@ urlpatterns: list = [
     ),
     path(f"{_V1}health/live", identity.HealthLiveView.as_view()),
     path(f"{_V1}health/ready", identity.HealthReadyView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/notifications", inbox.NotificationCollectionView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/notifications/<uuid:notification_id>/read",
+        inbox.NotificationReadView.as_view(),
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/review-inbox", inbox.ReviewInboxView.as_view()),
 ]

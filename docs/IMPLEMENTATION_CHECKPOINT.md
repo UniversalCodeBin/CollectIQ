@@ -6,10 +6,10 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 24** (reminders and manual handoff; E083-E089) is complete; the commit follows this checkpoint. Evidence: test_reminders.py 26 passed, full backend suite green, make check 12/12.
+- **Task 25** (notifications and review inbox; E106-E108) is complete; the commit follows this checkpoint. Evidence: test_inbox.py 15 passed; full suite and make check recorded below at commit.
 
 ## Current task
-- **Task 25: Notifications and review inbox (E106-E108).** Owed: end snoozes when their date passes (job `end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id is NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; a path to close `verification_tasks` and decrement `open_task_count` (T25/T30); nightly evidence.integrity_check (T37/T40); E065 cursor paging (T37). Next free endpoint is E120.
+- **Task 26: Conversations and Disputes UI (SCR-07, SCR-08).** Owed: end snoozes when their date passes (job `end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id is NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; a path to close `verification_tasks` and decrement `open_task_count` (T25/T30); nightly evidence.integrity_check (T37/T40); E065 cursor paging (T37). Next free endpoint is E120.
 
 ## Relevant files
 - Frontend T14: frontend/src/features/{dashboard,receivables,invoice,client}/*, components/ui/QueryState.tsx, lib/format.ts (formatDate), lib/statusMap.ts; e2e/receivables.spec.ts; tests/web/receivables.test.tsx. Backend: invoices/read_models.py (null issue_date).

@@ -869,6 +869,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E106"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/notifications/{notification_id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E107"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/payment-accounts": {
         parameters: {
             query?: never;
@@ -1173,6 +1205,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/review-inbox": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E108"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/transactions/{transaction_id}/mark-duplicate": {
         parameters: {
             query?: never;
@@ -1347,12 +1395,20 @@ export interface components {
         CaseInRequest: {
             /** Format: uuid */
             invoice_id: string;
-            type: components["schemas"]["TypeEnum"];
+            type: components["schemas"]["CaseInTypeEnum"];
             summary: string;
             dispute_type?: components["schemas"]["DisputeTypeEnum"];
             /** Format: uuid */
             source_message_id?: string;
         };
+        /**
+         * @description * `DISPUTE` - DISPUTE
+         *     * `MISSING_DOCUMENT` - MISSING_DOCUMENT
+         *     * `QUESTION` - QUESTION
+         *     * `PROPOSAL` - PROPOSAL
+         * @enum {string}
+         */
+        CaseInTypeEnum: "DISPUTE" | "MISSING_DOCUMENT" | "QUESTION" | "PROPOSAL";
         CaseNoteOut: {
             /** Format: uuid */
             id: string;
@@ -1903,6 +1959,31 @@ export interface components {
             allowed_decisions: string[];
             conflict: unknown;
         };
+        InboxItemOut: {
+            kind: components["schemas"]["InboxItemOutKindEnum"];
+            subject_ref: {
+                [key: string]: string;
+            };
+            target_route: string;
+            action: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        /**
+         * @description * `CASE` - CASE
+         *     * `REMINDER_DRAFT` - REMINDER_DRAFT
+         *     * `MATCH_PROPOSAL` - MATCH_PROPOSAL
+         *     * `PAYMENT_CLAIM` - PAYMENT_CLAIM
+         *     * `APPROVAL` - APPROVAL
+         * @enum {string}
+         */
+        InboxItemOutKindEnum: "CASE" | "REMINDER_DRAFT" | "MATCH_PROPOSAL" | "PAYMENT_CLAIM" | "APPROVAL";
+        InboxOut: {
+            items: components["schemas"]["InboxItemOut"][];
+            counts: {
+                [key: string]: number;
+            };
+        };
         InvitationAcceptedOut: {
             /** Format: uuid */
             workspace_id: string;
@@ -2096,6 +2177,30 @@ export interface components {
             /** Format: int64 */
             amount_minor: number;
             currency: components["schemas"]["CurrencyEnum"];
+        };
+        NotificationOut: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["NotificationOutTypeEnum"];
+            subject_ref: {
+                [key: string]: string;
+            };
+            target_route: string;
+            action: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            read_at: string | null;
+        };
+        /**
+         * @description * `CASE_OPENED` - CASE_OPENED
+         *     * `REMINDER_DRAFT_READY` - REMINDER_DRAFT_READY
+         * @enum {string}
+         */
+        NotificationOutTypeEnum: "CASE_OPENED" | "REMINDER_DRAFT_READY";
+        NotificationPageOut: {
+            items: components["schemas"]["NotificationOut"][];
+            next_cursor: string | null;
         };
         /**
          * @description * `NO_CHANGE` - NO_CHANGE
@@ -2736,14 +2841,6 @@ export interface components {
          * @enum {string}
          */
         TotalSourceEnum: "TOTAL" | "SUM";
-        /**
-         * @description * `DISPUTE` - DISPUTE
-         *     * `MISSING_DOCUMENT` - MISSING_DOCUMENT
-         *     * `QUESTION` - QUESTION
-         *     * `PROPOSAL` - PROPOSAL
-         * @enum {string}
-         */
-        TypeEnum: "DISPUTE" | "MISSING_DOCUMENT" | "QUESTION" | "PROPOSAL";
         UnmatchedPageOut: {
             items: components["schemas"]["UnmatchedTransactionOut"][];
             next_cursor: string | null;
@@ -4504,6 +4601,51 @@ export interface operations {
             };
         };
     };
+    E106: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPageOut"];
+                };
+            };
+        };
+    };
+    E107: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                notification_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     E029: {
         parameters: {
             query?: {
@@ -5129,6 +5271,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ReminderOut"];
+                };
+            };
+        };
+    };
+    E108: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InboxOut"];
                 };
             };
         };
