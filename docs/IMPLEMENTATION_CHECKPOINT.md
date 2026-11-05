@@ -6,7 +6,7 @@ Sources of record:
 - Ledger: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 37** (audit completeness, critical negatives, runbooks) complete; commit follows. Task 36 is `6ad2a78`. Task 32 deferred (OD-05).
+- **Task 37** (audit completeness, critical negatives, runbooks) complete as `ae2fd30`. Task 36 is `6ad2a78`. Task 32 deferred (OD-05).
 
 ## Current task
 - **Task 38** (end-to-end journeys FL-01..FL-16 and recovery at 320/360/768/1024/1440 px). Next free endpoint E120. Owed: nightly scheduling of `audit.verify_chain`, `evidence.integrity_check`, `privacy.retention` (T40); why-view link from audit rows; legal name and sender display name.
