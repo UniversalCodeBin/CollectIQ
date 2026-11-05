@@ -71,7 +71,12 @@ export function AuditPage() {
           event.preventDefault();
           setApplied(action.trim());
         }}
-        style={{ display: "flex", gap: "var(--space-2)", alignItems: "end" }}
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "var(--space-2)",
+          alignItems: "end",
+        }}
       >
         <label>
           Action
@@ -91,33 +96,40 @@ export function AuditPage() {
       </form>
       {exportNote && <p role="status">{exportNote}</p>}
       <QueryState query={events} label="audit events">
-        <table className={styles.card}>
-          <caption className="sr-only">Audit events, newest first</caption>
-          <thead>
-            <tr>
-              <th scope="col">When</th>
-              <th scope="col">Actor</th>
-              <th scope="col">Action</th>
-              <th scope="col">Object</th>
-              <th scope="col">Reasons</th>
-            </tr>
-          </thead>
-          <tbody>
-            {pages.flatMap((page) =>
-              page.items.map((item) => (
-                <tr key={item.id}>
-                  <td>{item.occurred_at}</td>
-                  <td>{item.actor_type}</td>
-                  <td>{item.action}</td>
-                  <td>
-                    {item.object_type} {item.object_id}
-                  </td>
-                  <td>{item.reason_codes.join(", ")}</td>
-                </tr>
-              )),
-            )}
-          </tbody>
-        </table>
+        <div
+          style={{ overflowX: "auto", maxWidth: "100%" }}
+          tabIndex={0}
+          role="region"
+          aria-label="Audit events table"
+        >
+          <table className={styles.card}>
+            <caption className="sr-only">Audit events, newest first</caption>
+            <thead>
+              <tr>
+                <th scope="col">When</th>
+                <th scope="col">Actor</th>
+                <th scope="col">Action</th>
+                <th scope="col">Object</th>
+                <th scope="col">Reasons</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pages.flatMap((page) =>
+                page.items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.occurred_at}</td>
+                    <td>{item.actor_type}</td>
+                    <td>{item.action}</td>
+                    <td>
+                      {item.object_type} {item.object_id}
+                    </td>
+                    <td>{item.reason_codes.join(", ")}</td>
+                  </tr>
+                )),
+              )}
+            </tbody>
+          </table>
+        </div>
         {pages.length > 0 && pages[0]?.items.length === 0 && (
           <p>No audit records match.</p>
         )}

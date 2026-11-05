@@ -233,3 +233,8 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Audit completeness (TS-023) is checked by a passive probe that runs across the whole suite: it patches the DB cursor and middleware, records each audit insert by correlation ID, and fails the session if a successful audited mutation wrote no audit event. Endpoints never driven to success are listed in `NOT_DRIVEN_TO_SUCCESS` (currently empty). Idempotent replays write nothing and are not violations.
 - The critical negatives are tied to named tests by an AST existence check, so a rename or deletion fails the suite.
 - Four runbooks (auth outage, wrong send, token compromise, bad allocation fix) state: pause first, nothing is edited by hand, and the audit wording with its superuser limit. Disconnecting Gmail deletes the stored credential and revokes at Google on a best-effort basis; PayPal disconnect only changes state, so both runbooks tell the operator to confirm at the provider.
+
+## Task 38 rulings
+- Journeys are covered by the existing specs (onboarding, import, reconciliation, follow-up, pause) plus `fl-viewports.spec.ts` and `fl-recovery.spec.ts`. FL-03, 08, 09, 10, 12, 13, 14 and 16 depend on UI that is not built (PDF review is flagged, no snooze/commitment controls, connect/send controls and AI correction UI are owed) and are not claimed as covered.
+- Pausing automation is not an idempotent mutation: a dropped request shows the problem and the person may press Pause again, which is safe because pausing twice is the same state.
+- Worker-killed-mid-job recovery is proven at the backend level by the job-lease tests, not in the browser.

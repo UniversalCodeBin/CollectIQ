@@ -6,10 +6,10 @@ Sources of record:
 - Ledger: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 37** (audit completeness, critical negatives, runbooks) complete as `ae2fd30`. Task 36 is `6ad2a78`. Task 32 deferred (OD-05).
+- **Task 38** (end-to-end journeys and recovery) complete; commit follows. Task 37 is `ae2fd30`.
 
 ## Current task
-- **Task 38** (end-to-end journeys FL-01..FL-16 and recovery at 320/360/768/1024/1440 px). Next free endpoint E120. Owed: nightly scheduling of `audit.verify_chain`, `evidence.integrity_check`, `privacy.retention` (T40); why-view link from audit rows; legal name and sender display name.
+- **Task 39** (accessibility, performance, security, claims). Next free endpoint E120. Owed: nightly scheduling of `audit.verify_chain`, `evidence.integrity_check`, `privacy.retention` (T40); why-view link from audit rows; legal name and sender display name.
 
 ## Owed carry-forwards
 - Per-client and per-invoice pause; end snoozes when their date passes (`end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; close `verification_tasks` and decrement `open_task_count`; nightly `evidence.integrity_check` (T37/T40); N+1 `_history`, candidate loading and E065 cursor paging (T37); 90-day notification retention; notification preferences (FR-146).

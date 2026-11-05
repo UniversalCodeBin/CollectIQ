@@ -60,6 +60,7 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T35 Audit History (E099, E100) | 6 backend tests (tenant-scoped search, paging, CSV formula neutralisation, audited export, seeded chain break detected by `audit.verify_chain`), 1 vitest; append-only wording with the superuser limit | ae2fd30 |
 | T36 Settings and payload inspector (E102-E105) | 9 backend tests (export scope and secret exclusion, Owner-only, typed-confirmation deletion with zero-row scan, audit retained, payload inspector with tokens only, retention), 1 interpretation test, 4 vitest; members, export/deletion and payload tabs | ae2fd30 |
 | T37 Audit completeness, critical negatives, runbooks | suite-wide probe (TS-023) checks every audited mutation wrote an audit event, plus 14 critical-negative existence checks and 4 runbooks in docs/runbooks | ae2fd30 |
+| T38 End-to-end journeys and recovery | Playwright: 5 viewport widths (320, 360, 768, 1024, 1440) across 12 screens with no sideways scrolling; recovery for server 500 with Try again, offline reload, expired session redirect, dropped pause request; existing specs cover FL-01, 02, 04-07, 11, 15; Audit History table scrolls inside its own region (defect fixed) | this commit |
 
 ## Open items carried forward
 
