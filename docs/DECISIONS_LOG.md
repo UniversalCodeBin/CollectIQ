@@ -185,3 +185,11 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Output validation is strict: exact key set, enums for labels and `LOW|MEDIUM|HIGH` confidence, so a numeric confidence or an unknown label is refused as `INVALID_OUTPUT`.
 - Account detection treats digit runs of nine or more as accounts; phones are seven or more digits. Over-redaction is accepted over leakage.
 - Rate limit is in-process per scope (workspace); a shared limiter is deferred until there is more than one worker (T39).
+
+## Task 30 rulings
+- Interpretation runs after capture only when the message has associated invoices and the person gave no labels. A gateway failure or an evidence span not found in the message stores NEEDS_MANUAL_REVIEW with a failure code; the manual path is unchanged.
+- Only PAYMENT_CLAIM and DISPUTE auto-apply, and only at MEDIUM or HIGH, through the same service path as a person but audited as actor AI. Applied effects are shown as AI-derived and unverified. A claim never changes the balance or marks anything paid.
+- Dates come from `ai/date_resolver.py`, never from the model. An ambiguous date is flagged for a person. No snooze is created unless a real-data eval report passes (AIR-12); the synthetic set in `backend/evals/` is marked synthetic and cannot pass. A test-only override exercises the positive path, and even then the snooze is only proposed.
+- Correcting requires a note, withdraws promises recorded from that message (ending any snooze with an audit record) and closes AI-opened verification tasks unless a person labelled PAYMENT_CLAIM.
+- Known limits: dismiss or correct leaves reminders SUPPRESSED because the prior status is not stored; a DISPUTE case the AI opened stays open for a person; the AI call runs inside the capture transaction; no frontend for pending interpretations yet.
+- The contract YAML keeps its generated "NOT IMPLEMENTED" text for all built endpoints; the traceability matrix and OpenAPI are the status of record.

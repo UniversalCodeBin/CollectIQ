@@ -9,7 +9,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from collectiq.conversations import service, service_commitments
+from collectiq.conversations import service, service_commitments, service_interpretation
 from collectiq.platform.idempotency import idempotent
 
 from .common import etag, expected_version, invalid, page_params, validated
@@ -22,6 +22,9 @@ from .serializers import (
     CommitmentPageOut,
     CommitmentRecordedOut,
     CommitmentUpdateIn,
+    InterpretationCorrectIn,
+    InterpretationNoteIn,
+    InterpretationOut,
     MessageOut,
     MessagePageOut,
     SnoozeApproveIn,
@@ -108,6 +111,9 @@ class MessageCollectionView(APIView):
             received_at=when,
             associations=_associations(request),
         )
+        # A reply a person already read is left to them; otherwise a model offers a reading to review.
+        if message["associations"] and not any(a["labels"] for a in message["associations"]):
+            service_interpretation.interpret(request.ctx, UUID(message["id"]))
         return Response(message, status=201)
 
 
@@ -136,6 +142,51 @@ class MessageAssociationView(APIView):
     def post(self, request: Any, ws: UUID, message_id: UUID) -> Response:
         data = validated(AssociationsIn, request)
         return Response(service.associate(request.ctx, message_id, list(data["invoice_ids"])))
+
+
+class MessageInterpretationView(APIView):
+    @endpoint("E067", responses={200: InterpretationOut})
+    def get(self, request: Any, ws: UUID, message_id: UUID) -> Response:
+        return Response(service_interpretation.get_for_message(request.ctx, message_id))
+
+
+class InterpretationAcceptView(APIView):
+    parser_classes = [JSONParser]
+
+    @endpoint("E068", request=InterpretationNoteIn, responses={200: InterpretationOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID, interpretation_id: UUID) -> Response:
+        data = validated(InterpretationNoteIn, request)
+        return Response(service_interpretation.accept(request.ctx, interpretation_id, data.get("note")))
+
+
+class InterpretationDismissView(APIView):
+    parser_classes = [JSONParser]
+
+    @endpoint("E069", request=InterpretationNoteIn, responses={200: InterpretationOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID, interpretation_id: UUID) -> Response:
+        data = validated(InterpretationNoteIn, request)
+        return Response(service_interpretation.dismiss(request.ctx, interpretation_id, data.get("note")))
+
+
+class InterpretationCorrectView(APIView):
+    parser_classes = [JSONParser]
+
+    @endpoint("E070", request=InterpretationCorrectIn, responses={200: InterpretationOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID, interpretation_id: UUID) -> Response:
+        data = validated(InterpretationCorrectIn, request)
+        return Response(
+            service_interpretation.correct(
+                request.ctx,
+                interpretation_id,
+                data.get("intent"),
+                data.get("date"),
+                data.get("invoice_ids"),
+                data["note"],
+            )
+        )
 
 
 class InvoiceCommitmentsView(APIView):

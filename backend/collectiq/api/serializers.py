@@ -945,6 +945,41 @@ class MessageOut(serializers.Serializer):
     effects = EffectOut(many=True, required=False)
 
 
+class InterpretationNoteIn(StrictSerializer):
+    note = serializers.CharField(max_length=1000, required=False, allow_blank=True)
+
+
+class InterpretationCorrectIn(StrictSerializer):
+    intent = serializers.CharField(max_length=60, required=False)
+    date = serializers.DateField(required=False)
+    invoice_ids = serializers.ListField(child=serializers.UUIDField(), max_length=20, required=False)
+    note = serializers.CharField(max_length=1000)
+
+
+class InterpretationOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    message_id = serializers.UUIDField()
+    status = serializers.CharField()
+    derived_by = serializers.CharField()
+    ai_derived = serializers.BooleanField()
+    verified = serializers.BooleanField()
+    labels = serializers.ListField(child=serializers.CharField())
+    primary_label = serializers.CharField(allow_null=True)
+    confidence = serializers.CharField(allow_null=True)
+    evidence_span = serializers.CharField(allow_null=True)
+    date_hint = serializers.CharField(allow_null=True)
+    date_status = serializers.CharField()
+    resolved_date = serializers.DateField(allow_null=True)
+    date_note = serializers.CharField(allow_null=True)
+    failure_code = serializers.CharField(allow_null=True)
+    applied = serializers.ListField(child=serializers.DictField())
+    decided_by = serializers.UUIDField(allow_null=True)
+    decided_at = serializers.DateTimeField(allow_null=True)
+    decision_note = serializers.CharField(allow_null=True)
+    corrected_labels = serializers.ListField(child=serializers.CharField(), allow_null=True)
+    created_at = serializers.DateTimeField()
+
+
 class MessagePageOut(serializers.Serializer):
     items = MessageOut(many=True)
     next_cursor = serializers.CharField(allow_null=True)

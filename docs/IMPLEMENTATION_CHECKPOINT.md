@@ -6,10 +6,10 @@ Sources of record:
 - Ledger: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 29** (AI gateway) complete; commit follows. Evidence: 22 gateway unit tests, make check 12/12. Task 28 is `ea3028c`.
+- **Task 30** (reply interpretation, E067-E070) complete; commit follows. Evidence: 22 interpretation tests, 16 injection-corpus tests, date_resolver 97% branch coverage, make check 12/12. Task 29 is `1d2c4d1`.
 
 ## Current task
-- **Task 30: reply interpretation and date resolver** (E066-E070): `ai/date_resolver.py`, `conversations/service_interpretation.py`, evals, injection corpus. Gateway API: `Gateway(provider, AIConfig).run(task_id, payload, scope)`; register tasks with `ai.registry.register(TaskSpec(...))`. Next free endpoint E120.
+- **Task 31: summaries, wording, settings, flagged PDF extraction** (E038-E041, E109-E110). Use `ai.runtime.get_gateway()` and `register(TaskSpec(...))`. Next free endpoint E120.
 
 ## Owed carry-forwards
 - Per-client and per-invoice pause; end snoozes when their date passes (`end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; close `verification_tasks` and decrement `open_task_count`; nightly `evidence.integrity_check` (T37/T40); N+1 `_history`, candidate loading and E065 cursor paging (T37); 90-day notification retention; notification preferences (FR-146).

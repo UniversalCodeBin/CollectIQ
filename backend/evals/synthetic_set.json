@@ -1,0 +1,7 @@
+[
+ {"text": "We paid last week.", "label": "PAYMENT_CLAIM"},
+ {"text": "This amount is wrong, we never ordered it.", "label": "DISPUTE"},
+ {"text": "We will pay on 15 March.", "label": "COMMITMENT_EXPLICIT"},
+ {"text": "Probably sometime next month.", "label": "COMMITMENT_TENTATIVE"},
+ {"text": "Thanks, received.", "label": "ACKNOWLEDGEMENT"}
+]

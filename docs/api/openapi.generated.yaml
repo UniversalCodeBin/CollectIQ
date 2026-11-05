@@ -1345,6 +1345,118 @@ paths:
                 $ref: '#/components/schemas/StatementImportOut'
           description: ''
       x-endpoint-id: E053
+  /api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept:
+    post:
+      operationId: E068
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: interpretation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterpretationNoteInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterpretationOut'
+          description: ''
+      x-endpoint-id: E068
+  /api/v1/workspaces/{ws}/interpretations/{interpretation_id}/correct:
+    post:
+      operationId: E070
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: interpretation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterpretationCorrectInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterpretationOut'
+          description: ''
+      x-endpoint-id: E070
+  /api/v1/workspaces/{ws}/interpretations/{interpretation_id}/dismiss:
+    post:
+      operationId: E069
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: interpretation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterpretationNoteInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterpretationOut'
+          description: ''
+      x-endpoint-id: E069
   /api/v1/workspaces/{ws}/invitations:
     post:
       operationId: E014
@@ -2099,6 +2211,32 @@ paths:
                 $ref: '#/components/schemas/MessageOut'
           description: ''
       x-endpoint-id: E066
+  /api/v1/workspaces/{ws}/messages/{message_id}/interpretation:
+    get:
+      operationId: E067
+      parameters:
+      - in: path
+        name: message_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InterpretationOut'
+          description: ''
+      x-endpoint-id: E067
   /api/v1/workspaces/{ws}/notifications:
     get:
       operationId: E106
@@ -4746,6 +4884,129 @@ components:
       required:
       - counts
       - items
+    InterpretationCorrectInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        intent:
+          type: string
+          minLength: 1
+          maxLength: 60
+        date:
+          type: string
+          format: date
+        invoice_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+          maxItems: 20
+        note:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - note
+    InterpretationNoteInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        note:
+          type: string
+          maxLength: 1000
+    InterpretationOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        message_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        derived_by:
+          type: string
+        ai_derived:
+          type: boolean
+        verified:
+          type: boolean
+        labels:
+          type: array
+          items:
+            type: string
+        primary_label:
+          type: string
+          nullable: true
+        confidence:
+          type: string
+          nullable: true
+        evidence_span:
+          type: string
+          nullable: true
+        date_hint:
+          type: string
+          nullable: true
+        date_status:
+          type: string
+        resolved_date:
+          type: string
+          format: date
+          nullable: true
+        date_note:
+          type: string
+          nullable: true
+        failure_code:
+          type: string
+          nullable: true
+        applied:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        decided_by:
+          type: string
+          format: uuid
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_note:
+          type: string
+          nullable: true
+        corrected_labels:
+          type: array
+          items:
+            type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - ai_derived
+      - applied
+      - confidence
+      - corrected_labels
+      - created_at
+      - date_hint
+      - date_note
+      - date_status
+      - decided_at
+      - decided_by
+      - decision_note
+      - derived_by
+      - evidence_span
+      - failure_code
+      - id
+      - labels
+      - message_id
+      - primary_label
+      - resolved_date
+      - status
+      - verified
     InvitationAcceptedOut:
       type: object
       properties:

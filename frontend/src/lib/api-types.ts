@@ -597,6 +597,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E068"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/interpretations/{interpretation_id}/correct": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E070"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/interpretations/{interpretation_id}/dismiss": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E069"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invitations": {
         parameters: {
             query?: never;
@@ -863,6 +911,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E066"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/messages/{message_id}/interpretation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E067"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1983,6 +2047,49 @@ export interface components {
             counts: {
                 [key: string]: number;
             };
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        InterpretationCorrectInRequest: {
+            intent?: string;
+            /** Format: date */
+            date?: string;
+            invoice_ids?: string[];
+            note: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        InterpretationNoteInRequest: {
+            note?: string;
+        };
+        InterpretationOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            message_id: string;
+            status: string;
+            derived_by: string;
+            ai_derived: boolean;
+            verified: boolean;
+            labels: string[];
+            primary_label: string | null;
+            confidence: string | null;
+            evidence_span: string | null;
+            date_hint: string | null;
+            date_status: string;
+            /** Format: date */
+            resolved_date: string | null;
+            date_note: string | null;
+            failure_code: string | null;
+            applied: {
+                [key: string]: unknown;
+            }[];
+            /** Format: uuid */
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            decision_note: string | null;
+            corrected_labels: string[] | null;
+            /** Format: date-time */
+            created_at: string;
         };
         InvitationAcceptedOut: {
             /** Format: uuid */
@@ -4059,6 +4166,90 @@ export interface operations {
             };
         };
     };
+    E068: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                interpretation_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["InterpretationNoteInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterpretationOut"];
+                };
+            };
+        };
+    };
+    E070: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                interpretation_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InterpretationCorrectInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterpretationOut"];
+                };
+            };
+        };
+    };
+    E069: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                interpretation_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["InterpretationNoteInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterpretationOut"];
+                };
+            };
+        };
+    };
     E014: {
         parameters: {
             query?: never;
@@ -4601,6 +4792,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MessageOut"];
+                };
+            };
+        };
+    };
+    E067: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterpretationOut"];
                 };
             };
         };

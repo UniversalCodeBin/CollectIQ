@@ -17,6 +17,10 @@ def validate(data: Any, shape: dict[str, Any]) -> bool:
         elif rule is bool:
             if not isinstance(value, bool):
                 return False
+        elif isinstance(rule, frozenset):
+            ok = isinstance(value, list) and all(isinstance(item, str) and item in rule for item in value)
+            if not ok:
+                return False
         elif rule is list:
             if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
                 return False

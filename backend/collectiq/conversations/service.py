@@ -325,6 +325,39 @@ def _claim(ctx: RequestContext, message_id: UUID, invoice_id: UUID, state: dict[
     return "VERIFICATION_TASK_OPENED"
 
 
+def close_ai_verification_tasks(ctx: RequestContext, message_id: UUID) -> int:
+    """Closes tasks a model's reading opened when a person says it was wrong. A person's own task stays."""
+    closed = 0
+    for task in fetch_all(
+        "SELECT t.id, t.invoice_id FROM verification_tasks t WHERE t.message_id = %s AND t.status = 'OPEN'"
+        " AND NOT EXISTS (SELECT 1 FROM message_invoices mi WHERE mi.message_id = t.message_id"
+        " AND mi.invoice_id = t.invoice_id AND 'PAYMENT_CLAIM' = ANY (mi.labels)) FOR UPDATE",
+        [message_id],
+    ):
+        execute(
+            "UPDATE verification_tasks SET status = 'CLOSED', closed_by = %s, closed_at = now()"
+            " WHERE id = %s",
+            [ctx.user_id, task["id"]],
+        )
+        execute(
+            "UPDATE invoice_state SET open_task_count = GREATEST(open_task_count - 1, 0),"
+            " version = version + 1,"
+            " updated_at = now() WHERE invoice_id = %s",
+            [task["invoice_id"]],
+        )
+        service_state.recompute(ctx, task["invoice_id"])
+        record(
+            ctx,
+            "verification_task.closed",
+            "invoice",
+            str(task["invoice_id"]),
+            after={"kind": "PAYMENT_CLAIM", "message_id": str(message_id)},
+            reason_codes=["READING_REJECTED_BY_PERSON"],
+        )
+        closed += 1
+    return closed
+
+
 def _opt_out(ctx: RequestContext, message_id: UUID, invoice_id: UUID, state: dict[str, Any]) -> str:
     message = fetch_one("SELECT sender FROM messages WHERE id = %s", [message_id])
     assert message
