@@ -8,6 +8,7 @@ import { QueryState } from "../../components/ui/QueryState";
 import { ApiProblem, apiRequest, useApiMutation } from "../../lib/api";
 import { formatDate } from "../../lib/format";
 import { NotFoundPage } from "../../app/NotFoundPage";
+import { AiSettingsPanel } from "../ai/AiSettingsPanel";
 import styles from "./Automation.module.css";
 
 const refuse = (field: string, message: string) =>
@@ -15,6 +16,7 @@ const refuse = (field: string, message: string) =>
 
 export function AutomationPage() {
   const { tab } = useParams();
+  if (tab === "ai") return <AiSettingsPanel />;
   return tab === "automation" ? <AutomationSettings /> : <NotFoundPage />;
 }
 

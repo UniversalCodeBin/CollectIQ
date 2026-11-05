@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import account_views as accounts
+from . import ai_views as ai
 from . import case_views as cases
 from . import client_views as clients
 from . import conversation_views as conversations
@@ -195,6 +196,13 @@ urlpatterns: list = [
     path(
         f"{_V1}workspaces/<uuid:ws>/notifications/<uuid:notification_id>/read",
         inbox.NotificationReadView.as_view(),
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/invoices/pdf", ai.InvoicePdfView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/extractions/<uuid:extraction_id>", ai.ExtractionView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/extractions/<uuid:extraction_id>/confirm",
+        ai.ExtractionConfirmView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/review-inbox", inbox.ReviewInboxView.as_view()),
 ]

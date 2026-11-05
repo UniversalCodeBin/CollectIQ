@@ -291,6 +291,59 @@ paths:
                 $ref: '#/components/schemas/WorkspaceOut'
           description: ''
       x-endpoint-id: E012
+  /api/v1/workspaces/{ws}/ai/settings:
+    get:
+      operationId: E109
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiSettingsOut'
+          description: ''
+      x-endpoint-id: E109
+    put:
+      operationId: E110
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AiSettingsInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AiSettingsInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiSettingsOut'
+          description: ''
+      x-endpoint-id: E110
   /api/v1/workspaces/{ws}/allocations:
     post:
       operationId: E059
@@ -1076,6 +1129,110 @@ paths:
                 $ref: '#/components/schemas/DashboardOut'
           description: ''
       x-endpoint-id: E048
+  /api/v1/workspaces/{ws}/extractions/{extraction_id}:
+    get:
+      operationId: E039
+      parameters:
+      - in: path
+        name: extraction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionOut'
+          description: ''
+      x-endpoint-id: E039
+    patch:
+      operationId: E040
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: extraction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedExtractionEditInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedExtractionEditInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionOut'
+          description: ''
+      x-endpoint-id: E040
+  /api/v1/workspaces/{ws}/extractions/{extraction_id}/confirm:
+    post:
+      operationId: E041
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: extraction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ExtractionConfirmInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ExtractionConfirmInRequest'
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionOut'
+          description: ''
+      x-endpoint-id: E041
   /api/v1/workspaces/{ws}/imports/{import_id}:
     get:
       operationId: E037
@@ -1974,6 +2131,43 @@ paths:
                 $ref: '#/components/schemas/SnoozeUndoneOut'
           description: ''
       x-endpoint-id: E075
+  /api/v1/workspaces/{ws}/invoices/pdf:
+    post:
+      operationId: E038
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExtractionOut'
+          description: ''
+      x-endpoint-id: E038
   /api/v1/workspaces/{ws}/members:
     get:
       operationId: E013
@@ -3255,6 +3449,33 @@ components:
       - gaps
       - ranges
       - statements_through
+    AiSettingsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        pdf_extraction_enabled:
+          type: boolean
+        reply_interpretation_enabled:
+          type: boolean
+        kill_switch:
+          type: boolean
+    AiSettingsOut:
+      type: object
+      properties:
+        pdf_extraction_enabled:
+          type: boolean
+        reply_interpretation_enabled:
+          type: boolean
+        kill_switch:
+          type: boolean
+        provider_configured:
+          type: boolean
+      required:
+      - kill_switch
+      - pdf_extraction_enabled
+      - provider_configured
+      - reply_interpretation_enabled
     AliasOut:
       type: object
       properties:
@@ -4532,6 +4753,103 @@ components:
           maxLength: 254
       required:
       - email
+    ExtractionConfirmInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        decisions:
+          $ref: '#/components/schemas/ExtractionDecisionsInRequest'
+    ExtractionDecisionsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        client_id:
+          type: string
+          format: uuid
+        create_client:
+          type: boolean
+    ExtractionFieldsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_number:
+          type: string
+          maxLength: 128
+        client_name:
+          type: string
+          maxLength: 200
+        issue_date:
+          type: string
+          maxLength: 10
+        due_date:
+          type: string
+          maxLength: 10
+        currency:
+          type: string
+          maxLength: 3
+        total:
+          type: string
+          maxLength: 32
+    ExtractionOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        fields:
+          type: object
+          additionalProperties:
+            type: string
+        ai_fields:
+          type: object
+          additionalProperties:
+            type: string
+        missing:
+          type: array
+          items:
+            type: string
+        dropped_fields:
+          type: array
+          items:
+            type: string
+        failure_code:
+          type: string
+          nullable: true
+        invoice_id:
+          type: string
+          format: uuid
+          nullable: true
+        version:
+          type: integer
+        ai_derived:
+          type: boolean
+        verified:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      required:
+      - ai_derived
+      - ai_fields
+      - created_at
+      - dropped_fields
+      - failure_code
+      - fields
+      - id
+      - invoice_id
+      - missing
+      - status
+      - updated_at
+      - verified
+      - version
     GateOut:
       type: object
       properties:
@@ -5609,6 +5927,13 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    PatchedExtractionEditInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        fields:
+          $ref: '#/components/schemas/ExtractionFieldsInRequest'
     PatchedInvoiceCorrectionInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional

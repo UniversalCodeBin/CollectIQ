@@ -14,6 +14,7 @@ import { ReminderPage } from "../features/followups/ReminderPage";
 import { InboxPage } from "../features/inbox/InboxPage";
 import { ClientPage } from "../features/client/ClientPage";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
+import { PdfExtractionPage } from "../features/ai/PdfExtractionPage";
 import { ImportPage } from "../features/import/ImportPage";
 import { InvoicePage } from "../features/invoice/InvoicePage";
 import { OnboardingPage } from "../features/onboarding/OnboardingPage";
@@ -41,6 +42,7 @@ const WORKSPACE_ROUTES = [
   "invoices/:id/:tab",
   "clients/:id",
   "import/invoices",
+  "import/pdf",
   "reconciliation/:tab",
   "accounts",
   "conversations",
@@ -66,6 +68,7 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   "/onboarding/:step": OnboardingPage,
   dashboard: DashboardPage,
   "import/invoices": ImportPage,
+  "import/pdf": PdfExtractionPage,
   receivables: ReceivablesPage,
   "invoices/:id/:tab": InvoicePage,
   "clients/:id": ClientPage,

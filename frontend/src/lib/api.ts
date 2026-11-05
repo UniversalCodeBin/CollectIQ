@@ -65,6 +65,8 @@ export class ApiProblem extends Error {
 const FIXED_MESSAGES: Record<string, string> = {
   NETWORK: "We couldn't reach CollectIQ. Check your connection and try again.",
   NOT_FOUND: "We can't find that. It may have been removed, or you may not have access to it.",
+  AI_DISABLED: "AI reading is turned off for this workspace. An Owner can turn it on in Settings, or use CSV import or manual entry.",
+  AI_NOT_CONFIGURED: "AI is not configured on this server. Use CSV import or manual entry.",
   CONFLICT_VERSION: "This record changed since you opened it. Reload to see the latest version, then try again.",
   IDEMPOTENCY_MISMATCH: "This action was already started with different details. Reload and start again.",
   PAYLOAD_TOO_LARGE: "That file is too large to upload.",

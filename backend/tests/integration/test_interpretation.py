@@ -50,7 +50,13 @@ def script() -> Iterator[Any]:
 
 @pytest.fixture
 def env(owner_db: psycopg.Connection) -> Env:
-    return Env(owner_db, f"interp-{uuid.uuid4().hex[:8]}@example.test")
+    e = Env(owner_db, f"interp-{uuid.uuid4().hex[:8]}@example.test")
+    # Precondition: an Owner has opted this workspace in to reply interpretation (default is off).
+    owner_db.execute(
+        "INSERT INTO workspace_ai_settings (workspace_id, reply_interpretation_enabled) VALUES (%s, true)",
+        [e.ws],
+    )
+    return e
 
 
 def interpretation(env: Env, message_id: str) -> dict[str, Any]:

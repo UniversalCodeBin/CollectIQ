@@ -212,6 +212,22 @@ export interface paths {
         patch: operations["E012"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/ai/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E109"];
+        put: operations["E110"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/allocations": {
         parameters: {
             query?: never;
@@ -494,6 +510,38 @@ export interface paths {
         get: operations["E048"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/extractions/{extraction_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E039"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E040"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/extractions/{extraction_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E041"];
         delete?: never;
         options?: never;
         head?: never;
@@ -831,6 +879,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E075"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E038"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1342,6 +1406,18 @@ export interface components {
             attestations: {
                 [key: string]: unknown;
             }[];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AiSettingsInRequest: {
+            pdf_extraction_enabled?: boolean;
+            reply_interpretation_enabled?: boolean;
+            kill_switch?: boolean;
+        };
+        AiSettingsOut: {
+            pdf_extraction_enabled: boolean;
+            reply_interpretation_enabled: boolean;
+            kill_switch: boolean;
+            provider_configured: boolean;
         };
         AliasOut: {
             /** Format: uuid */
@@ -1902,6 +1978,48 @@ export interface components {
             /** Format: email */
             email: string;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ExtractionConfirmInRequest: {
+            decisions?: components["schemas"]["ExtractionDecisionsInRequest"];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ExtractionDecisionsInRequest: {
+            /** Format: uuid */
+            client_id?: string;
+            create_client?: boolean;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ExtractionFieldsInRequest: {
+            invoice_number?: string;
+            client_name?: string;
+            issue_date?: string;
+            due_date?: string;
+            currency?: string;
+            total?: string;
+        };
+        ExtractionOut: {
+            /** Format: uuid */
+            id: string;
+            status: string;
+            fields: {
+                [key: string]: string;
+            };
+            ai_fields: {
+                [key: string]: string;
+            };
+            missing: string[];
+            dropped_fields: string[];
+            failure_code: string | null;
+            /** Format: uuid */
+            invoice_id: string | null;
+            version: number;
+            ai_derived: boolean;
+            verified: boolean;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
         GateOut: {
             gate: string;
             passed: boolean;
@@ -2346,6 +2464,10 @@ export interface components {
             /** Format: email */
             email?: string;
             name?: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedExtractionEditInRequest: {
+            fields?: components["schemas"]["ExtractionFieldsInRequest"];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedInvoiceCorrectionInRequest: {
@@ -3345,6 +3467,55 @@ export interface operations {
             };
         };
     };
+    E109: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiSettingsOut"];
+                };
+            };
+        };
+    };
+    E110: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AiSettingsInRequest"];
+                "multipart/form-data": components["schemas"]["AiSettingsInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiSettingsOut"];
+                };
+            };
+        };
+    };
     E059: {
         parameters: {
             query?: never;
@@ -3955,6 +4126,86 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardOut"];
+                };
+            };
+        };
+    };
+    E039: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                extraction_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionOut"];
+                };
+            };
+        };
+    };
+    E040: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                extraction_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedExtractionEditInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedExtractionEditInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionOut"];
+                };
+            };
+        };
+    };
+    E041: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                extraction_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ExtractionConfirmInRequest"];
+                "multipart/form-data": components["schemas"]["ExtractionConfirmInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionOut"];
                 };
             };
         };
@@ -4605,6 +4856,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SnoozeUndoneOut"];
+                };
+            };
+        };
+    };
+    E038: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExtractionOut"];
                 };
             };
         };

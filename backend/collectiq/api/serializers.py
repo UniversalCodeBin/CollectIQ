@@ -1157,3 +1157,54 @@ class InboxItemOut(serializers.Serializer):
 class InboxOut(serializers.Serializer):
     items = InboxItemOut(many=True)
     counts = serializers.DictField(child=serializers.IntegerField())
+
+
+class AiSettingsIn(StrictSerializer):
+    pdf_extraction_enabled = serializers.BooleanField(required=False)
+    reply_interpretation_enabled = serializers.BooleanField(required=False)
+    kill_switch = serializers.BooleanField(required=False)
+
+
+class AiSettingsOut(serializers.Serializer):
+    pdf_extraction_enabled = serializers.BooleanField()
+    reply_interpretation_enabled = serializers.BooleanField()
+    kill_switch = serializers.BooleanField()
+    provider_configured = serializers.BooleanField()
+
+
+class ExtractionFieldsIn(StrictSerializer):
+    invoice_number = serializers.CharField(max_length=128, required=False, allow_blank=True)
+    client_name = serializers.CharField(max_length=200, required=False, allow_blank=True)
+    issue_date = serializers.CharField(max_length=10, required=False, allow_blank=True)
+    due_date = serializers.CharField(max_length=10, required=False, allow_blank=True)
+    currency = serializers.CharField(max_length=3, required=False, allow_blank=True)
+    total = serializers.CharField(max_length=32, required=False, allow_blank=True)
+
+
+class ExtractionEditIn(StrictSerializer):
+    fields = ExtractionFieldsIn()
+
+
+class ExtractionDecisionsIn(StrictSerializer):
+    client_id = serializers.UUIDField(required=False)
+    create_client = serializers.BooleanField(required=False)
+
+
+class ExtractionConfirmIn(StrictSerializer):
+    decisions = ExtractionDecisionsIn(required=False)
+
+
+class ExtractionOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    status = serializers.CharField()
+    fields = serializers.DictField(child=serializers.CharField(allow_blank=True))
+    ai_fields = serializers.DictField(child=serializers.CharField(allow_blank=True))
+    missing = serializers.ListField(child=serializers.CharField())
+    dropped_fields = serializers.ListField(child=serializers.CharField())
+    failure_code = serializers.CharField(allow_null=True)
+    invoice_id = serializers.UUIDField(allow_null=True)
+    version = serializers.IntegerField()
+    ai_derived = serializers.BooleanField()
+    verified = serializers.BooleanField()
+    created_at = serializers.DateTimeField()
+    updated_at = serializers.DateTimeField()

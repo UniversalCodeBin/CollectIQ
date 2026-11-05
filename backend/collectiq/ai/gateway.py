@@ -67,6 +67,10 @@ class Gateway:
         self._clock = clock
         self._calls: dict[str, deque[float]] = defaultdict(deque)
 
+    @property
+    def configured(self) -> bool:
+        return self._provider is not None
+
     def _limited(self, scope: str) -> bool:
         now = self._clock()
         window = self._calls[scope]

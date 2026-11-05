@@ -23,6 +23,7 @@ from collectiq.platform import clock
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
+from collectiq.tenancy import service_ai_settings
 from collectiq.tenancy.permissions import MESSAGES_READ, MESSAGES_WRITE, authorize
 
 from . import service, service_commitments
@@ -148,8 +149,8 @@ def interpret(ctx: RequestContext, message_id: UUID) -> dict[str, Any] | None:
     authorize(ctx, MESSAGES_WRITE)
     with tenant_tx(ctx):
         invoices = _associated(message_id)
-        if not invoices:
-            return None
+        if not invoices or not service_ai_settings.enabled(ctx, service_ai_settings.REPLIES):
+            return None  # nothing is sent to a model unless an Owner opted in
         message = service._read(ctx, message_id)
         workspace = fetch_one("SELECT timezone FROM workspaces WHERE id = %s", [ctx.workspace_id])
         assert workspace

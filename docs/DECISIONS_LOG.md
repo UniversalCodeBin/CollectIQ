@@ -193,3 +193,11 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Correcting requires a note, withdraws promises recorded from that message (ending any snooze with an audit record) and closes AI-opened verification tasks unless a person labelled PAYMENT_CLAIM.
 - Known limits: dismiss or correct leaves reminders SUPPRESSED because the prior status is not stored; a DISPUTE case the AI opened stays open for a person; the AI call runs inside the capture transaction; no frontend for pending interpretations yet.
 - The contract YAML keeps its generated "NOT IMPLEMENTED" text for all built endpoints; the traceability matrix and OpenAPI are the status of record.
+
+## Task 31 rulings
+- AI features are opt-in per workspace in `workspace_ai_settings` (tenancy layer so lower layers can read it): `pdf_extraction_enabled`, `reply_interpretation_enabled`, default off. `kill_switch` overrides both. Only an Owner changes them; each change is audited with before and after.
+- Off or no provider means no content leaves the application: PDF upload returns 409 `AI_DISABLED` or `AI_NOT_CONFIGURED`; reply interpretation returns without a model call. Tests that exercise interpretation opt the workspace in as a precondition.
+- PDF extraction is a separate `invoice_extractions` row (READY or NEEDS_MANUAL_REVIEW) that no reminder or match reads. An invoice exists only after a person confirms (E041), with provenance AI_EXTRACTED_CONFIRMED or MANUAL. Nothing is marked paid or sent.
+- A value is kept only if the document text supports it (number and client must appear, the total must parse and appear). Otherwise it is blanked and listed in `dropped_fields`. No numeric confidence is exposed.
+- PDFs that are encrypted, over 20 pages, without a text layer or not `%PDF-` are refused before any AI call. Reduced schema: six header fields; line items, tax and payment references are not extracted. Size limit and OCR remain open.
+- `stored_files.kind` gains `INVOICE_PDF`. `pypdf` is the only new dependency.
