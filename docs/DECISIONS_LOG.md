@@ -201,3 +201,9 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - A value is kept only if the document text supports it (number and client must appear, the total must parse and appear). Otherwise it is blanked and listed in `dropped_fields`. No numeric confidence is exposed.
 - PDFs that are encrypted, over 20 pages, without a text layer or not `%PDF-` are refused before any AI call. Reduced schema: six header fields; line items, tax and payment references are not extracted. Size limit and OCR remain open.
 - `stored_files.kind` gains `INVOICE_PDF`. `pypdf` is the only new dependency.
+
+## Task 32 / 33 rulings
+- Task 32 (live AI provider adapter) is deferred: no provider is chosen (OD-05). The fake provider stays dev/test only and is refused in production.
+- `integration_connections` is keyed by workspace and provider (GMAIL, PAYPAL only). A CHECK requires `verified_at` for CONNECTED_VERIFIED, so no code path can claim a connection without a verification.
+- CSV, statement and manual paths are listed by a static registry as FILE_BASED or MANUAL, never as connected.
+- Connect and disconnect are Owner-only audited services; no endpoint exposes them until the adapters exist (Task 34). E093 is read-only for Owner and Finance admin.

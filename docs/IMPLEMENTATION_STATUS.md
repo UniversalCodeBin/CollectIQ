@@ -54,6 +54,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T17 derive() and state maintenance | 20 property/table tests (every precedence branch, TS-011/012, INV-01, Hypothesis), 4 integration tests (recompute/version, outbox follow, seeded-drift detection and audited repair), make check 12 of 12 | `feat(evidence): payment state derivation` |
 | T19 Confirmed allocations and reversals | 874 pytest in total, of which the two new allocation files cover triggers, TS-011/012, F-8 races, the database backstop and a Hypothesis state-equals-derive property; `evidence.domain` 96% combined statement and branch on the full run, gate ≥95%, before one further matcher test; make check 12 of 12 | `feat(evidence): confirmed allocations and reversals` |
 | T20 Reconciliation and Payment Accounts screens | E117, E118, E119 added; 5 new Playwright tests on the real API (14 total), 3 new vitest, 2 new backend tests; 884 pytest, 199 vitest, make check 12 of 12 | `feat(web): reconciliation e2e, invoice history, allocate unmatched` |
+| T32 Live AI provider adapter | Deferred: no provider chosen (OD-05); fake provider is dev/test only | n/a |
+| T33 Integration registry and lifecycle (E093) | 9 integration tests (no connected state without verification, DB CHECK, Owner-only, audited, tenant isolation), 1 vitest; 1212 pytest + 234 vitest, make check 12 of 12 | this commit |
 
 ## Open items carried forward
 

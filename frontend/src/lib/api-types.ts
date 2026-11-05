@@ -645,6 +645,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/integrations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E093"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept": {
         parameters: {
             query?: never;
@@ -2165,6 +2181,18 @@ export interface components {
             counts: {
                 [key: string]: number;
             };
+        };
+        IntegrationItemOut: {
+            key: string;
+            label: string;
+            kind: string;
+            state: string;
+            note: string;
+            verified_at: string | null;
+            last_error: string | null;
+        };
+        IntegrationListOut: {
+            items: components["schemas"]["IntegrationItemOut"][];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         InterpretationCorrectInRequest: {
@@ -4413,6 +4441,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatementImportOut"];
+                };
+            };
+        };
+    };
+    E093: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrationListOut"];
                 };
             };
         };

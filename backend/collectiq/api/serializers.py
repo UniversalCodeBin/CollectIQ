@@ -1208,3 +1208,17 @@ class ExtractionOut(serializers.Serializer):
     verified = serializers.BooleanField()
     created_at = serializers.DateTimeField()
     updated_at = serializers.DateTimeField()
+
+
+class IntegrationItemOut(serializers.Serializer):
+    key = serializers.CharField()
+    label = serializers.CharField()
+    kind = serializers.CharField()
+    state = serializers.CharField()
+    note = serializers.CharField()
+    verified_at = serializers.CharField(allow_null=True)
+    last_error = serializers.CharField(allow_null=True)
+
+
+class IntegrationListOut(serializers.Serializer):
+    items = IntegrationItemOut(many=True)

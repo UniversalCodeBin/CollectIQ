@@ -1502,6 +1502,26 @@ paths:
                 $ref: '#/components/schemas/StatementImportOut'
           description: ''
       x-endpoint-id: E053
+  /api/v1/workspaces/{ws}/integrations:
+    get:
+      operationId: E093
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationListOut'
+          description: ''
+      x-endpoint-id: E093
   /api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept:
     post:
       operationId: E068
@@ -5201,6 +5221,42 @@ components:
             type: integer
       required:
       - counts
+      - items
+    IntegrationItemOut:
+      type: object
+      properties:
+        key:
+          type: string
+        label:
+          type: string
+        kind:
+          type: string
+        state:
+          type: string
+        note:
+          type: string
+        verified_at:
+          type: string
+          nullable: true
+        last_error:
+          type: string
+          nullable: true
+      required:
+      - key
+      - kind
+      - label
+      - last_error
+      - note
+      - state
+      - verified_at
+    IntegrationListOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IntegrationItemOut'
+      required:
       - items
     InterpretationCorrectInRequest:
       type: object

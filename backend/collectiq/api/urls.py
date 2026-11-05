@@ -8,6 +8,7 @@ from . import conversation_views as conversations
 from . import identity_views as identity
 from . import import_views as imports
 from . import inbox_views as inbox
+from . import integration_views as integrations
 from . import invoice_views as invoices
 from . import payment_views as payments
 from . import policy_views as policy
@@ -198,6 +199,7 @@ urlpatterns: list = [
         inbox.NotificationReadView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/integrations", integrations.IntegrationsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/invoices/pdf", ai.InvoicePdfView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/extractions/<uuid:extraction_id>", ai.ExtractionView.as_view()),
     path(
