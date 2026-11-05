@@ -318,6 +318,26 @@ paths:
                 $ref: '#/components/schemas/WorkspaceOut'
           description: ''
       x-endpoint-id: E012
+  /api/v1/workspaces/{ws}/ai/payloads:
+    get:
+      operationId: E105
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AiPayloadPageOut'
+          description: ''
+      x-endpoint-id: E105
   /api/v1/workspaces/{ws}/ai/settings:
     get:
       operationId: E109
@@ -1242,6 +1262,93 @@ paths:
                 $ref: '#/components/schemas/DashboardOut'
           description: ''
       x-endpoint-id: E048
+  /api/v1/workspaces/{ws}/deletion:
+    post:
+      operationId: E104
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletionInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DeletionInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletionOut'
+          description: ''
+      x-endpoint-id: E104
+  /api/v1/workspaces/{ws}/exports:
+    post:
+      operationId: E102
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportOut'
+          description: ''
+      x-endpoint-id: E102
+  /api/v1/workspaces/{ws}/exports/{export_id}:
+    get:
+      operationId: E103
+      parameters:
+      - in: path
+        name: export_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportOut'
+          description: ''
+      x-endpoint-id: E103
   /api/v1/workspaces/{ws}/extractions/{extraction_id}:
     get:
       operationId: E039
@@ -3706,6 +3813,59 @@ components:
       - gaps
       - ranges
       - statements_through
+    AiPayloadOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        task_id:
+          type: string
+        subject_type:
+          type: string
+        provider:
+          type: string
+          nullable: true
+        model_version:
+          type: string
+          nullable: true
+        input_sha256:
+          type: string
+          nullable: true
+        status:
+          type: string
+        dropped_fields:
+          type: array
+          items:
+            type: string
+        payload:
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - dropped_fields
+      - id
+      - input_sha256
+      - model_version
+      - payload
+      - provider
+      - status
+      - subject_type
+      - task_id
+    AiPayloadPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AiPayloadOut'
+        note:
+          type: string
+      required:
+      - items
+      - note
     AiSettingsInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -5090,6 +5250,40 @@ components:
       description: |-
         * `APPROVED` - APPROVED
         * `REJECTED` - REJECTED
+    DeletionInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        confirmation_text:
+          type: string
+          minLength: 1
+          maxLength: 100
+      required:
+      - confirmation_text
+    DeletionOut:
+      type: object
+      properties:
+        status:
+          type: string
+        rows_deleted:
+          type: integer
+        rows_remaining:
+          type: integer
+        tables_cleared:
+          type: integer
+        completed_at:
+          type: string
+          format: date-time
+        note:
+          type: string
+      required:
+      - completed_at
+      - note
+      - rows_deleted
+      - rows_remaining
+      - status
+      - tables_cleared
     DetailOut:
       type: object
       properties:
@@ -5146,6 +5340,46 @@ components:
           maxLength: 254
       required:
       - email
+    ExportOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ExportOutStatusEnum'
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+        size_bytes:
+          type: integer
+          nullable: true
+        content:
+          nullable: true
+      required:
+      - completed_at
+      - created_at
+      - expires_at
+      - id
+      - size_bytes
+      - status
+    ExportOutStatusEnum:
+      enum:
+      - PENDING
+      - READY
+      - FAILED
+      type: string
+      description: |-
+        * `PENDING` - PENDING
+        * `READY` - READY
+        * `FAILED` - FAILED
     ExtractionConfirmInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional

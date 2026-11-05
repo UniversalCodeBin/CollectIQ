@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { type FormEvent, useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { type FormEvent, type ReactElement, useEffect, useState } from "react";
+import { NavLink, useParams } from "react-router";
 import { Button } from "../../components/ui/Button";
 import { fieldError, SelectField, TextField } from "../../components/ui/Field";
 import { MutationFeedback } from "../../components/ui/MutationFeedback";
@@ -9,15 +9,61 @@ import { ApiProblem, apiRequest, useApiMutation } from "../../lib/api";
 import { formatDate } from "../../lib/format";
 import { NotFoundPage } from "../../app/NotFoundPage";
 import { AiSettingsPanel } from "../ai/AiSettingsPanel";
+import { MembersPanel } from "../settings/MembersPanel";
+import { PayloadsPanel } from "../settings/PayloadsPanel";
+import { PrivacyPanel } from "../settings/PrivacyPanel";
 import styles from "./Automation.module.css";
 
 const refuse = (field: string, message: string) =>
-  new ApiProblem({ status: 400, code: "VALIDATION_FAILED", detail: "", correlationId: null, errors: [{ field, message }] });
+  new ApiProblem({
+    status: 400,
+    code: "VALIDATION_FAILED",
+    detail: "",
+    correlationId: null,
+    errors: [{ field, message }],
+  });
+
+const TABS = [
+  ["automation", "Automation"],
+  ["ai", "AI"],
+  ["members", "Members"],
+  ["privacy", "Export and deletion"],
+  ["payloads", "AI payloads"],
+] as const;
 
 export function AutomationPage() {
-  const { tab } = useParams();
-  if (tab === "ai") return <AiSettingsPanel />;
-  return tab === "automation" ? <AutomationSettings /> : <NotFoundPage />;
+  const { tab, ws = "" } = useParams();
+  const panels: Record<string, ReactElement> = {
+    automation: <AutomationSettings />,
+    ai: <AiSettingsPanel />,
+    members: <MembersPanel />,
+    privacy: <PrivacyPanel />,
+    payloads: <PayloadsPanel />,
+  };
+  const panel = tab ? panels[tab] : undefined;
+  if (!panel) return <NotFoundPage />;
+  return (
+    <>
+      <nav aria-label="Settings sections">
+        <ul
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1rem",
+            listStyle: "none",
+            padding: 0,
+          }}
+        >
+          {TABS.map(([key, label]) => (
+            <li key={key}>
+              <NavLink to={`/w/${ws}/settings/${key}`}>{label}</NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+      {panel}
+    </>
+  );
 }
 
 function AutomationSettings() {
@@ -25,13 +71,24 @@ function AutomationSettings() {
   const client = useQueryClient();
   const policy = useQuery({
     queryKey: ["policy", ws],
-    queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/policy" }, { path: { ws } }),
+    queryFn: () =>
+      apiRequest(
+        { method: "get", path: "/api/v1/workspaces/{ws}/policy" },
+        { path: { ws } },
+      ),
   });
   const versions = useQuery({
     queryKey: ["policy", ws, "versions"],
-    queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/policy/versions" }, { path: { ws } }),
+    queryFn: () =>
+      apiRequest(
+        { method: "get", path: "/api/v1/workspaces/{ws}/policy/versions" },
+        { path: { ws } },
+      ),
   });
-  const save = useApiMutation({ method: "put", path: "/api/v1/workspaces/{ws}/policy" }, { idempotent: true });
+  const save = useApiMutation(
+    { method: "put", path: "/api/v1/workspaces/{ws}/policy" },
+    { idempotent: true },
+  );
   const [mode, setMode] = useState("MANUAL");
   const [maxContacts, setMaxContacts] = useState("3");
   const [local, setLocal] = useState<ApiProblem | null>(null);
@@ -45,17 +102,23 @@ function AutomationSettings() {
   }, [loaded]);
 
   useEffect(() => {
-    if (save.status === "success") void client.invalidateQueries({ queryKey: ["policy", ws] });
+    if (save.status === "success")
+      void client.invalidateQueries({ queryKey: ["policy", ws] });
   }, [save.status, client, ws]);
 
   function submit(event: FormEvent) {
     event.preventDefault();
     const max = Number(maxContacts);
     if (!Number.isInteger(max) || max < 1 || max > 20) {
-      return setLocal(refuse("max_contacts", "Enter a whole number from 1 to 20."));
+      return setLocal(
+        refuse("max_contacts", "Enter a whole number from 1 to 20."),
+      );
     }
     setLocal(null);
-    save.submit({ path: { ws }, body: { mode: mode as never, limits: { max_contacts: max } } });
+    save.submit({
+      path: { ws },
+      body: { mode: mode as never, limits: { max_contacts: max } },
+    });
   }
 
   return (
@@ -64,9 +127,15 @@ function AutomationSettings() {
       <QueryState query={policy} label="automation settings">
         {loaded && (
           <form className={styles.card} onSubmit={submit} noValidate>
-            <SelectField label="Mode" value={mode} onChange={(e) => setMode(e.target.value)}>
+            <SelectField
+              label="Mode"
+              value={mode}
+              onChange={(e) => setMode(e.target.value)}
+            >
               <option value="MANUAL">Manual: I decide every step</option>
-              <option value="ASSISTED">Assisted: CollectIQ prepares drafts for my approval</option>
+              <option value="ASSISTED">
+                Assisted: CollectIQ prepares drafts for my approval
+              </option>
             </SelectField>
             <TextField
               label="Most reminders to one customer"
@@ -76,12 +145,17 @@ function AutomationSettings() {
               error={fieldError(local, "max_contacts")}
             />
             <p className={styles.muted}>
-              Automatic snoozing is {loaded.auto_snooze_available ? "available" : "not available yet"}. Every message to a customer still needs a
-              person to approve it.
+              Automatic snoozing is{" "}
+              {loaded.auto_snooze_available ? "available" : "not available yet"}
+              . Every message to a customer still needs a person to approve it.
             </p>
             <MutationFeedback mutation={save} />
             <div className={styles.actions}>
-              <Button variant="primary" type="submit" aria-disabled={save.status === "pending" || undefined}>
+              <Button
+                variant="primary"
+                type="submit"
+                aria-disabled={save.status === "pending" || undefined}
+              >
                 Save settings
               </Button>
             </div>

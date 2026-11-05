@@ -1266,3 +1266,49 @@ class AuditExportOut(serializers.Serializer):
     truncated = serializers.BooleanField()
     content = serializers.CharField()
     notice = serializers.CharField()
+
+
+# --- privacy: export, deletion, payload inspector (E102-E105) -----------------------------------------------
+class ExportRequestIn(StrictSerializer):
+    pass
+
+
+class ExportOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    status = serializers.ChoiceField(choices=["PENDING", "READY", "FAILED"])
+    created_at = serializers.DateTimeField()
+    completed_at = serializers.DateTimeField(allow_null=True)
+    expires_at = serializers.DateTimeField()
+    size_bytes = serializers.IntegerField(allow_null=True)
+    content = serializers.JSONField(allow_null=True, required=False)
+
+
+class DeletionIn(StrictSerializer):
+    confirmation_text = serializers.CharField(max_length=100)
+
+
+class DeletionOut(serializers.Serializer):
+    status = serializers.CharField()
+    rows_deleted = serializers.IntegerField()
+    rows_remaining = serializers.IntegerField()
+    tables_cleared = serializers.IntegerField()
+    completed_at = serializers.DateTimeField()
+    note = serializers.CharField()
+
+
+class AiPayloadOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    task_id = serializers.CharField()
+    subject_type = serializers.CharField()
+    provider = serializers.CharField(allow_null=True)
+    model_version = serializers.CharField(allow_null=True)
+    input_sha256 = serializers.CharField(allow_null=True)
+    status = serializers.CharField()
+    dropped_fields = serializers.ListField(child=serializers.CharField())
+    payload = serializers.JSONField(allow_null=True)
+    created_at = serializers.DateTimeField()
+
+
+class AiPayloadPageOut(serializers.Serializer):
+    items = AiPayloadOut(many=True)
+    note = serializers.CharField()

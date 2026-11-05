@@ -24,6 +24,10 @@ describe("navigation", () => {
     expect(DIRECTIVE_NAV).toEqual(LABELS);
   });
 
+  it("the shell lists exactly the 11 labels", () => {
+    expect(NAV_ITEMS.map((item) => item.label)).toEqual(LABELS);
+  });
+
   it("nav items are a subset of the 11 directive labels, in directive order", () => {
     const positions = NAV_ITEMS.map((item) => LABELS.indexOf(item.label));
     expect(positions.every((position) => position >= 0)).toBe(true);

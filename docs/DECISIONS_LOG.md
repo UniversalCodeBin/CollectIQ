@@ -222,3 +222,9 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Export is synchronous JSON (`content` holds the CSV or JSON text), capped at 10,000 rows with a `truncated` flag, idempotent, and writes an `audit.exported` record. CSV cells starting with `= + - @` tab or CR get a leading quote.
 - `audit.verify_chain` recomputes each link with `audit_event_hash`; a break records `audit.chain_break_detected`. Scheduling it nightly is owed to T40. E101 was already built in Task 21.
 - The Audit History and Integrations links are now in the nav. The screen shows the append-only wording with the superuser limit.
+
+## Task 36 rulings
+- The redacted payload lives in `ai_payloads`, apart from `ai_processing_records`, so the processing record keeps hashes and no text. The inspector shows tokens only; opening it is audited. `privacy.retention` clears payloads after 30 days by default; it is not yet scheduled (owed to T40).
+- Export is Owner-only, returns the content inline (no signed URL), excludes credentials, sealed values and keys, and is audited.
+- Deletion is Owner-only with typed confirmation. A SECURITY DEFINER procedure clears the workspace tables, tombstones the workspace and records a `deletion_records` row that requires zero rows remaining. Stored files are removed after the commit. Audit history is retained: append-only by database permissions, with a hash chain that detects casual edits; not tamper-resistant against a database superuser. The backup purge window stays open (OPEN-09).
+- Assignable roles remain OWNER and FINANCE_ADMIN. Legal name and sender display name are not built.

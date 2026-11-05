@@ -194,6 +194,14 @@ def test_processing_record_keeps_hashes_not_text(env: Env, script: Any) -> None:
     assert not {"input", "body", "prompt", "redacted_input"} & set(columns)
 
 
+def test_redacted_payload_is_kept_apart_for_the_inspector(env: Env, script: Any) -> None:
+    script(reading())
+    env.message(text=CLAIM_TEXT + " Reach me at buyer.person@example.test", on="INV-1")
+    rows = env.db.execute("SELECT redacted_input::text FROM ai_payloads").fetchall()
+    assert len(rows) == 1
+    assert "buyer.person@example.test" not in rows[0][0]
+
+
 # --- dates and promises (TS-007, TS-008) ---
 
 

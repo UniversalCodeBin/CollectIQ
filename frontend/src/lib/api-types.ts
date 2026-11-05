@@ -244,6 +244,22 @@ export interface paths {
         patch: operations["E012"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/ai/payloads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E105"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/ai/settings": {
         parameters: {
             query?: never;
@@ -572,6 +588,54 @@ export interface paths {
             cookie?: never;
         };
         get: operations["E048"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/deletion": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E104"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E102"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/exports/{export_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E103"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1551,6 +1615,24 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        AiPayloadOut: {
+            /** Format: uuid */
+            id: string;
+            task_id: string;
+            subject_type: string;
+            provider: string | null;
+            model_version: string | null;
+            input_sha256: string | null;
+            status: string;
+            dropped_fields: string[];
+            payload: unknown;
+            /** Format: date-time */
+            created_at: string;
+        };
+        AiPayloadPageOut: {
+            items: components["schemas"]["AiPayloadOut"][];
+            note: string;
+        };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         AiSettingsInRequest: {
             pdf_extraction_enabled?: boolean;
@@ -2155,6 +2237,19 @@ export interface components {
          * @enum {string}
          */
         DecisionEnum: "APPROVED" | "REJECTED";
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        DeletionInRequest: {
+            confirmation_text: string;
+        };
+        DeletionOut: {
+            status: string;
+            rows_deleted: number;
+            rows_remaining: number;
+            tables_cleared: number;
+            /** Format: date-time */
+            completed_at: string;
+            note: string;
+        };
         DetailOut: {
             detail: string;
         };
@@ -2182,6 +2277,26 @@ export interface components {
             /** Format: email */
             email: string;
         };
+        ExportOut: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["ExportOutStatusEnum"];
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            completed_at: string | null;
+            /** Format: date-time */
+            expires_at: string;
+            size_bytes: number | null;
+            content?: unknown;
+        };
+        /**
+         * @description * `PENDING` - PENDING
+         *     * `READY` - READY
+         *     * `FAILED` - FAILED
+         * @enum {string}
+         */
+        ExportOutStatusEnum: "PENDING" | "READY" | "FAILED";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ExtractionConfirmInRequest: {
             decisions?: components["schemas"]["ExtractionDecisionsInRequest"];
@@ -3719,6 +3834,27 @@ export interface operations {
             };
         };
     };
+    E105: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiPayloadPageOut"];
+                };
+            };
+        };
+    };
     E109: {
         parameters: {
             query?: never;
@@ -4436,6 +4572,79 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardOut"];
+                };
+            };
+        };
+    };
+    E104: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeletionInRequest"];
+                "multipart/form-data": components["schemas"]["DeletionInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DeletionOut"];
+                };
+            };
+        };
+    };
+    E102: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportOut"];
+                };
+            };
+        };
+    };
+    E103: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                export_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ExportOut"];
                 };
             };
         };

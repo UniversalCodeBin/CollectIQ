@@ -20,6 +20,7 @@ from collectiq.ai.registry import TaskSpec, register
 from collectiq.ai.runtime import get_gateway
 from collectiq.audit import record
 from collectiq.platform import clock
+from collectiq.platform.ai_payloads import keep_redacted_input
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
@@ -141,6 +142,7 @@ def _record_processing(ctx: RequestContext, message_id: UUID, result: AIResult) 
         ],
     )
     assert row
+    keep_redacted_input(ctx, row["id"], result.redacted_input)
     return row["id"]
 
 

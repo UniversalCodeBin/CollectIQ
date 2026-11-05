@@ -13,6 +13,7 @@ from . import integration_views as integrations
 from . import invoice_views as invoices
 from . import payment_views as payments
 from . import policy_views as policy
+from . import privacy_views
 from . import reconciliation_views as reconciliation
 from . import reminder_views as reminders
 from . import statement_views as statements
@@ -202,6 +203,10 @@ urlpatterns: list = [
     path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/audit-events", audit_history.AuditEventsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/audit-events/exports", audit_history.AuditExportView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/exports", privacy_views.ExportCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/exports/<uuid:export_id>", privacy_views.ExportDetailView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/deletion", privacy_views.DeletionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/ai/payloads", privacy_views.AiPayloadsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/integrations", integrations.IntegrationsView.as_view()),
     path(
         f"{_V1}workspaces/<uuid:ws>/integrations/gmail/connect", integrations.GmailConnectView.as_view()

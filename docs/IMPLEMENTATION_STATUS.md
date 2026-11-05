@@ -58,6 +58,7 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T33 Integration registry and lifecycle (E093) | 9 integration tests (no connected state without verification, DB CHECK, Owner-only, audited, tenant isolation), 1 vitest; 1212 pytest + 234 vitest, make check 12 of 12 | this commit |
 | T34 Gmail send-only and PayPal webhook adapters (E090, E091, E094, E095, E097, E098) | 23 provider tests on fake transports (scopes, PKCE state, sealed tokens, no auto retry on unknown, evidence-only webhooks), flags off by default; not verified against Gmail or PayPal | this commit |
 | T35 Audit History (E099, E100) | 6 backend tests (tenant-scoped search, paging, CSV formula neutralisation, audited export, seeded chain break detected by `audit.verify_chain`), 1 vitest; append-only wording with the superuser limit | this commit |
+| T36 Settings and payload inspector (E102-E105) | 9 backend tests (export scope and secret exclusion, Owner-only, typed-confirmation deletion with zero-row scan, audit retained, payload inspector with tokens only, retention), 1 interpretation test, 4 vitest; members, export/deletion and payload tabs | this commit |
 
 ## Open items carried forward
 

@@ -19,6 +19,7 @@ from django.conf import settings
 from collectiq.ai.registry import TaskSpec, register
 from collectiq.ai.runtime import get_gateway
 from collectiq.audit import record
+from collectiq.platform.ai_payloads import keep_redacted_input
 from collectiq.platform.context import RequestContext
 from collectiq.platform.crypto import get_cipher
 from collectiq.platform.db import execute, fetch_one, tenant_tx
@@ -189,6 +190,7 @@ def upload_pdf(ctx: RequestContext, file_name: str, data: bytes) -> dict[str, An
             ],
         )
         assert processing
+        keep_redacted_input(ctx, processing["id"], result.redacted_input)
         failure = None if result.status == "OK" else result.status
         kept, dropped = _grounded(result.data or {}, text) if failure is None else ({}, [])
         execute(
