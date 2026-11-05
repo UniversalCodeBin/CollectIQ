@@ -21,7 +21,7 @@ async function openFollowup(page: Page, number: string) {
   await page.getByRole("link", { name: "Dashboard", exact: true }).click();
   await page.getByRole("link", { name: /^Outstanding/ }).click();
   await page.getByRole("link", { name: number }).click();
-  await page.getByRole("link", { name: "Follow-up" }).click();
+  await page.getByRole("link", { name: "Follow-up", exact: true }).click();
 }
 
 test("a draft is reviewed, approved, copied and recorded as sent by a person; nothing is sent by the app", async ({

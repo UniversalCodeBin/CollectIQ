@@ -11,6 +11,7 @@ import { ConversationsPage } from "../features/conversations/ConversationsPage";
 import { MessagePage } from "../features/conversations/MessagePage";
 import { FollowupsPage } from "../features/followups/FollowupsPage";
 import { ReminderPage } from "../features/followups/ReminderPage";
+import { InboxPage } from "../features/inbox/InboxPage";
 import { ClientPage } from "../features/client/ClientPage";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { ImportPage } from "../features/import/ImportPage";
@@ -75,6 +76,7 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   cases: CasesPage,
   followups: FollowupsPage,
   "reminders/:id": ReminderPage,
+  inbox: InboxPage,
   "settings/:tab": AutomationPage,
 };
 

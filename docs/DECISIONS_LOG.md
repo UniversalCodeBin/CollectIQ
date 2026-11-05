@@ -174,3 +174,8 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Blocked drafts show plain reasons from a gate-to-words map; gate ids (G4 etc.) are never rendered. Approve is disabled while blocked or while edits are unsaved.
 - The e2e seeds the one client contact and evidence coverage a draft needs through an owner connection with the workspace set (`seedDraftPrerequisites`), because no screen creates either yet. Test-only; never reached through the app.
 - Owed: per-client and per-invoice pause (only the workspace pause exists in the UI).
+
+## Task 28 rulings
+- The inbox shows only what the server returns (kind, action, date); it invents no detail. Items link to the screen that resolves them, so resolving there removes the item (the inbox is derived on read).
+- Onboarding skips are kept per workspace in the browser (`collectiq.onboarding.<ws>`), not on the server; they hide nothing that matters and need no endpoint.
+- The Task 14-27 screens that had no nav link now have one, in directive order. Remaining unbuilt nav labels: Integrations, Audit History.

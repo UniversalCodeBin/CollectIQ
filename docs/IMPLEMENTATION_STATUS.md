@@ -15,9 +15,9 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** Task 22, disputes and blockers (E076-E082): dispute and blocker cases, reminders suppressed on open, human-only resolution, 24-hour cooling-off and approved resume.
 - **Done (earlier):** Task 21, policy engine (E016-E020, E092, E101): pure gates G1-G15, single-use authorization, immutable policy versions, pause and resume, approvals, header pause control and SCR-10 settings.
 - **Done:** Task 24, reminders and manual handoff (E083-E089, API only): template drafts with a deterministic fact block, content linter, gates re-run at approval and mark-sent, approval never sends, mark-sent records a hand-off, payments and cases cancel pending drafts.
-- **Done:** Task 27, Follow-ups and Automation UI (SCR-09, SCR-10): follow-up list by group, reminder page (edit, approve, copy, record sent, reject) in plain words with no gate ids, invoice Follow-up tab with Prepare a reminder, global pause and explicit resume. Playwright e2e covers both flows.
+- **Done:** Task 28, Review Inbox UI and onboarding (SCR-17, SCR-01): inbox grouped by item type with each item linking to where it is resolved, notifications with mark-as-read, five more main-nav links (Receivables, Conversations, Disputes & Blockers, Follow-ups, Review Inbox), and a skippable, hideable getting-started checklist that remembers skips. Playwright covers onboarding and a draft that leaves the inbox once resolved.
 - **Earlier:** Task 25, notifications and review inbox (E106-E108, API only): per-user notifications carrying ids and codes only, deduped; the inbox is derived read-only from cases, reminder drafts, match proposals, payment-claim tasks and approvals; leads see only assigned cases.
-- **Next:** Task 28, Review Inbox UI and onboarding (SCR-17, SCR-01).
+- **Next:** Task 29, AI gateway.
 
 ## T1 spike outcome
 
