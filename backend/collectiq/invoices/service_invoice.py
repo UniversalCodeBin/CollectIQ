@@ -9,6 +9,7 @@ from collectiq.audit import record
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
+from collectiq.platform.outbox import publish
 
 from .domain.validate import normalize_number
 from .read_models import detail_in_tx
@@ -80,6 +81,7 @@ def correct_invoice(
         )
         if "gross_minor" in changed:
             refresh_after_total_changed(invoice_id)
+            publish(ctx, "InvoiceChanged", {"invoice_id": str(invoice_id)})
         record(
             ctx,
             "invoice.corrected",

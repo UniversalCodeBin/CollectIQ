@@ -22,6 +22,7 @@ from collectiq.platform.context import RequestContext
 from collectiq.platform.crypto import get_cipher
 from collectiq.platform.db import execute, execute_many, fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
+from collectiq.platform.outbox import publish
 from collectiq.platform.scan import get_scanner
 from collectiq.platform.storage import get_storage, storage_key
 
@@ -533,6 +534,7 @@ def _apply_update(ctx: RequestContext, batch_id: UUID, headers: Sequence[str], r
     )
     if any(diff["field"] == "gross_minor" for diff in applied):
         refresh_after_total_changed(target.id)
+        publish(ctx, "InvoiceChanged", {"invoice_id": str(target.id)})
     record(
         ctx,
         "invoice.updated",

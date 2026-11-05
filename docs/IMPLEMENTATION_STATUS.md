@@ -8,7 +8,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** dashboard (SCR-02), receivables queue and all-invoices list (SCR-03), invoice details with correct, cancel and archive (SCR-04), read-only client profile (SCR-14).
 - **Done:** payment accounts, statement coverage and attestations (API only).
 - **Done:** statement import (E053, API only): generic CSV parser, credit-only default, fingerprint dedupe, coverage confirmation.
-- **Next:** Task 17, derive() and state maintenance.
+- **Done:** Task 17, payment state derivation.
+- **Next:** Task 18, matcher and proposals (E055-E057).
 
 ## T1 spike outcome
 
@@ -39,6 +40,7 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T14 Dashboard, receivables, invoice details and client profile | 35 new vitest (186 total), 5 new Playwright tests on the real API incl. widths 320/768/1024/1440 (9 total), 1 new backend regression test, make check 12 of 12 | See `git log` |
 | T15 Accounts, coverage and attestations | 26 unit tests (99% branch on evidence domain, gate ≥95%), 17 integration tests incl. TS-032 sequence, tenant isolation, append-only rows; make check 12 of 12 | See `git log` |
 | T16 Statement import (E053) | 15 parser unit tests, 20 integration tests (TS-031 overlap, F-6 re-import, credit-only default, locale/BOM, coverage, row immutability), make check 12 of 12 | `feat(evidence): statement import` |
+| T17 derive() and state maintenance | 20 property/table tests (every precedence branch, TS-011/012, INV-01, Hypothesis), 4 integration tests (recompute/version, outbox follow, seeded-drift detection and audited repair), make check 12 of 12 | `feat(evidence): payment state derivation` |
 
 ## Open items carried forward
 
