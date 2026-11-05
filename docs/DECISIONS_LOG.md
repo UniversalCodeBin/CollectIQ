@@ -207,3 +207,11 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - `integration_connections` is keyed by workspace and provider (GMAIL, PAYPAL only). A CHECK requires `verified_at` for CONNECTED_VERIFIED, so no code path can claim a connection without a verification.
 - CSV, statement and manual paths are listed by a static registry as FILE_BASED or MANUAL, never as connected.
 - Connect and disconnect are Owner-only audited services; no endpoint exposes them until the adapters exist (Task 34). E093 is read-only for Owner and Finance admin.
+
+## Task 34 rulings
+- Gmail and PayPal run behind ports (`integrations/gmail/transport.py`, `integrations/paypal/verify.py`). Only fakes exist; the production default refuses (`NOT_CONFIGURED`, or a PayPal event fails verification). Nothing is verified against Google or PayPal. Both flags (`FEATURE_GMAIL_SEND`, `FEATURE_PAYPAL_WEBHOOK`) default off.
+- Gmail connect asks only for `gmail.send` with PKCE (S256) and a single-use, 10-minute state bound to the signed-in user. A granted read scope refuses the connection and stores nothing. The refresh token is sealed with the workspace key.
+- Sending is three steps: `begin` commits SUBMITTING after every gate is clear, the provider call runs outside the transaction, `finish` records SUBMITTED, back to APPROVED on a definite rejection, or SUBMISSION_UNKNOWN. Unknown is never retried; a person answers WAS_SENT or NOT_SENT (E091). The word shown is "submitted", never "delivered", and `sent_at` stays empty (it belongs to manual mark-sent).
+- Submitted and unknown reminders count toward the contact window and the idempotency key, so a second send cannot slip through.
+- PayPal events are stored as `EVIDENCE_ONLY` in `webhook_events`, keyed by event id. They never allocate or mark anything paid. An event for an unknown merchant is acknowledged and not stored. The workspace is found by two narrow SECURITY DEFINER functions (`consume_oauth_state`, `paypal_workspace_for`).
+- Not built: Gmail monitoring (E096), token refresh, thread ids, backoff classes, PayPal connect endpoint, UI controls for connect/send/confirm-unknown.

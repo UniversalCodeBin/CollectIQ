@@ -200,6 +200,22 @@ urlpatterns: list = [
     ),
     path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/integrations", integrations.IntegrationsView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/integrations/gmail/connect", integrations.GmailConnectView.as_view()
+    ),
+    path(f"{_V1}integrations/gmail/callback", integrations.GmailCallbackView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/integrations/<str:key>", integrations.IntegrationItemView.as_view()
+    ),
+    path(f"{_V1}webhooks/paypal", integrations.PayPalWebhookView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>/send",
+        integrations.ReminderSendView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>/confirm-unknown",
+        integrations.ReminderConfirmUnknownView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/invoices/pdf", ai.InvoicePdfView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/extractions/<uuid:extraction_id>", ai.ExtractionView.as_view()),
     path(

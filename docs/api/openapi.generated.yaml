@@ -188,6 +188,24 @@ paths:
                 $ref: '#/components/schemas/HealthOut'
           description: ''
       x-endpoint-id: E112
+  /api/v1/integrations/gmail/callback:
+    get:
+      operationId: E095
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+      - in: query
+        name: state
+        schema:
+          type: string
+      tags:
+      - integrations
+      responses:
+        '302':
+          description: No response body
+      x-endpoint-id: E095
   /api/v1/invitations/accept:
     post:
       operationId: E114
@@ -210,6 +228,15 @@ paths:
                 $ref: '#/components/schemas/InvitationAcceptedOut'
           description: ''
       x-endpoint-id: E114
+  /api/v1/webhooks/paypal:
+    post:
+      operationId: E098
+      tags:
+      - webhooks
+      responses:
+        '200':
+          description: No response body
+      x-endpoint-id: E098
   /api/v1/workspaces:
     post:
       operationId: E010
@@ -1522,6 +1549,57 @@ paths:
                 $ref: '#/components/schemas/IntegrationListOut'
           description: ''
       x-endpoint-id: E093
+  /api/v1/workspaces/{ws}/integrations/{key}:
+    delete:
+      operationId: E097
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: key
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationItemOut'
+          description: ''
+      x-endpoint-id: E097
+  /api/v1/workspaces/{ws}/integrations/gmail/connect:
+    post:
+      operationId: E094
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationOut'
+          description: ''
+      x-endpoint-id: E094
   /api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept:
     post:
       operationId: E068
@@ -3246,6 +3324,47 @@ paths:
                 $ref: '#/components/schemas/ReminderOut'
           description: ''
       x-endpoint-id: E087
+  /api/v1/workspaces/{ws}/reminders/{reminder_id}/confirm-unknown:
+    post:
+      operationId: E091
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfirmUnknownInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ConfirmUnknownInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderOut'
+          description: ''
+      x-endpoint-id: E091
   /api/v1/workspaces/{ws}/reminders/{reminder_id}/mark-sent:
     post:
       operationId: E089
@@ -3327,6 +3446,38 @@ paths:
                 $ref: '#/components/schemas/ReminderOut'
           description: ''
       x-endpoint-id: E088
+  /api/v1/workspaces/{ws}/reminders/{reminder_id}/send:
+    post:
+      operationId: E090
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '202':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderOut'
+          description: ''
+      x-endpoint-id: E090
   /api/v1/workspaces/{ws}/review-inbox:
     get:
       operationId: E108
@@ -3698,6 +3849,14 @@ components:
       - attestation_ids
       - coverage_date
       - scope
+    AuthorizationOut:
+      type: object
+      properties:
+        authorization_url:
+          type: string
+          format: uri
+      required:
+      - authorization_url
     CaseDetailOut:
       type: object
       properties:
@@ -3928,13 +4087,27 @@ components:
           maxLength: 2000
       required:
       - reason
+    CaseResolveInOutcomeEnum:
+      enum:
+      - NO_CHANGE
+      - INVOICE_CORRECTED
+      - ADJUSTMENT_AGREED
+      - WITHDRAWN_BY_CUSTOMER
+      - OTHER
+      type: string
+      description: |-
+        * `NO_CHANGE` - NO_CHANGE
+        * `INVOICE_CORRECTED` - INVOICE_CORRECTED
+        * `ADJUSTMENT_AGREED` - ADJUSTMENT_AGREED
+        * `WITHDRAWN_BY_CUSTOMER` - WITHDRAWN_BY_CUSTOMER
+        * `OTHER` - OTHER
     CaseResolveInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
         field left out.
       properties:
         outcome:
-          $ref: '#/components/schemas/OutcomeEnum'
+          $ref: '#/components/schemas/CaseResolveInOutcomeEnum'
         note:
           type: string
           minLength: 1
@@ -4218,6 +4391,23 @@ components:
       description: |-
         * `WITHDRAWN` - WITHDRAWN
         * `BROKEN` - BROKEN
+    ConfirmUnknownInOutcomeEnum:
+      enum:
+      - WAS_SENT
+      - NOT_SENT
+      type: string
+      description: |-
+        * `WAS_SENT` - WAS_SENT
+        * `NOT_SENT` - NOT_SENT
+    ConfirmUnknownInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        outcome:
+          $ref: '#/components/schemas/ConfirmUnknownInOutcomeEnum'
+      required:
+      - outcome
     ContactInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -5900,20 +6090,6 @@ components:
       required:
       - items
       - next_cursor
-    OutcomeEnum:
-      enum:
-      - NO_CHANGE
-      - INVOICE_CORRECTED
-      - ADJUSTMENT_AGREED
-      - WITHDRAWN_BY_CUSTOMER
-      - OTHER
-      type: string
-      description: |-
-        * `NO_CHANGE` - NO_CHANGE
-        * `INVOICE_CORRECTED` - INVOICE_CORRECTED
-        * `ADJUSTMENT_AGREED` - ADJUSTMENT_AGREED
-        * `WITHDRAWN_BY_CUSTOMER` - WITHDRAWN_BY_CUSTOMER
-        * `OTHER` - OTHER
     PasswordResetConfirmInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional

@@ -56,19 +56,31 @@ def _provider(key: str) -> Any:
     return next(e for e in ENTRIES if e.key == key)
 
 
-def _write(ctx: RequestContext, key: str, state: str, verified: bool, error: str | None) -> None:
+def _write(
+    ctx: RequestContext,
+    key: str,
+    state: str,
+    verified: bool,
+    error: str | None,
+    external_account: str | None = None,
+) -> None:
     fetch_one(
         "INSERT INTO integration_connections"
-        " (workspace_id, provider, state, verified_at, last_error, updated_by)"
-        " VALUES (%s, %s, %s, CASE WHEN %s THEN now() END, %s, %s)"
+        " (workspace_id, provider, state, verified_at, last_error, updated_by, external_account)"
+        " VALUES (%s, %s, %s, CASE WHEN %s THEN now() END, %s, %s, %s)"
         " ON CONFLICT (workspace_id, provider) DO UPDATE SET state = EXCLUDED.state,"
         " verified_at = EXCLUDED.verified_at, last_error = EXCLUDED.last_error,"
-        " updated_by = EXCLUDED.updated_by, updated_at = now() RETURNING provider",
-        [ctx.workspace_id, key, state, verified, error, ctx.user_id],
+        " updated_by = EXCLUDED.updated_by, updated_at = now(),"
+        " external_account = CASE WHEN EXCLUDED.state = 'CONNECTED_VERIFIED' THEN EXCLUDED.external_account"
+        " WHEN EXCLUDED.state = 'DISCONNECTED' THEN NULL ELSE integration_connections.external_account END"
+        " RETURNING provider",
+        [ctx.workspace_id, key, state, verified, error, ctx.user_id, external_account],
     )
 
 
-def connect(ctx: RequestContext, key: str, verifier: Callable[[], bool]) -> dict[str, Any]:
+def connect(
+    ctx: RequestContext, key: str, verifier: Callable[[], bool], external_account: str | None = None
+) -> dict[str, Any]:
     """Only a verifier that returns True produces CONNECTED_VERIFIED; an error or False never does."""
     authorize(ctx, INTEGRATIONS_MANAGE)
     entry = _provider(key)
@@ -80,7 +92,7 @@ def connect(ctx: RequestContext, key: str, verifier: Callable[[], bool]) -> dict
     with tenant_tx(ctx):
         before = _item(entry, _stored(ctx).get(key))
         if ok:
-            _write(ctx, key, "CONNECTED_VERIFIED", True, None)
+            _write(ctx, key, "CONNECTED_VERIFIED", True, None, external_account)
             action = "integration.connected"
         else:
             state = "NEEDS_REAUTH" if before["state"] == "CONNECTED_VERIFIED" else "NEEDS_CONFIGURATION"
@@ -98,10 +110,21 @@ def connect(ctx: RequestContext, key: str, verifier: Callable[[], bool]) -> dict
         return after
 
 
-def disconnect(ctx: RequestContext, key: str) -> dict[str, Any]:
+def is_connected(ctx: RequestContext, key: str) -> bool:
+    """Inside a tenant transaction."""
+    row = fetch_one(
+        "SELECT state FROM integration_connections WHERE workspace_id = %s AND provider = %s",
+        [ctx.workspace_id, key],
+    )
+    return bool(row and row["state"] == "CONNECTED_VERIFIED")
+
+
+def disconnect(ctx: RequestContext, key: str, cleanup: Callable[[], None] | None = None) -> dict[str, Any]:
     authorize(ctx, INTEGRATIONS_MANAGE)
     entry = _provider(key)
     with tenant_tx(ctx):
+        if cleanup:
+            cleanup()
         before = _item(entry, _stored(ctx).get(key))
         _write(ctx, key, "DISCONNECTED", False, None)
         after = _item(entry, _stored(ctx).get(key))

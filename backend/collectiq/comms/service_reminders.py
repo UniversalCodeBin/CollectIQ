@@ -205,12 +205,15 @@ def _snapshot(
     )
     sent = fetch_one(
         "SELECT count(*) AS n FROM reminders r JOIN invoices i ON i.id = r.invoice_id"
-        " WHERE i.client_id = %s AND r.status = 'MARKED_SENT' AND r.sent_at >= %s",
+        " WHERE i.client_id = %s AND r.status IN ('MARKED_SENT', 'SUBMITTED')"
+        " AND COALESCE(r.sent_at, r.submitted_at) >= %s",
         [invoice["client_id"], clock.now() - CONTACT_WINDOW],
     )
     used = (
         fetch_one(
-            "SELECT 1 AS ok FROM reminders WHERE idempotency_key = %s AND status = 'MARKED_SENT'", [key]
+            "SELECT 1 AS ok FROM reminders WHERE idempotency_key = %s"
+            " AND status IN ('MARKED_SENT', 'SUBMITTED', 'SUBMISSION_UNKNOWN')",
+            [key],
         )
         if key
         else None
@@ -424,6 +427,12 @@ def _settle_status(invoice_id: UUID | str) -> None:
     invoice_state.set_follow_up(
         invoice_id, reminder_status="WAITING_FOR_CUSTOMER" if sent else "NOT_CONTACTED"
     )
+
+
+def _key_of(reminder_id: UUID) -> str:
+    key = fetch_one("SELECT idempotency_key FROM reminders WHERE id = %s", [reminder_id])
+    assert key
+    return str(key["idempotency_key"])
 
 
 def _live_row(reminder_id: UUID) -> dict[str, Any]:

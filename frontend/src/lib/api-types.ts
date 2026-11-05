@@ -164,6 +164,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/integrations/gmail/callback": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E095"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/invitations/accept": {
         parameters: {
             query?: never;
@@ -174,6 +190,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E114"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/paypal": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E098"];
         delete?: never;
         options?: never;
         head?: never;
@@ -655,6 +687,38 @@ export interface paths {
         get: operations["E093"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/integrations/{key}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete: operations["E097"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/integrations/gmail/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E094"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1317,6 +1381,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/reminders/{reminder_id}/confirm-unknown": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E091"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/reminders/{reminder_id}/mark-sent": {
         parameters: {
             query?: never;
@@ -1343,6 +1423,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E088"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminders/{reminder_id}/send": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E090"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1519,6 +1615,10 @@ export interface components {
             coverage_date: string;
             attestation_ids: string[];
         };
+        AuthorizationOut: {
+            /** Format: uri */
+            authorization_url: string;
+        };
         CaseDetailOut: {
             /** Format: uuid */
             id: string;
@@ -1610,9 +1710,18 @@ export interface components {
         CaseReopenInRequest: {
             reason: string;
         };
+        /**
+         * @description * `NO_CHANGE` - NO_CHANGE
+         *     * `INVOICE_CORRECTED` - INVOICE_CORRECTED
+         *     * `ADJUSTMENT_AGREED` - ADJUSTMENT_AGREED
+         *     * `WITHDRAWN_BY_CUSTOMER` - WITHDRAWN_BY_CUSTOMER
+         *     * `OTHER` - OTHER
+         * @enum {string}
+         */
+        CaseResolveInOutcomeEnum: "NO_CHANGE" | "INVOICE_CORRECTED" | "ADJUSTMENT_AGREED" | "WITHDRAWN_BY_CUSTOMER" | "OTHER";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         CaseResolveInRequest: {
-            outcome: components["schemas"]["OutcomeEnum"];
+            outcome: components["schemas"]["CaseResolveInOutcomeEnum"];
             note?: string;
         };
         /**
@@ -1728,6 +1837,16 @@ export interface components {
          * @enum {string}
          */
         CommitmentUpdateInStatusEnum: "WITHDRAWN" | "BROKEN";
+        /**
+         * @description * `WAS_SENT` - WAS_SENT
+         *     * `NOT_SENT` - NOT_SENT
+         * @enum {string}
+         */
+        ConfirmUnknownInOutcomeEnum: "WAS_SENT" | "NOT_SENT";
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ConfirmUnknownInRequest: {
+            outcome: components["schemas"]["ConfirmUnknownInOutcomeEnum"];
+        };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ContactInRequest: {
             /** Format: email */
@@ -2455,15 +2574,6 @@ export interface components {
             items: components["schemas"]["NotificationOut"][];
             next_cursor: string | null;
         };
-        /**
-         * @description * `NO_CHANGE` - NO_CHANGE
-         *     * `INVOICE_CORRECTED` - INVOICE_CORRECTED
-         *     * `ADJUSTMENT_AGREED` - ADJUSTMENT_AGREED
-         *     * `WITHDRAWN_BY_CUSTOMER` - WITHDRAWN_BY_CUSTOMER
-         *     * `OTHER` - OTHER
-         * @enum {string}
-         */
-        OutcomeEnum: "NO_CHANGE" | "INVOICE_CORRECTED" | "ADJUSTMENT_AGREED" | "WITHDRAWN_BY_CUSTOMER" | "OTHER";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PasswordResetConfirmInRequest: {
             token: string;
@@ -3396,6 +3506,27 @@ export interface operations {
             };
         };
     };
+    E095: {
+        parameters: {
+            query?: {
+                code?: string;
+                state?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            302: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     E114: {
         parameters: {
             query?: never;
@@ -3417,6 +3548,24 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["InvitationAcceptedOut"];
                 };
+            };
+        };
+    };
+    E098: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No response body */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -4462,6 +4611,51 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IntegrationListOut"];
+                };
+            };
+        };
+    };
+    E097: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                key: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrationItemOut"];
+                };
+            };
+        };
+    };
+    E094: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthorizationOut"];
                 };
             };
         };
@@ -5764,6 +5958,35 @@ export interface operations {
             };
         };
     };
+    E091: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ConfirmUnknownInRequest"];
+                "multipart/form-data": components["schemas"]["ConfirmUnknownInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderOut"];
+                };
+            };
+        };
+    };
     E089: {
         parameters: {
             query?: never;
@@ -5813,6 +6036,30 @@ export interface operations {
         };
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderOut"];
+                };
+            };
+        };
+    };
+    E090: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            202: {
                 headers: {
                     [name: string]: unknown;
                 };

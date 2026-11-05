@@ -1129,6 +1129,14 @@ class ReminderSentIn(StrictSerializer):
     method = serializers.ChoiceField(choices=["EMAIL", "WHATSAPP", "PHONE", "OTHER"])
 
 
+class ConfirmUnknownIn(StrictSerializer):
+    outcome = serializers.ChoiceField(choices=["WAS_SENT", "NOT_SENT"])
+
+
+class AuthorizationOut(serializers.Serializer):
+    authorization_url = serializers.URLField()
+
+
 class NotificationOut(serializers.Serializer):
     id = serializers.UUIDField()
     type = serializers.ChoiceField(choices=["CASE_OPENED", "REMINDER_DRAFT_READY"])
