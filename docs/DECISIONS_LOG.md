@@ -228,3 +228,8 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Export is Owner-only, returns the content inline (no signed URL), excludes credentials, sealed values and keys, and is audited.
 - Deletion is Owner-only with typed confirmation. A SECURITY DEFINER procedure clears the workspace tables, tombstones the workspace and records a `deletion_records` row that requires zero rows remaining. Stored files are removed after the commit. Audit history is retained: append-only by database permissions, with a hash chain that detects casual edits; not tamper-resistant against a database superuser. The backup purge window stays open (OPEN-09).
 - Assignable roles remain OWNER and FINANCE_ADMIN. Legal name and sender display name are not built.
+
+## Task 37 rulings
+- Audit completeness (TS-023) is checked by a passive probe that runs across the whole suite: it patches the DB cursor and middleware, records each audit insert by correlation ID, and fails the session if a successful audited mutation wrote no audit event. Endpoints never driven to success are listed in `NOT_DRIVEN_TO_SUCCESS` (currently empty). Idempotent replays write nothing and are not violations.
+- The critical negatives are tied to named tests by an AST existence check, so a rename or deletion fails the suite.
+- Four runbooks (auth outage, wrong send, token compromise, bad allocation fix) state: pause first, nothing is edited by hand, and the audit wording with its superuser limit. Disconnecting Gmail deletes the stored credential and revokes at Google on a best-effort basis; PayPal disconnect only changes state, so both runbooks tell the operator to confirm at the provider.

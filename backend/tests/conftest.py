@@ -76,3 +76,27 @@ def pg(django_db_setup, django_db_blocker) -> Iterator[None]:
     with django_db_blocker.unblock():
         yield
     _truncate_all()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def audit_probe() -> Iterator[None]:
+    """TS-023: observe every API call in the run and check each audited write left its audit event."""
+    from django.conf import settings
+
+    from tests.safety import audit_probe as probe
+
+    probe.install()
+    probe.PROBE.reset()
+    settings.MIDDLEWARE = [*settings.MIDDLEWARE, "tests.safety.audit_probe.ProbeMiddleware"]
+    yield
+
+
+def pytest_sessionfinish(session: pytest.Session, exitstatus: int) -> None:
+    """An audited write without its audit event fails the run, wherever in the suite it happened."""
+    from tests.safety.audit_probe import PROBE
+
+    if PROBE.violations:
+        print("\nTS-023 audit completeness violations:")
+        for line in sorted(set(PROBE.violations)):
+            print(f"  - {line}")
+        session.exitstatus = 1

@@ -55,10 +55,11 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T19 Confirmed allocations and reversals | 874 pytest in total, of which the two new allocation files cover triggers, TS-011/012, F-8 races, the database backstop and a Hypothesis state-equals-derive property; `evidence.domain` 96% combined statement and branch on the full run, gate ≥95%, before one further matcher test; make check 12 of 12 | `feat(evidence): confirmed allocations and reversals` |
 | T20 Reconciliation and Payment Accounts screens | E117, E118, E119 added; 5 new Playwright tests on the real API (14 total), 3 new vitest, 2 new backend tests; 884 pytest, 199 vitest, make check 12 of 12 | `feat(web): reconciliation e2e, invoice history, allocate unmatched` |
 | T32 Live AI provider adapter | Deferred: no provider chosen (OD-05); fake provider is dev/test only | n/a |
-| T33 Integration registry and lifecycle (E093) | 9 integration tests (no connected state without verification, DB CHECK, Owner-only, audited, tenant isolation), 1 vitest; 1212 pytest + 234 vitest, make check 12 of 12 | this commit |
+| T33 Integration registry and lifecycle (E093) | 9 integration tests (no connected state without verification, DB CHECK, Owner-only, audited, tenant isolation), 1 vitest; 1212 pytest + 234 vitest, make check 12 of 12 | 6ad2a78 |
 | T34 Gmail send-only and PayPal webhook adapters (E090, E091, E094, E095, E097, E098) | 23 provider tests on fake transports (scopes, PKCE state, sealed tokens, no auto retry on unknown, evidence-only webhooks), flags off by default; not verified against Gmail or PayPal | this commit |
 | T35 Audit History (E099, E100) | 6 backend tests (tenant-scoped search, paging, CSV formula neutralisation, audited export, seeded chain break detected by `audit.verify_chain`), 1 vitest; append-only wording with the superuser limit | this commit |
 | T36 Settings and payload inspector (E102-E105) | 9 backend tests (export scope and secret exclusion, Owner-only, typed-confirmation deletion with zero-row scan, audit retained, payload inspector with tokens only, retention), 1 interpretation test, 4 vitest; members, export/deletion and payload tabs | this commit |
+| T37 Audit completeness, critical negatives, runbooks | suite-wide probe (TS-023) checks every audited mutation wrote an audit event, plus 14 critical-negative existence checks and 4 runbooks in docs/runbooks | this commit |
 
 ## Open items carried forward
 
