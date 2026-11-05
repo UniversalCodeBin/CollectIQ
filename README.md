@@ -4,7 +4,7 @@ A receivables operations assistant. It records invoice and payment evidence, kee
 from human-confirmed allocations, and pauses follow-ups when anything is uncertain. It does not replace
 an accounting system, and it never marks an invoice paid on its own.
 
-Status and limitations: [docs/implementation-status.md](docs/implementation-status.md).
+Status and limitations: [docs/IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md).
 
 ## Prerequisites
 

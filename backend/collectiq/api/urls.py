@@ -3,6 +3,7 @@ from django.urls import path
 from . import client_views as clients
 from . import identity_views as identity
 from . import import_views as imports
+from . import invoice_views as invoices
 from . import tenancy_views as tenancy
 
 _V1 = "api/v1/"
@@ -44,6 +45,16 @@ urlpatterns: list = [
         f"{_V1}workspaces/<uuid:ws>/imports/<uuid:import_id>/error-report",
         imports.ImportErrorReportView.as_view(),
     ),
+    path(f"{_V1}workspaces/<uuid:ws>/invoices", invoices.InvoiceCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>", invoices.InvoiceDetailView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/cancel", invoices.InvoiceCancelView.as_view()
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/archive", invoices.InvoiceArchiveView.as_view()
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/queue", invoices.QueueView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/dashboard", invoices.DashboardView.as_view()),
     path(f"{_V1}health/live", identity.HealthLiveView.as_view()),
     path(f"{_V1}health/ready", identity.HealthReadyView.as_view()),
 ]

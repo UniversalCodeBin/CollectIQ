@@ -53,6 +53,7 @@ from .domain.reconcile import (
     read_rows,
 )
 from .domain.validate import RowMapping, mapping_errors, normalize_number, suggest_mapping
+from .state import create_states, refresh_after_total_changed
 
 KIND = "INVOICE_CSV"
 SOURCE_SYSTEM = "CSV"
@@ -65,7 +66,7 @@ _BATCH = (
     " FROM import_batches b JOIN stored_files f ON f.id = b.file_id AND f.workspace_id = b.workspace_id"
     " WHERE b.id = %s"
 )
-_OPEN = ("PREVIEW", "FAILED")
+_OPEN = ("PREVIEW", "IMPORT_FAILED")
 _FORMULA_START = ("=", "+", "-", "@", "\t", "\r")
 
 
@@ -483,6 +484,7 @@ def _insert_invoices(
         )
         created_rows[row.number] = invoice_id
     execute_many(_INSERT_INVOICE, parameters)
+    create_states(parameters)
     for row, invoice_id in zip(to_create, ids, strict=True):
         record(
             ctx,
@@ -529,6 +531,8 @@ def _apply_update(ctx: RequestContext, batch_id: UUID, headers: Sequence[str], r
         " updated_at = now() WHERE id = %s",
         [*parameters, json.dumps(provenance), any_kept, batch_id, row.number, sealed, target.id],
     )
+    if any(diff["field"] == "gross_minor" for diff in applied):
+        refresh_after_total_changed(target.id)
     record(
         ctx,
         "invoice.updated",
@@ -638,7 +642,7 @@ def commit_import(ctx: RequestContext, batch_id: UUID, decisions: Mapping[str, A
 def record_failure(ctx: RequestContext, batch_id: UUID) -> None:
     with tenant_tx(ctx):
         execute(
-            "UPDATE import_batches SET status = 'FAILED', failure_reason = %s, updated_at = now()"
+            "UPDATE import_batches SET status = 'IMPORT_FAILED', failure_reason = %s, updated_at = now()"
             " WHERE id = %s",
             [FAILED_REASON, batch_id],
         )

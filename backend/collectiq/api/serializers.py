@@ -314,3 +314,119 @@ class ImportDecisionsIn(StrictSerializer):
 
 class ImportCommitIn(StrictSerializer):
     decisions = ImportDecisionsIn(required=False)
+
+
+class ReasonOut(serializers.Serializer):
+    code = serializers.CharField()
+    label = serializers.CharField()
+    link = serializers.CharField()
+
+
+class WhyNotOut(serializers.Serializer):
+    code = serializers.CharField()
+    label = serializers.CharField()
+
+
+class RecommendedActionOut(serializers.Serializer):
+    code = serializers.CharField()
+    label = serializers.CharField()
+    can_act = serializers.BooleanField()
+    performed_by = serializers.ListField(child=serializers.CharField())
+    reason = serializers.CharField(allow_null=True)
+
+
+class InvoiceRowOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_number = serializers.CharField()
+    client_id = serializers.UUIDField()
+    client_name = serializers.CharField()
+    currency = serializers.CharField()
+    status = serializers.CharField()
+    due_date = serializers.DateField()
+    outstanding_minor = serializers.IntegerField()
+    paid_minor = serializers.IntegerField()
+    payment_status = serializers.CharField()
+    dispute_status = serializers.CharField()
+    reminder_status = serializers.CharField()
+    evidence_coverage = serializers.CharField()
+    evidence_as_of = serializers.DateTimeField(allow_null=True)
+    days_overdue = serializers.IntegerField()
+    due_bucket = serializers.CharField()
+    allowed_actions = AllowedActionOut(many=True)
+
+
+class InvoicePageOut(serializers.Serializer):
+    items = InvoiceRowOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class QueueItemOut(InvoiceRowOut):
+    tier = serializers.IntegerField()
+    reasons = ReasonOut(many=True)
+    why_not = WhyNotOut(many=True)
+    recommended_action = RecommendedActionOut(allow_null=True)
+    sample = serializers.BooleanField()
+
+
+class QueuePageOut(serializers.Serializer):
+    items = QueueItemOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class InvoiceDetailOut(serializers.Serializer):
+    version = serializers.IntegerField()
+    facts = serializers.DictField()
+    derived = serializers.DictField()
+    ai_claims = serializers.ListField(child=serializers.DictField())
+    provenance = serializers.DictField()
+    recommended_action = RecommendedActionOut(allow_null=True)
+    reasons = ReasonOut(many=True)
+    why_not = WhyNotOut(many=True)
+    allowed_actions = AllowedActionOut(many=True)
+
+
+class InvoiceCorrectionIn(StrictSerializer):
+    invoice_number = serializers.CharField(max_length=64, required=False)
+    due_date = serializers.DateField(required=False)
+    issue_date = serializers.DateField(required=False)
+    gross_minor = serializers.IntegerField(min_value=0, required=False)
+    po_number = serializers.CharField(max_length=64, required=False, allow_null=True)
+    project_ref = serializers.CharField(max_length=64, required=False, allow_null=True)
+    description = serializers.CharField(max_length=500, required=False, allow_null=True)
+    payment_terms = serializers.CharField(max_length=64, required=False, allow_null=True)
+    reason = serializers.CharField(max_length=500)
+
+    def validate(self, attrs: dict[str, Any]) -> dict[str, Any]:
+        if len(attrs) < 2:
+            raise serializers.ValidationError({"invoice_number": "Change at least one field."})
+        return attrs
+
+
+class InvoiceReasonIn(StrictSerializer):
+    reason = serializers.CharField(max_length=500)
+
+
+class DashboardEntryOut(serializers.Serializer):
+    count = serializers.IntegerField()
+    amount_minor = serializers.IntegerField()
+    filter = serializers.DictField(child=serializers.CharField())
+
+
+class DashboardTileOut(DashboardEntryOut):
+    key = serializers.CharField()
+
+
+class DashboardAgingOut(DashboardEntryOut):
+    bucket = serializers.CharField()
+
+
+class DashboardCurrencyOut(serializers.Serializer):
+    currency = serializers.CharField()
+    tiles = DashboardTileOut(many=True)
+    aging = DashboardAgingOut(many=True)
+
+
+class DashboardOut(serializers.Serializer):
+    currencies = DashboardCurrencyOut(many=True)
+    has_sample_data = serializers.BooleanField()
+    as_of_date = serializers.DateField()

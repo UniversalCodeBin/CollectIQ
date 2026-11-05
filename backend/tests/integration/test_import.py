@@ -634,7 +634,7 @@ def test_failed_commit_leaves_no_records(pg, owner_db) -> None:
         assert _count(owner_db, ws, "invoices") == 0
         assert _count(owner_db, ws, "clients") == 0
         batch = _get(client, ws, import_id).json()
-        assert batch["status"] == "FAILED"
+        assert batch["status"] == "IMPORT_FAILED"
         assert "Nothing was added" in batch["failure_reason"]
         assert len(_audit(owner_db, ws, "invoice.created")) == 0
         assert len(_audit(owner_db, ws, "import.failed")) == 1

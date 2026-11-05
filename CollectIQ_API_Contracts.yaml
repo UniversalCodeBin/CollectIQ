@@ -5928,7 +5928,7 @@ paths:
       tags:
       - Imports
       summary: Download per-row import problems as CSV
-      description: 'Endpoint E116. Status: PROPOSED-NEW (P0 screen SCR-05 needs a downloadable error report, FR-005). Module M05. Roles: O, F. Priority P0.'
+      description: 'Endpoint E116. Status: PROPOSED-NEW (P0 screen SCR-05 needs a downloadable error report, FR-003). Module M05. Roles: O, F. Priority P0.'
       x-endpoint-id: E116
       x-origin: proposed-new
       x-priority: P0

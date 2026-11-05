@@ -292,6 +292,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E048"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/imports/{import_id}": {
         parameters: {
             query?: never;
@@ -389,6 +405,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E042"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E043"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E044"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/archive": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E046"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E045"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/members": {
         parameters: {
             query?: never;
@@ -419,6 +499,22 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["E115"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E047"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -494,6 +590,33 @@ export interface components {
             /** Format: email */
             email: string;
             password: string;
+        };
+        DashboardAgingOut: {
+            count: number;
+            amount_minor: number;
+            filter: {
+                [key: string]: string;
+            };
+            bucket: string;
+        };
+        DashboardCurrencyOut: {
+            currency: string;
+            tiles: components["schemas"]["DashboardTileOut"][];
+            aging: components["schemas"]["DashboardAgingOut"][];
+        };
+        DashboardOut: {
+            currencies: components["schemas"]["DashboardCurrencyOut"][];
+            has_sample_data: boolean;
+            /** Format: date */
+            as_of_date: string;
+        };
+        DashboardTileOut: {
+            count: number;
+            amount_minor: number;
+            filter: {
+                [key: string]: string;
+            };
+            key: string;
         };
         DetailOut: {
             detail: string;
@@ -630,6 +753,56 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
         };
+        InvoiceDetailOut: {
+            version: number;
+            facts: {
+                [key: string]: unknown;
+            };
+            derived: {
+                [key: string]: unknown;
+            };
+            ai_claims: {
+                [key: string]: unknown;
+            }[];
+            provenance: {
+                [key: string]: unknown;
+            };
+            recommended_action: components["schemas"]["RecommendedActionOut"] | null;
+            reasons: components["schemas"]["ReasonOut"][];
+            why_not: components["schemas"]["WhyNotOut"][];
+            allowed_actions: components["schemas"]["AllowedActionOut"][];
+        };
+        InvoicePageOut: {
+            items: components["schemas"]["InvoiceRowOut"][];
+            next_cursor: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        InvoiceReasonInRequest: {
+            reason: string;
+        };
+        InvoiceRowOut: {
+            /** Format: uuid */
+            id: string;
+            invoice_number: string;
+            /** Format: uuid */
+            client_id: string;
+            client_name: string;
+            currency: string;
+            status: string;
+            /** Format: date */
+            due_date: string;
+            outstanding_minor: number;
+            paid_minor: number;
+            payment_status: string;
+            dispute_status: string;
+            reminder_status: string;
+            evidence_coverage: string;
+            /** Format: date-time */
+            evidence_as_of: string | null;
+            days_overdue: number;
+            due_bucket: string;
+            allowed_actions: components["schemas"]["AllowedActionOut"][];
+        };
         LoginOut: {
             user: components["schemas"]["UserOut"];
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
@@ -666,6 +839,20 @@ export interface components {
             name?: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedInvoiceCorrectionInRequest: {
+            invoice_number?: string;
+            /** Format: date */
+            due_date?: string;
+            /** Format: date */
+            issue_date?: string;
+            gross_minor?: number;
+            po_number?: string | null;
+            project_ref?: string | null;
+            description?: string | null;
+            payment_terms?: string | null;
+            reason?: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedMemberRoleInRequest: {
             role?: components["schemas"]["RoleEnum"];
         };
@@ -677,6 +864,50 @@ export interface components {
             business_hours?: {
                 [key: string]: unknown;
             };
+        };
+        QueueItemOut: {
+            /** Format: uuid */
+            id: string;
+            invoice_number: string;
+            /** Format: uuid */
+            client_id: string;
+            client_name: string;
+            currency: string;
+            status: string;
+            /** Format: date */
+            due_date: string;
+            outstanding_minor: number;
+            paid_minor: number;
+            payment_status: string;
+            dispute_status: string;
+            reminder_status: string;
+            evidence_coverage: string;
+            /** Format: date-time */
+            evidence_as_of: string | null;
+            days_overdue: number;
+            due_bucket: string;
+            allowed_actions: components["schemas"]["AllowedActionOut"][];
+            tier: number;
+            reasons: components["schemas"]["ReasonOut"][];
+            why_not: components["schemas"]["WhyNotOut"][];
+            recommended_action: components["schemas"]["RecommendedActionOut"] | null;
+            sample: boolean;
+        };
+        QueuePageOut: {
+            items: components["schemas"]["QueueItemOut"][];
+            next_cursor: string | null;
+        };
+        ReasonOut: {
+            code: string;
+            label: string;
+            link: string;
+        };
+        RecommendedActionOut: {
+            code: string;
+            label: string;
+            can_act: boolean;
+            performed_by: string[];
+            reason: string | null;
         };
         /**
          * @description * `OWNER` - OWNER
@@ -723,6 +954,10 @@ export interface components {
             /** Format: email */
             email: string;
             email_verified: boolean;
+        };
+        WhyNotOut: {
+            code: string;
+            label: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         WorkspaceCreateInRequest: {
@@ -1300,6 +1535,27 @@ export interface operations {
             };
         };
     };
+    E048: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardOut"];
+                };
+            };
+        };
+    };
     E037: {
         parameters: {
             query?: {
@@ -1482,6 +1738,154 @@ export interface operations {
             };
         };
     };
+    E042: {
+        parameters: {
+            query?: {
+                aging?: string;
+                amount_max?: string;
+                amount_min?: string;
+                assignee?: string;
+                client_id?: string;
+                currency?: string;
+                cursor?: string;
+                dispute_status?: string;
+                due_from?: string;
+                due_to?: string;
+                import_batch?: string;
+                limit?: string;
+                payment_status?: string;
+                q?: string;
+                reminder_status?: string;
+                sort?: string;
+                tile?: string;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoicePageOut"];
+                };
+            };
+        };
+    };
+    E043: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDetailOut"];
+                };
+            };
+        };
+    };
+    E044: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedInvoiceCorrectionInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedInvoiceCorrectionInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDetailOut"];
+                };
+            };
+        };
+    };
+    E046: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceReasonInRequest"];
+                "multipart/form-data": components["schemas"]["InvoiceReasonInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDetailOut"];
+                };
+            };
+        };
+    };
+    E045: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["InvoiceReasonInRequest"];
+                "multipart/form-data": components["schemas"]["InvoiceReasonInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceDetailOut"];
+                };
+            };
+        };
+    };
     E013: {
         parameters: {
             query?: {
@@ -1552,6 +1956,45 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"];
+                };
+            };
+        };
+    };
+    E047: {
+        parameters: {
+            query?: {
+                aging?: string;
+                amount_max?: string;
+                amount_min?: string;
+                assignee?: string;
+                client_id?: string;
+                currency?: string;
+                cursor?: string;
+                dispute_status?: string;
+                due_from?: string;
+                due_to?: string;
+                import_batch?: string;
+                limit?: string;
+                payment_status?: string;
+                q?: string;
+                reminder_status?: string;
+                sort?: string;
+                tile?: string;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueuePageOut"];
                 };
             };
         };

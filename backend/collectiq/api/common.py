@@ -1,5 +1,6 @@
 """Small request helpers shared by the views. Nothing here knows about a domain."""
 
+from collections.abc import Iterable
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -54,3 +55,24 @@ def page_params(request: Any) -> tuple[int, UUID | None]:
         return int(raw_limit), UUID(raw_cursor)
     except ValueError:
         raise invalid("cursor", "This cursor is not valid. Start again from the first page.") from None
+
+
+def query_values(request: Any, allowed: Iterable[str]) -> dict[str, str]:
+    """Each query parameter once, and only the ones this endpoint knows. Anything else is refused by name."""
+    known = set(allowed)
+    values: dict[str, str] = {}
+    for name, given in request.query_params.lists():
+        if name not in known:
+            raise invalid(name, "This filter is not recognised.")
+        if len(given) > 1:
+            raise invalid(name, "Give this filter once.")
+        values[name] = given[0]
+    return values
+
+
+def limit_param(raw: str | None, default: int = _DEFAULT_LIMIT) -> int:
+    if raw is None:
+        return default
+    if not raw.isascii() or not raw.isdigit() or not 1 <= int(raw) <= _MAX_LIMIT:
+        raise invalid("limit", f"Use a number from 1 to {_MAX_LIMIT}.")
+    return int(raw)

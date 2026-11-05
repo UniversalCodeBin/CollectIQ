@@ -566,6 +566,26 @@ paths:
         '204':
           description: No response body
       x-endpoint-id: E028
+  /api/v1/workspaces/{ws}/dashboard:
+    get:
+      operationId: E048
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardOut'
+          description: ''
+      x-endpoint-id: E048
   /api/v1/workspaces/{ws}/imports/{import_id}:
     get:
       operationId: E037
@@ -796,6 +816,240 @@ paths:
                 $ref: '#/components/schemas/InvitationOut'
           description: ''
       x-endpoint-id: E014
+  /api/v1/workspaces/{ws}/invoices:
+    get:
+      operationId: E042
+      parameters:
+      - in: query
+        name: aging
+        schema:
+          type: string
+      - in: query
+        name: amount_max
+        schema:
+          type: string
+      - in: query
+        name: amount_min
+        schema:
+          type: string
+      - in: query
+        name: assignee
+        schema:
+          type: string
+      - in: query
+        name: client_id
+        schema:
+          type: string
+      - in: query
+        name: currency
+        schema:
+          type: string
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: dispute_status
+        schema:
+          type: string
+      - in: query
+        name: due_from
+        schema:
+          type: string
+      - in: query
+        name: due_to
+        schema:
+          type: string
+      - in: query
+        name: import_batch
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: string
+      - in: query
+        name: payment_status
+        schema:
+          type: string
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: reminder_status
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+      - in: query
+        name: tile
+        schema:
+          type: string
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoicePageOut'
+          description: ''
+      x-endpoint-id: E042
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}:
+    get:
+      operationId: E043
+      parameters:
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDetailOut'
+          description: ''
+      x-endpoint-id: E043
+    patch:
+      operationId: E044
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedInvoiceCorrectionInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedInvoiceCorrectionInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDetailOut'
+          description: ''
+      x-endpoint-id: E044
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/archive:
+    post:
+      operationId: E046
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceReasonInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvoiceReasonInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDetailOut'
+          description: ''
+      x-endpoint-id: E046
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/cancel:
+    post:
+      operationId: E045
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InvoiceReasonInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InvoiceReasonInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceDetailOut'
+          description: ''
+      x-endpoint-id: E045
   /api/v1/workspaces/{ws}/members:
     get:
       operationId: E013
@@ -885,6 +1139,94 @@ paths:
         '204':
           description: No response body
       x-endpoint-id: E015
+  /api/v1/workspaces/{ws}/queue:
+    get:
+      operationId: E047
+      parameters:
+      - in: query
+        name: aging
+        schema:
+          type: string
+      - in: query
+        name: amount_max
+        schema:
+          type: string
+      - in: query
+        name: amount_min
+        schema:
+          type: string
+      - in: query
+        name: assignee
+        schema:
+          type: string
+      - in: query
+        name: client_id
+        schema:
+          type: string
+      - in: query
+        name: currency
+        schema:
+          type: string
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: dispute_status
+        schema:
+          type: string
+      - in: query
+        name: due_from
+        schema:
+          type: string
+      - in: query
+        name: due_to
+        schema:
+          type: string
+      - in: query
+        name: import_batch
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: string
+      - in: query
+        name: payment_status
+        schema:
+          type: string
+      - in: query
+        name: q
+        schema:
+          type: string
+      - in: query
+        name: reminder_status
+        schema:
+          type: string
+      - in: query
+        name: sort
+        schema:
+          type: string
+      - in: query
+        name: tile
+        schema:
+          type: string
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueuePageOut'
+          description: ''
+      x-endpoint-id: E047
 components:
   schemas:
     AliasOut:
@@ -1075,6 +1417,75 @@ components:
       required:
       - email
       - password
+    DashboardAgingOut:
+      type: object
+      properties:
+        count:
+          type: integer
+        amount_minor:
+          type: integer
+        filter:
+          type: object
+          additionalProperties:
+            type: string
+        bucket:
+          type: string
+      required:
+      - amount_minor
+      - bucket
+      - count
+      - filter
+    DashboardCurrencyOut:
+      type: object
+      properties:
+        currency:
+          type: string
+        tiles:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardTileOut'
+        aging:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardAgingOut'
+      required:
+      - aging
+      - currency
+      - tiles
+    DashboardOut:
+      type: object
+      properties:
+        currencies:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardCurrencyOut'
+        has_sample_data:
+          type: boolean
+        as_of_date:
+          type: string
+          format: date
+      required:
+      - as_of_date
+      - currencies
+      - has_sample_data
+    DashboardTileOut:
+      type: object
+      properties:
+        count:
+          type: integer
+        amount_minor:
+          type: integer
+        filter:
+          type: object
+          additionalProperties:
+            type: string
+        key:
+          type: string
+      required:
+      - amount_minor
+      - count
+      - filter
+      - key
     DetailOut:
       type: object
       properties:
@@ -1400,6 +1811,137 @@ components:
       - id
       - role
       - status
+    InvoiceDetailOut:
+      type: object
+      properties:
+        version:
+          type: integer
+        facts:
+          type: object
+          additionalProperties: {}
+        derived:
+          type: object
+          additionalProperties: {}
+        ai_claims:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        provenance:
+          type: object
+          additionalProperties: {}
+        recommended_action:
+          allOf:
+          - $ref: '#/components/schemas/RecommendedActionOut'
+          nullable: true
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonOut'
+        why_not:
+          type: array
+          items:
+            $ref: '#/components/schemas/WhyNotOut'
+        allowed_actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowedActionOut'
+      required:
+      - ai_claims
+      - allowed_actions
+      - derived
+      - facts
+      - provenance
+      - reasons
+      - recommended_action
+      - version
+      - why_not
+    InvoicePageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceRowOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    InvoiceReasonInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
+    InvoiceRowOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        client_id:
+          type: string
+          format: uuid
+        client_name:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        due_date:
+          type: string
+          format: date
+        outstanding_minor:
+          type: integer
+        paid_minor:
+          type: integer
+        payment_status:
+          type: string
+        dispute_status:
+          type: string
+        reminder_status:
+          type: string
+        evidence_coverage:
+          type: string
+        evidence_as_of:
+          type: string
+          format: date-time
+          nullable: true
+        days_overdue:
+          type: integer
+        due_bucket:
+          type: string
+        allowed_actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowedActionOut'
+      required:
+      - allowed_actions
+      - client_id
+      - client_name
+      - currency
+      - days_overdue
+      - dispute_status
+      - due_bucket
+      - due_date
+      - evidence_as_of
+      - evidence_coverage
+      - id
+      - invoice_number
+      - outstanding_minor
+      - paid_minor
+      - payment_status
+      - reminder_status
+      - status
     LoginOut:
       type: object
       properties:
@@ -1491,6 +2033,48 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+    PatchedInvoiceCorrectionInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_number:
+          type: string
+          minLength: 1
+          maxLength: 64
+        due_date:
+          type: string
+          format: date
+        issue_date:
+          type: string
+          format: date
+        gross_minor:
+          type: integer
+          minimum: 0
+        po_number:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 64
+        project_ref:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 64
+        description:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 500
+        payment_terms:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 64
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
     PatchedMemberRoleInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -1518,6 +2102,137 @@ components:
         business_hours:
           type: object
           additionalProperties: {}
+    QueueItemOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        client_id:
+          type: string
+          format: uuid
+        client_name:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        due_date:
+          type: string
+          format: date
+        outstanding_minor:
+          type: integer
+        paid_minor:
+          type: integer
+        payment_status:
+          type: string
+        dispute_status:
+          type: string
+        reminder_status:
+          type: string
+        evidence_coverage:
+          type: string
+        evidence_as_of:
+          type: string
+          format: date-time
+          nullable: true
+        days_overdue:
+          type: integer
+        due_bucket:
+          type: string
+        allowed_actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllowedActionOut'
+        tier:
+          type: integer
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReasonOut'
+        why_not:
+          type: array
+          items:
+            $ref: '#/components/schemas/WhyNotOut'
+        recommended_action:
+          allOf:
+          - $ref: '#/components/schemas/RecommendedActionOut'
+          nullable: true
+        sample:
+          type: boolean
+      required:
+      - allowed_actions
+      - client_id
+      - client_name
+      - currency
+      - days_overdue
+      - dispute_status
+      - due_bucket
+      - due_date
+      - evidence_as_of
+      - evidence_coverage
+      - id
+      - invoice_number
+      - outstanding_minor
+      - paid_minor
+      - payment_status
+      - reasons
+      - recommended_action
+      - reminder_status
+      - sample
+      - status
+      - tier
+      - why_not
+    QueuePageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueueItemOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    ReasonOut:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        link:
+          type: string
+      required:
+      - code
+      - label
+      - link
+    RecommendedActionOut:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+        can_act:
+          type: boolean
+        performed_by:
+          type: array
+          items:
+            type: string
+        reason:
+          type: string
+          nullable: true
+      required:
+      - can_act
+      - code
+      - label
+      - performed_by
+      - reason
     RoleEnum:
       enum:
       - OWNER
@@ -1606,6 +2321,16 @@ components:
       - email
       - email_verified
       - id
+    WhyNotOut:
+      type: object
+      properties:
+        code:
+          type: string
+        label:
+          type: string
+      required:
+      - code
+      - label
     WorkspaceCreateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional

@@ -6,7 +6,7 @@ the milestones after M0. Authority order when documents disagree: PRD, then SAD,
 Companion files:
 - [Requirement traceability](../CollectIQ_Requirements_Traceability.csv), checked by `scripts/check_traceability.py`.
 - [Stitch control dispositions](stitch-control-dispositions.md), one decision per control.
-- [Implementation status](implementation-status.md), the running record of what is built.
+- [Implementation status](IMPLEMENTATION_STATUS.md), the running record of what is built.
 
 ## 1. Existing functionality
 
