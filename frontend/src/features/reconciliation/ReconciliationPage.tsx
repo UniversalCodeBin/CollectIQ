@@ -41,7 +41,7 @@ export function ReconciliationPage() {
       <h1 className={styles.title}>Payment Reconciliation</h1>
       <nav aria-label="Reconciliation views" className={styles.tabs}>
         {TABS.map((name) => (
-          <Link key={name} to={`../reconciliation/${name}`} relative="path" aria-current={active === name ? "page" : undefined}>
+          <Link key={name} to={`../${name}`} relative="path" aria-current={active === name ? "page" : undefined}>
             {labels[name]} <span className={styles.count}>{counts[name]}</span>
           </Link>
         ))}

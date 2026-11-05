@@ -710,6 +710,36 @@ def list_payments(ctx: RequestContext, limit: int, cursor: UUID | None) -> dict[
     }
 
 
+def invoice_payment_history(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
+    """Every allocation and reversal on one invoice, oldest first, with its payment (FR-056)."""
+    authorize(ctx, FINANCE_READ)
+    with tenant_tx(ctx):
+        if fetch_one("SELECT 1 FROM invoices WHERE id = %s", [invoice_id]) is None:
+            raise ProblemError("NOT_FOUND", 404, "That invoice does not exist.")
+        rows = fetch_all(
+            "SELECT a.id, a.invoice_id, a.amount_minor, a.kind, a.reverses_allocation_id, a.match_id,"
+            "       a.overpayment_confirmed, a.evidence_type, a.confirmed_by, a.note, a.created_at,"
+            "       i.invoice_number, t.id AS transaction_id, t.value_date, t.payer_descriptor, t.currency"
+            "  FROM payment_allocations a"
+            "  JOIN invoices i ON i.id = a.invoice_id AND i.workspace_id = a.workspace_id"
+            "  JOIN payment_transactions t ON t.id = a.transaction_id AND t.workspace_id = a.workspace_id"
+            " WHERE a.invoice_id = %s ORDER BY a.created_at, a.id",
+            [invoice_id],
+        )
+    return {
+        "items": [
+            {
+                **_allocation_dto(row),
+                "transaction_id": str(row["transaction_id"]),
+                "value_date": row["value_date"].isoformat(),
+                "payer_descriptor": row["payer_descriptor"],
+                "currency": row["currency"],
+            }
+            for row in rows
+        ]
+    }
+
+
 def get_payment(ctx: RequestContext, transaction_id: UUID) -> dict[str, Any]:
     authorize(ctx, FINANCE_READ)
     with tenant_tx(ctx):

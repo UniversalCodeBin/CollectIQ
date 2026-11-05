@@ -77,6 +77,10 @@ urlpatterns: list = [
     path(f"{_V1}workspaces/<uuid:ws>/reconciliation/proposals", reconciliation.ProposalsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/payments", payments.PaymentsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>", payments.PaymentDetailView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/payments",
+        payments.InvoicePaymentHistoryView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/void", payments.PaymentVoidView.as_view()),
     path(
         f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/attachment",

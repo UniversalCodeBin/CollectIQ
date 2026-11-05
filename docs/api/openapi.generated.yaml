@@ -1235,6 +1235,32 @@ paths:
                 $ref: '#/components/schemas/InvoiceDetailOut'
           description: ''
       x-endpoint-id: E045
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/payments:
+    get:
+      operationId: E119
+      parameters:
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoicePaymentHistoryOut'
+          description: ''
+      x-endpoint-id: E119
   /api/v1/workspaces/{ws}/members:
     get:
       operationId: E013
@@ -3060,6 +3086,78 @@ components:
       required:
       - items
       - next_cursor
+    InvoicePaymentHistoryItemOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        amount_minor:
+          type: integer
+        kind:
+          $ref: '#/components/schemas/KindF8eEnum'
+        reverses_allocation_id:
+          type: string
+          format: uuid
+          nullable: true
+        match_id:
+          type: string
+          format: uuid
+          nullable: true
+        overpayment_confirmed:
+          type: boolean
+        evidence_type:
+          type: string
+        confirmed_by:
+          type: string
+          format: uuid
+        note:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        transaction_id:
+          type: string
+          format: uuid
+        value_date:
+          type: string
+          format: date
+        payer_descriptor:
+          type: string
+          nullable: true
+        currency:
+          type: string
+      required:
+      - amount_minor
+      - confirmed_by
+      - created_at
+      - currency
+      - evidence_type
+      - id
+      - invoice_id
+      - kind
+      - match_id
+      - note
+      - overpayment_confirmed
+      - payer_descriptor
+      - reverses_allocation_id
+      - transaction_id
+      - value_date
+    InvoicePaymentHistoryOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoicePaymentHistoryItemOut'
+      required:
+      - items
     InvoiceReasonInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -3159,6 +3257,14 @@ components:
       - payment_status
       - reminder_status
       - version
+    KindF8eEnum:
+      enum:
+      - ALLOCATION
+      - REVERSAL
+      type: string
+      description: |-
+        * `ALLOCATION` - ALLOCATION
+        * `REVERSAL` - REVERSAL
     LabelEnum:
       enum:
       - Strong
@@ -3520,7 +3626,7 @@ components:
         amount_minor:
           type: integer
         kind:
-          $ref: '#/components/schemas/PaymentAllocationOutKindEnum'
+          $ref: '#/components/schemas/KindF8eEnum'
         reverses_allocation_id:
           type: string
           format: uuid
@@ -3554,14 +3660,6 @@ components:
       - note
       - overpayment_confirmed
       - reverses_allocation_id
-    PaymentAllocationOutKindEnum:
-      enum:
-      - ALLOCATION
-      - REVERSAL
-      type: string
-      description: |-
-        * `ALLOCATION` - ALLOCATION
-        * `REVERSAL` - REVERSAL
     PaymentAttachmentOut:
       type: object
       properties:

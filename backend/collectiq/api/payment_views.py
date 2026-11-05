@@ -21,6 +21,7 @@ from .registry import endpoint
 from .serializers import (
     AllocationIn,
     DuplicateIn,
+    InvoicePaymentHistoryOut,
     LedgerResultOut,
     PaymentAttachmentOut,
     PaymentDetailOut,
@@ -147,3 +148,9 @@ class PaymentAttachmentView(APIView):
         if upload.size > attachments.MAX_BYTES:
             raise invalid("file", "That file is larger than 5 MB.")
         return Response(attachments.attach(request.ctx, payment_id, upload.name, upload.read()), status=201)
+
+
+class InvoicePaymentHistoryView(APIView):
+    @endpoint("E119", responses={200: InvoicePaymentHistoryOut})
+    def get(self, request: Any, ws: UUID, invoice_id: UUID) -> Response:
+        return Response(ledger.invoice_payment_history(request.ctx, invoice_id))

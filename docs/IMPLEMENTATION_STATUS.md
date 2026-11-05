@@ -10,7 +10,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** statement import (E053, API only): generic CSV parser, credit-only default, fingerprint dedupe, coverage confirmation.
 - **Done:** Task 18, explainable match suggestions (E055, E056).
 - **Done:** Task 19, confirmed allocations, reversal, manual payment, void and duplicate (E049-E052, E057-E061, API only).
-- **Next:** Task 20, Reconciliation and Payment Accounts screens (SCR-06, SCR-15).
+- **Done:** Task 20, Reconciliation and Payment Accounts screens (SCR-06, SCR-15): review, confirmed, unmatched, allocate, manual payment with proof, statement upload with explicit date format, invoice Payment history (E117-E119).
+- **Next:** Task 21, policy engine (E016-E020).
 
 ## T1 spike outcome
 
@@ -43,6 +44,7 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T16 Statement import (E053) | 15 parser unit tests, 20 integration tests (TS-031 overlap, F-6 re-import, credit-only default, locale/BOM, coverage, row immutability), make check 12 of 12 | `feat(evidence): statement import` |
 | T17 derive() and state maintenance | 20 property/table tests (every precedence branch, TS-011/012, INV-01, Hypothesis), 4 integration tests (recompute/version, outbox follow, seeded-drift detection and audited repair), make check 12 of 12 | `feat(evidence): payment state derivation` |
 | T19 Confirmed allocations and reversals | 874 pytest in total, of which the two new allocation files cover triggers, TS-011/012, F-8 races, the database backstop and a Hypothesis state-equals-derive property; `evidence.domain` 96% combined statement and branch on the full run, gate ≥95%, before one further matcher test; make check 12 of 12 | `feat(evidence): confirmed allocations and reversals` |
+| T20 Reconciliation and Payment Accounts screens | E117, E118, E119 added; 5 new Playwright tests on the real API (14 total), 3 new vitest, 2 new backend tests; 884 pytest, 199 vitest, make check 12 of 12 | `feat(web): reconciliation e2e, invoice history, allocate unmatched` |
 
 ## Open items carried forward
 

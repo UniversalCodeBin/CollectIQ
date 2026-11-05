@@ -690,6 +690,17 @@ class PaymentAllocationOut(serializers.Serializer):
     created_at = serializers.DateTimeField()
 
 
+class InvoicePaymentHistoryItemOut(PaymentAllocationOut):
+    transaction_id = serializers.UUIDField()
+    value_date = serializers.DateField()
+    payer_descriptor = serializers.CharField(allow_null=True)
+    currency = serializers.CharField()
+
+
+class InvoicePaymentHistoryOut(serializers.Serializer):
+    items = InvoicePaymentHistoryItemOut(many=True)
+
+
 class InvoiceStateOut(serializers.Serializer):
     invoice_id = serializers.UUIDField()
     payment_status = serializers.CharField()

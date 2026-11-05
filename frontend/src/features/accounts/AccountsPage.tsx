@@ -73,15 +73,17 @@ function StatementDialog({ workspace, accountId, onClose }: { workspace: string;
   const [dateCol, setDateCol] = useState("Date");
   const [descCol, setDescCol] = useState("Description");
   const [amountCol, setAmountCol] = useState("Amount");
+  const [dateFormat, setDateFormat] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [problem, setProblem] = useState<ApiProblem | null>(null);
-  const [preview, setPreview] = useState<{ added: number; held: number } | null>(null);
+  const [preview, setPreview] = useState<{ added: number; held: number; invalid: { row: number; message: string }[] } | null>(null);
   const [busy, setBusy] = useState(false);
 
   async function send(dry: boolean) {
     if (!file) return setProblem(refuse("file", "Choose a CSV file to upload."));
     if (!isCsv(file)) return setProblem(refuse("file", "Choose a CSV file. Other kinds of file can't be imported."));
+    if (!dateFormat) return setProblem(refuse("date_format", "Choose how dates are written in this file. Dates are never guessed."));
     if (!from || !to) return setProblem(refuse("coverage_from", "Confirm the first and last date this statement covers."));
     setProblem(null);
     setBusy(true);
@@ -90,6 +92,7 @@ function StatementDialog({ workspace, accountId, onClose }: { workspace: string;
     body.set("source_type", "BANK_CSV");
     body.set("payment_account_id", accountId);
     body.set("mapping", JSON.stringify({ date: dateCol, description: descCol, amount: amountCol }));
+    body.set("date_format", dateFormat);
     body.set("coverage_from", from);
     body.set("coverage_to", to);
     body.set("dry_run", String(dry));
@@ -97,7 +100,11 @@ function StatementDialog({ workspace, accountId, onClose }: { workspace: string;
       const result = await apiRequest({ method: "post", path: "/api/v1/workspaces/{ws}/imports/transactions" }, { path: { ws: workspace }, body } as never, {
         idempotencyKey: crypto.randomUUID(),
       });
-      if (dry) setPreview({ added: result.counts.added, held: result.counts.held_for_confirmation });
+      if (dry) setPreview({
+          added: result.counts.added,
+          held: result.counts.held_for_confirmation,
+          invalid: ((result as { errors?: { row: number; message: string }[] }).errors ?? []).slice(0, 5),
+        });
       else {
         void client.invalidateQueries({ queryKey: ["accounts"] });
         void client.invalidateQueries({ queryKey: ["reconciliation"] });
@@ -117,12 +124,25 @@ function StatementDialog({ workspace, accountId, onClose }: { workspace: string;
         <TextField label="Date column" value={dateCol} onChange={(e) => setDateCol(e.target.value)} />
         <TextField label="Description column" value={descCol} onChange={(e) => setDescCol(e.target.value)} />
         <TextField label="Amount column" value={amountCol} onChange={(e) => setAmountCol(e.target.value)} />
+        <SelectField label="Date format" value={dateFormat} onChange={(e) => { setDateFormat(e.target.value); setPreview(null); }} error={fieldError(problem, "date_format")}>
+          <option value="">Choose a date format</option>
+          {["YYYY-MM-DD", "DD/MM/YYYY", "MM/DD/YYYY", "DD-MM-YYYY", "MM-DD-YYYY", "DD.MM.YYYY", "YYYY/MM/DD"].map((f) => (
+            <option key={f}>{f}</option>
+          ))}
+        </SelectField>
         <TextField label="Statement covers from" type="date" value={from} onChange={(e) => setFrom(e.target.value)} />
         <TextField label="Statement covers to" type="date" value={to} onChange={(e) => setTo(e.target.value)} />
         {preview && (
           <p role="status">
             {preview.added} payments will be added{preview.held ? `, ${preview.held} held for your confirmation` : ""}. Nothing is added until you confirm.
           </p>
+        )}
+        {preview && preview.invalid.length > 0 && (
+          <ul aria-label="Rows that cannot be read">
+            {preview.invalid.map((e) => (
+              <li key={e.row}>{`Row ${e.row}: ${e.message}`}</li>
+            ))}
+          </ul>
         )}
         {problem && <ProblemMessage problem={problem} />}
         <div className={styles.actions}>

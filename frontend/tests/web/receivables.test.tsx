@@ -302,6 +302,30 @@ describe("Invoice details (SCR-04)", () => {
     expect(within(derived).getByText(/35 days overdue/)).toBeInTheDocument();
   });
 
+  it("lists applied payments and reversals, oldest first (FR-056)", async () => {
+    const row = (id: string, kind: string, amount_minor: number, note: string | null) => ({
+      id, kind, amount_minor, currency: "INR", created_at: "2026-02-01T10:00:00Z", value_date: "2026-01-30",
+      payer_descriptor: "Acme Ltd", evidence_type: "BANK_STATEMENT", overpayment_confirmed: false, note, transaction_id: "t1", invoice_id: INV,
+    });
+    stub({
+      [DETAIL]: { status: 200, body: detail() },
+      [`GET ${API}/invoices/${INV}/payments`]: { status: 200, body: { items: [row("a1", "ALLOCATION", 100000, null), row("a2", "REVERSAL", -100000, "Wrong invoice")] } },
+    });
+    open(`invoices/${INV}/history`);
+    const list = await screen.findByRole("list", { name: "Payment history" });
+    const items = within(list).getAllByRole("listitem") as [HTMLElement, HTMLElement];
+    expect(items).toHaveLength(2);
+    expect(within(items[0]).getByText("Applied")).toBeInTheDocument();
+    expect(within(items[1]).getByText("Reversed")).toBeInTheDocument();
+    expect(within(items[1]).getByText(/Wrong invoice/)).toBeInTheDocument();
+  });
+
+  it("says when no payment has been applied", async () => {
+    stub({ [DETAIL]: { status: 200, body: detail() }, [`GET ${API}/invoices/${INV}/payments`]: { status: 200, body: { items: [] } } });
+    open(`invoices/${INV}/history`);
+    expect(await screen.findByText("No payments applied yet")).toBeInTheDocument();
+  });
+
   it("shows where the invoice came from", async () => {
     stub({ [DETAIL]: { status: 200, body: detail() } });
     open(`invoices/${INV}/overview`);
@@ -323,7 +347,7 @@ describe("Invoice details (SCR-04)", () => {
     open(`invoices/${INV}/overview`);
     await screen.findByRole("heading", { name: "Invoice INV-2041" });
     const tabs = screen.getByRole("navigation", { name: "Invoice sections" });
-    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview"]);
+    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history"]);
     for (const hidden of [/payment evidence/i, /timeline/i, /reconciliation/i, /tasks/i]) {
       expect(within(tabs).queryByText(hidden)).not.toBeInTheDocument();
     }

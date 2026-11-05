@@ -533,6 +533,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E119"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/members": {
         parameters: {
             query?: never;
@@ -1275,6 +1291,35 @@ export interface components {
             items: components["schemas"]["InvoiceRowOut"][];
             next_cursor: string | null;
         };
+        InvoicePaymentHistoryItemOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number?: string;
+            amount_minor: number;
+            kind: components["schemas"]["KindF8eEnum"];
+            /** Format: uuid */
+            reverses_allocation_id: string | null;
+            /** Format: uuid */
+            match_id: string | null;
+            overpayment_confirmed: boolean;
+            evidence_type: string;
+            /** Format: uuid */
+            confirmed_by: string;
+            note: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            transaction_id: string;
+            /** Format: date */
+            value_date: string;
+            payer_descriptor: string | null;
+            currency: string;
+        };
+        InvoicePaymentHistoryOut: {
+            items: components["schemas"]["InvoicePaymentHistoryItemOut"][];
+        };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         InvoiceReasonInRequest: {
             reason: string;
@@ -1312,6 +1357,12 @@ export interface components {
             reminder_status: string;
             version: number;
         };
+        /**
+         * @description * `ALLOCATION` - ALLOCATION
+         *     * `REVERSAL` - REVERSAL
+         * @enum {string}
+         */
+        KindF8eEnum: "ALLOCATION" | "REVERSAL";
         /**
          * @description * `Strong` - Strong
          *     * `Possible` - Possible
@@ -1465,7 +1516,7 @@ export interface components {
             invoice_id: string;
             invoice_number?: string;
             amount_minor: number;
-            kind: components["schemas"]["PaymentAllocationOutKindEnum"];
+            kind: components["schemas"]["KindF8eEnum"];
             /** Format: uuid */
             reverses_allocation_id: string | null;
             /** Format: uuid */
@@ -1478,12 +1529,6 @@ export interface components {
             /** Format: date-time */
             created_at: string;
         };
-        /**
-         * @description * `ALLOCATION` - ALLOCATION
-         *     * `REVERSAL` - REVERSAL
-         * @enum {string}
-         */
-        PaymentAllocationOutKindEnum: "ALLOCATION" | "REVERSAL";
         PaymentAttachmentOut: {
             file_name: string;
             size_bytes: number;
@@ -2828,6 +2873,28 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InvoiceDetailOut"];
+                };
+            };
+        };
+    };
+    E119: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoicePaymentHistoryOut"];
                 };
             };
         };

@@ -300,6 +300,7 @@ _SPECS = (
     _spec("E116", "GET", "/workspaces/{ws}/imports/{import_id}/error-report", FINANCE_READ, "", "P0"),
     _spec("E117", "POST", "/workspaces/{ws}/payments/{payment_id}/attachment", LEDGER_WRITE, "AI", "P0"),
     _spec("E118", "GET", "/workspaces/{ws}/payments/{payment_id}/attachment", FINANCE_READ, "", "P0"),
+    _spec("E119", "GET", "/workspaces/{ws}/invoices/{invoice_id}/payments", FINANCE_READ, "", "P0"),
 )
 
 ENDPOINTS: dict[str, EndpointSpec] = {spec.id: spec for spec in _SPECS}

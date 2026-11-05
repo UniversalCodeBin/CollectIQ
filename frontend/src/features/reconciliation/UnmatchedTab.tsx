@@ -1,5 +1,5 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { type FormEvent, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { type FormEvent, useEffect, useState } from "react";
 import { Button } from "../../components/ui/Button";
 import { Dialog } from "../../components/ui/Dialog";
 import { EmptyState } from "../../components/ui/EmptyState";
@@ -8,7 +8,7 @@ import { MutationFeedback } from "../../components/ui/MutationFeedback";
 import { ProblemMessage } from "../../components/ui/ProblemMessage";
 import { ApiProblem, apiRequest, useApiMutation } from "../../lib/api";
 import { formatDate, formatMinor } from "../../lib/format";
-import { parseMinor } from "./money";
+import { minorToText, parseMinor } from "./money";
 import styles from "./Reconciliation.module.css";
 import type { Unmatched } from "./types";
 
@@ -125,8 +125,74 @@ function PaymentDialog({ workspace, onClose }: { workspace: string; onClose: () 
   );
 }
 
+
+function AllocateDialog({ workspace, item, onClose }: { workspace: string; item: Unmatched; onClose: () => void }) {
+  const client = useQueryClient();
+  const invoices = useQuery({
+    queryKey: ["reconciliation", workspace, "open-invoices"],
+    queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/invoices" }, { path: { ws: workspace }, query: { limit: "100" } }),
+  });
+  const allocate = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/allocations" }, { idempotent: true });
+  const open = (invoices.data?.items ?? []).filter((i) => i.currency === item.currency && i.outstanding_minor > 0);
+  const [invoiceId, setInvoiceId] = useState("");
+  const [amount, setAmount] = useState(minorToText(item.remaining_minor));
+  const [local, setLocal] = useState<ApiProblem | null>(null);
+  const invoice = open.find((i) => i.id === invoiceId);
+
+  useEffect(() => {
+    if (allocate.status === "success") {
+      void client.invalidateQueries({ queryKey: ["reconciliation"] });
+      onClose();
+    }
+  }, [allocate.status, client, onClose]);
+
+  function submit(event: FormEvent) {
+    event.preventDefault();
+    const minor = parseMinor(amount);
+    if (!invoice) return setLocal(refuse("invoice_id", "Choose the invoice this payment belongs to."));
+    if (minor === null) return setLocal(refuse("amount", "Enter the amount to apply, such as 1500.50."));
+    if (minor > item.remaining_minor) return setLocal(refuse("amount", "That is more than is left on this payment."));
+    if (minor > invoice.outstanding_minor) return setLocal(refuse("amount", "That is more than the invoice still owes."));
+    setLocal(null);
+    allocate.submit({
+      path: { ws: workspace },
+      body: { transaction_id: item.id, allocations: [{ invoice_id: invoice.id, amount_minor: minor }] } as never,
+    });
+  }
+
+  return (
+    <Dialog open onClose={onClose} title="Apply payment to an invoice">
+      <form className={styles.form} onSubmit={submit} noValidate>
+        <p className={styles.muted}>
+          {formatMinor(item.remaining_minor, item.currency)} is unapplied. Nothing changes until you press Apply payment.
+        </p>
+        <SelectField label="Invoice" value={invoiceId} onChange={(e) => setInvoiceId(e.target.value)} error={fieldError(local, "invoice_id")}>
+          <option value="">Choose an invoice</option>
+          {open.map((i) => (
+            <option key={i.id} value={i.id}>
+              {`${i.invoice_number} · ${i.client_name} · ${formatMinor(i.outstanding_minor, i.currency)}`}
+            </option>
+          ))}
+        </SelectField>
+        <TextField label="Amount to apply" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} error={fieldError(local, "amount")} />
+        {local && !fieldError(local, "amount") && !fieldError(local, "invoice_id") && <ProblemMessage problem={local} />}
+        <MutationFeedback mutation={allocate} />
+        <div className={styles.actions}>
+          <Button variant="primary" type="submit" aria-disabled={allocate.status === "pending" || undefined}>
+            Apply payment
+          </Button>
+          <Button data-cancel onClick={onClose}>
+            Cancel
+          </Button>
+        </div>
+      </form>
+    </Dialog>
+  );
+}
+
 export function UnmatchedTab({ workspace, items }: { workspace: string; items: Unmatched[] }) {
   const [recording, setRecording] = useState(false);
+  const [applying, setApplying] = useState<Unmatched | null>(null);
   return (
     <>
       <div className={styles.toolbar}>
@@ -146,11 +212,13 @@ export function UnmatchedTab({ workspace, items }: { workspace: string; items: U
                   {t.payer_descriptor ?? "Unknown payer"} · {formatDate(t.value_date)}
                   {t.account_label ? ` · ${t.account_label}` : ""}
                 </p>
+                <Button onClick={() => setApplying(t)}>Apply to an invoice</Button>
               </div>
             </li>
           ))}
         </ul>
       )}
+      {applying && <AllocateDialog workspace={workspace} item={applying} onClose={() => setApplying(null)} />}
       {recording && <PaymentDialog workspace={workspace} onClose={() => setRecording(false)} />}
     </>
   );
