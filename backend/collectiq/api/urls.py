@@ -3,6 +3,7 @@ from django.urls import path
 from . import account_views as accounts
 from . import case_views as cases
 from . import client_views as clients
+from . import conversation_views as conversations
 from . import identity_views as identity
 from . import import_views as imports
 from . import invoice_views as invoices
@@ -84,6 +85,33 @@ urlpatterns: list = [
         payments.InvoicePaymentHistoryView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/void", payments.PaymentVoidView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/messages", conversations.MessageCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/messages/<uuid:message_id>", conversations.MessageDetailView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/messages/<uuid:message_id>/associations",
+        conversations.MessageAssociationView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/messages",
+        conversations.InvoiceTimelineView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/commitments",
+        conversations.InvoiceCommitmentsView.as_view(),
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/commitments", conversations.CommitmentCollectionView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/commitments/<uuid:commitment_id>",
+        conversations.CommitmentDetailView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/snooze/approve",
+        conversations.SnoozeApproveView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/snooze/undo",
+        conversations.SnoozeUndoView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/cases", cases.CaseCollectionView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>", cases.CaseDetailView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>/resolve", cases.CaseResolveView.as_view()),

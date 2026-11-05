@@ -914,6 +914,80 @@ paths:
                 $ref: '#/components/schemas/ContactOut'
           description: ''
       x-endpoint-id: E026
+  /api/v1/workspaces/{ws}/commitments:
+    post:
+      operationId: E072
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommitmentInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommitmentInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentRecordedOut'
+          description: ''
+      x-endpoint-id: E072
+  /api/v1/workspaces/{ws}/commitments/{commitment_id}:
+    patch:
+      operationId: E073
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: commitment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCommitmentUpdateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCommitmentUpdateInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentOut'
+          description: ''
+      x-endpoint-id: E073
   /api/v1/workspaces/{ws}/contacts/{contact_id}/suppression:
     post:
       operationId: E027
@@ -1540,6 +1614,40 @@ paths:
                 $ref: '#/components/schemas/InvoiceDetailOut'
           description: ''
       x-endpoint-id: E045
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/commitments:
+    get:
+      operationId: E071
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommitmentPageOut'
+          description: ''
+      x-endpoint-id: E071
   /api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume:
     post:
       operationId: E082
@@ -1581,6 +1689,40 @@ paths:
                 $ref: '#/components/schemas/ResumeOut'
           description: ''
       x-endpoint-id: E082
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/messages:
+    get:
+      operationId: E065
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimelinePageOut'
+          description: ''
+      x-endpoint-id: E065
   /api/v1/workspaces/{ws}/invoices/{invoice_id}/payments:
     get:
       operationId: E119
@@ -1607,6 +1749,87 @@ paths:
                 $ref: '#/components/schemas/InvoicePaymentHistoryOut'
           description: ''
       x-endpoint-id: E119
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/approve:
+    post:
+      operationId: E074
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnoozeApproveInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SnoozeApproveInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnoozeStartedOut'
+          description: ''
+      x-endpoint-id: E074
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/undo:
+    post:
+      operationId: E075
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnoozeUndoInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SnoozeUndoInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SnoozeUndoneOut'
+          description: ''
+      x-endpoint-id: E075
   /api/v1/workspaces/{ws}/members:
     get:
       operationId: E013
@@ -1696,6 +1919,154 @@ paths:
         '204':
           description: No response body
       x-endpoint-id: E015
+  /api/v1/workspaces/{ws}/messages:
+    get:
+      operationId: E063
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessagePageOut'
+          description: ''
+      x-endpoint-id: E063
+    post:
+      operationId: E062
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                source:
+                  type: string
+                  enum:
+                  - PASTE
+                  - EML
+                  - TXT
+                text:
+                  type: string
+                file:
+                  type: string
+                  format: binary
+                sender:
+                  type: string
+                subject:
+                  type: string
+                received_at:
+                  type: string
+                  format: date-time
+                invoice_ids:
+                  type: array
+                  items:
+                    type: string
+                  description: JSON objects
+              required:
+              - source
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageOut'
+          description: ''
+      x-endpoint-id: E062
+  /api/v1/workspaces/{ws}/messages/{message_id}:
+    get:
+      operationId: E064
+      parameters:
+      - in: path
+        name: message_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageOut'
+          description: ''
+      x-endpoint-id: E064
+  /api/v1/workspaces/{ws}/messages/{message_id}/associations:
+    post:
+      operationId: E066
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: message_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssociationsInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageOut'
+          description: ''
+      x-endpoint-id: E066
   /api/v1/workspaces/{ws}/payment-accounts:
     get:
       operationId: E029
@@ -2553,6 +2924,48 @@ components:
         * `PENDING` - PENDING
         * `APPROVED` - APPROVED
         * `REJECTED` - REJECTED
+    AssociationInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        labels:
+          type: array
+          items:
+            $ref: '#/components/schemas/LabelsEnum'
+          maxItems: 10
+      required:
+      - invoice_id
+    AssociationOut:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        labels:
+          type: array
+          items:
+            type: string
+      required:
+      - invoice_id
+      - invoice_number
+      - labels
+    AssociationsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_ids:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociationInRequest'
+      required:
+      - invoice_ids
     AttestationInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2940,6 +3353,173 @@ components:
       - contacts_active
       - contacts_suppressed
       - contacts_total
+    CommitmentInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        strength:
+          $ref: '#/components/schemas/StrengthEnum'
+        date:
+          type: string
+          format: date
+        window_start:
+          type: string
+          format: date
+        window_end:
+          type: string
+          format: date
+        note:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - invoice_id
+      - strength
+    CommitmentOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        source_message_id:
+          type: string
+          format: uuid
+          nullable: true
+        strength:
+          type: string
+        promised_date:
+          type: string
+          format: date
+          nullable: true
+        window_start:
+          type: string
+          format: date
+          nullable: true
+        window_end:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+        note:
+          type: string
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - created_at
+      - created_by
+      - id
+      - invoice_id
+      - note
+      - promised_date
+      - source_message_id
+      - status
+      - strength
+      - version
+      - window_end
+      - window_start
+    CommitmentPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommitmentOut'
+        snoozes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SnoozeOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+      - snoozes
+    CommitmentRecordedOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        source_message_id:
+          type: string
+          format: uuid
+          nullable: true
+        strength:
+          type: string
+        promised_date:
+          type: string
+          format: date
+          nullable: true
+        window_start:
+          type: string
+          format: date
+          nullable: true
+        window_end:
+          type: string
+          format: date
+          nullable: true
+        status:
+          type: string
+        note:
+          type: string
+          nullable: true
+        created_by:
+          type: string
+          format: uuid
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        snooze:
+          allOf:
+          - $ref: '#/components/schemas/SnoozeProposalOut'
+          nullable: true
+        snooze_note:
+          type: string
+          nullable: true
+      required:
+      - created_at
+      - created_by
+      - id
+      - invoice_id
+      - note
+      - promised_date
+      - snooze
+      - snooze_note
+      - source_message_id
+      - status
+      - strength
+      - version
+      - window_end
+      - window_start
+    CommitmentUpdateInStatusEnum:
+      enum:
+      - WITHDRAWN
+      - BROKEN
+      type: string
+      description: |-
+        * `WITHDRAWN` - WITHDRAWN
+        * `BROKEN` - BROKEN
     ContactInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -3468,6 +4048,21 @@ components:
           format: uuid
       required:
       - duplicate_of
+    EffectOut:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        label:
+          type: string
+        effect:
+          type: string
+          nullable: true
+      required:
+      - effect
+      - invoice_id
+      - label
     EmailInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -4046,6 +4641,30 @@ components:
         * `Strong` - Strong
         * `Possible` - Possible
         * `Weak` - Weak
+    LabelsEnum:
+      enum:
+      - PAYMENT_CLAIM
+      - COMMITMENT_EXPLICIT
+      - EXPECTATION_TENTATIVE
+      - DOCUMENT_REQUEST
+      - DISPUTE
+      - PAUSE_REQUEST
+      - CLARIFICATION_REQUEST
+      - PARTIAL_PAYMENT_PROPOSAL
+      - WRONG_RECIPIENT_OR_OPT_OUT
+      - UNRELATED_OR_AMBIGUOUS
+      type: string
+      description: |-
+        * `PAYMENT_CLAIM` - PAYMENT_CLAIM
+        * `COMMITMENT_EXPLICIT` - COMMITMENT_EXPLICIT
+        * `EXPECTATION_TENTATIVE` - EXPECTATION_TENTATIVE
+        * `DOCUMENT_REQUEST` - DOCUMENT_REQUEST
+        * `DISPUTE` - DISPUTE
+        * `PAUSE_REQUEST` - PAUSE_REQUEST
+        * `CLARIFICATION_REQUEST` - CLARIFICATION_REQUEST
+        * `PARTIAL_PAYMENT_PROPOSAL` - PARTIAL_PAYMENT_PROPOSAL
+        * `WRONG_RECIPIENT_OR_OPT_OUT` - WRONG_RECIPIENT_OR_OPT_OUT
+        * `UNRELATED_OR_AMBIGUOUS` - UNRELATED_OR_AMBIGUOUS
     LedgerResultOut:
       type: object
       properties:
@@ -4105,6 +4724,66 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MemberOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    MessageOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        source:
+          type: string
+        sender:
+          type: string
+          nullable: true
+        subject:
+          type: string
+          nullable: true
+        received_at:
+          type: string
+          format: date-time
+        uploaded_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        is_customer_statement:
+          type: boolean
+        associations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AssociationOut'
+        body:
+          type: string
+        preview:
+          type: string
+        effects:
+          type: array
+          items:
+            $ref: '#/components/schemas/EffectOut'
+      required:
+      - associations
+      - created_at
+      - id
+      - is_customer_statement
+      - received_at
+      - sender
+      - source
+      - subject
+      - uploaded_by
+    MessagePageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MessageOut'
         next_cursor:
           type: string
           nullable: true
@@ -4206,6 +4885,17 @@ components:
           $ref: '#/components/schemas/SensitivityEnum'
         tone:
           $ref: '#/components/schemas/ToneEnum'
+    PatchedCommitmentUpdateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        status:
+          $ref: '#/components/schemas/CommitmentUpdateInStatusEnum'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 1000
     PatchedContactUpdateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -5172,6 +5862,114 @@ components:
       - csrf_token
       - user
       - workspaces
+    SnoozeApproveInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        approval_id:
+          type: string
+          format: uuid
+      required:
+      - approval_id
+    SnoozeOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        commitment_id:
+          type: string
+          format: uuid
+          nullable: true
+        until:
+          type: string
+          format: date
+        status:
+          type: string
+        approval_id:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        activated_at:
+          type: string
+          format: date-time
+          nullable: true
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - activated_at
+      - approval_id
+      - commitment_id
+      - created_at
+      - ended_at
+      - id
+      - invoice_id
+      - status
+      - until
+    SnoozeProposalOut:
+      type: object
+      properties:
+        outcome:
+          type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        approval_id:
+          type: string
+          format: uuid
+          nullable: true
+        until:
+          type: string
+          format: date
+      required:
+      - approval_id
+      - outcome
+      - reasons
+      - until
+    SnoozeStartedOut:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        reminder_status:
+          type: string
+        until:
+          type: string
+          format: date
+      required:
+      - invoice_id
+      - reminder_status
+      - until
+    SnoozeUndoInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+    SnoozeUndoneOut:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        reminder_status:
+          type: string
+      required:
+      - invoice_id
+      - reminder_status
     StatementCountsOut:
       type: object
       properties:
@@ -5262,6 +6060,14 @@ components:
       - field
       - message
       - row
+    StrengthEnum:
+      enum:
+      - EXPLICIT
+      - TENTATIVE
+      type: string
+      description: |-
+        * `EXPLICIT` - EXPLICIT
+        * `TENTATIVE` - TENTATIVE
     SuppressionInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -5273,6 +6079,20 @@ components:
           maxLength: 500
       required:
       - reason
+    TimelinePageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
     TokenInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional

@@ -890,3 +890,144 @@ class ResumeOut(serializers.Serializer):
     invoice_id = serializers.UUIDField()
     dispute_status = serializers.CharField()
     reminder_status = serializers.CharField()
+
+
+class AssociationIn(StrictSerializer):
+    invoice_id = serializers.UUIDField()
+    labels = serializers.ListField(
+        child=serializers.ChoiceField(
+            choices=[
+                "PAYMENT_CLAIM",
+                "COMMITMENT_EXPLICIT",
+                "EXPECTATION_TENTATIVE",
+                "DOCUMENT_REQUEST",
+                "DISPUTE",
+                "PAUSE_REQUEST",
+                "CLARIFICATION_REQUEST",
+                "PARTIAL_PAYMENT_PROPOSAL",
+                "WRONG_RECIPIENT_OR_OPT_OUT",
+                "UNRELATED_OR_AMBIGUOUS",
+            ]
+        ),
+        required=False,
+        max_length=10,
+    )
+
+
+class AssociationsIn(StrictSerializer):
+    invoice_ids = AssociationIn(many=True, max_length=20)
+
+
+class AssociationOut(serializers.Serializer):
+    invoice_id = serializers.UUIDField()
+    invoice_number = serializers.CharField()
+    labels = serializers.ListField(child=serializers.CharField())
+
+
+class EffectOut(serializers.Serializer):
+    invoice_id = serializers.UUIDField()
+    label = serializers.CharField()
+    effect = serializers.CharField(allow_null=True)
+
+
+class MessageOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    source = serializers.CharField()
+    sender = serializers.CharField(allow_null=True)
+    subject = serializers.CharField(allow_null=True)
+    received_at = serializers.DateTimeField()
+    uploaded_by = serializers.UUIDField()
+    created_at = serializers.DateTimeField()
+    is_customer_statement = serializers.BooleanField()
+    associations = AssociationOut(many=True)
+    body = serializers.CharField(required=False)
+    preview = serializers.CharField(required=False)
+    effects = EffectOut(many=True, required=False)
+
+
+class MessagePageOut(serializers.Serializer):
+    items = MessageOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class TimelinePageOut(serializers.Serializer):
+    items = serializers.ListField(child=serializers.DictField())
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class CommitmentIn(StrictSerializer):
+    invoice_id = serializers.UUIDField()
+    strength = serializers.ChoiceField(choices=["EXPLICIT", "TENTATIVE"])
+    date = serializers.DateField(required=False)
+    window_start = serializers.DateField(required=False)
+    window_end = serializers.DateField(required=False)
+    note = serializers.CharField(max_length=1000, required=False)
+
+
+class CommitmentUpdateIn(StrictSerializer):
+    status = serializers.ChoiceField(choices=["WITHDRAWN", "BROKEN"], required=False)
+    note = serializers.CharField(max_length=1000, required=False)
+
+
+class SnoozeProposalOut(serializers.Serializer):
+    outcome = serializers.CharField()
+    reasons = serializers.ListField(child=serializers.CharField())
+    approval_id = serializers.UUIDField(allow_null=True)
+    until = serializers.DateField()
+
+
+class SnoozeOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    commitment_id = serializers.UUIDField(allow_null=True)
+    until = serializers.DateField()
+    status = serializers.CharField()
+    approval_id = serializers.UUIDField()
+    created_at = serializers.DateTimeField()
+    activated_at = serializers.DateTimeField(allow_null=True)
+    ended_at = serializers.DateTimeField(allow_null=True)
+
+
+class CommitmentOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    source_message_id = serializers.UUIDField(allow_null=True)
+    strength = serializers.CharField()
+    promised_date = serializers.DateField(allow_null=True)
+    window_start = serializers.DateField(allow_null=True)
+    window_end = serializers.DateField(allow_null=True)
+    status = serializers.CharField()
+    note = serializers.CharField(allow_null=True)
+    created_by = serializers.UUIDField()
+    version = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+
+
+class CommitmentRecordedOut(CommitmentOut):
+    snooze = SnoozeProposalOut(allow_null=True)
+    snooze_note = serializers.CharField(allow_null=True)
+
+
+class CommitmentPageOut(serializers.Serializer):
+    items = CommitmentOut(many=True)
+    snoozes = SnoozeOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class SnoozeApproveIn(StrictSerializer):
+    approval_id = serializers.UUIDField()
+
+
+class SnoozeUndoIn(StrictSerializer):
+    reason = serializers.CharField(max_length=500, required=False)
+
+
+class SnoozeStartedOut(serializers.Serializer):
+    invoice_id = serializers.UUIDField()
+    reminder_status = serializers.CharField()
+    until = serializers.DateField()
+
+
+class SnoozeUndoneOut(serializers.Serializer):
+    invoice_id = serializers.UUIDField()
+    reminder_status = serializers.CharField()

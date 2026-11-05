@@ -6,10 +6,10 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 22** (disputes and blockers, E076-E082) is complete; the commit follows this checkpoint. Evidence: see the Task 22 commit message.
+- **Task 23** (messages, claims, commitments, snooze; E062-E066, E071-E075) is complete; the commit follows this checkpoint. Evidence: see the Task 23 commit message.
 
 ## Current task
-- **Task 23: Messages, timeline, claims, commitments and snooze (E062-E066, E071-E075).** Owed from T22: subscribers on `CaseOpened` to cancel drafts and snoozes; E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type needs a migration (invoice_id is NOT NULL). Still owed from T19: AllocationConfirmed/Reversed subscribers (FR-057); nightly evidence.integrity_check (T37/T40). Next free endpoint is E120.
+- **Task 24: Reminders and manual handoff (E083-E089).** Owed: subscribers on `CaseOpened` to cancel drafts and snoozes; end active snoozes when their date passes; a path to close `verification_tasks` and decrement `open_task_count` (T25/T30); the E065 timeline has no cursor paging (T37). From T22: E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type needs a migration (invoice_id is NOT NULL). Still owed from T19: AllocationConfirmed/Reversed subscribers (FR-057); nightly evidence.integrity_check (T37/T40). Next free endpoint is E120.
 
 ## Relevant files
 - Frontend T14: frontend/src/features/{dashboard,receivables,invoice,client}/*, components/ui/QueryState.tsx, lib/format.ts (formatDate), lib/statusMap.ts; e2e/receivables.spec.ts; tests/web/receivables.test.tsx. Backend: invoices/read_models.py (null issue_date).

@@ -436,6 +436,38 @@ export interface paths {
         patch: operations["E026"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/commitments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E072"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/commitments/{commitment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E073"];
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/contacts/{contact_id}/suppression": {
         parameters: {
             query?: never;
@@ -645,6 +677,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/commitments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E071"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume": {
         parameters: {
             query?: never;
@@ -661,6 +709,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E065"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invoices/{invoice_id}/payments": {
         parameters: {
             query?: never;
@@ -671,6 +735,38 @@ export interface paths {
         get: operations["E119"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E074"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/undo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E075"];
         delete?: never;
         options?: never;
         head?: never;
@@ -707,6 +803,54 @@ export interface paths {
         options?: never;
         head?: never;
         patch: operations["E115"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E063"];
+        put?: never;
+        post: operations["E062"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/messages/{message_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E064"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/messages/{message_id}/associations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E066"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/workspaces/{ws}/payment-accounts": {
@@ -1042,6 +1186,22 @@ export interface components {
          */
         ApprovalOutStatusEnum: "PENDING" | "APPROVED" | "REJECTED";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AssociationInRequest: {
+            /** Format: uuid */
+            invoice_id: string;
+            labels?: components["schemas"]["LabelsEnum"][];
+        };
+        AssociationOut: {
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number: string;
+            labels: string[];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AssociationsInRequest: {
+            invoice_ids: components["schemas"]["AssociationInRequest"][];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         AttestationInRequest: {
             scope: components["schemas"]["ScopeEnum"];
             /** Format: uuid */
@@ -1190,6 +1350,76 @@ export interface components {
             contacts_active: number;
             contacts_suppressed: number;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        CommitmentInRequest: {
+            /** Format: uuid */
+            invoice_id: string;
+            strength: components["schemas"]["StrengthEnum"];
+            /** Format: date */
+            date?: string;
+            /** Format: date */
+            window_start?: string;
+            /** Format: date */
+            window_end?: string;
+            note?: string;
+        };
+        CommitmentOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            /** Format: uuid */
+            source_message_id: string | null;
+            strength: string;
+            /** Format: date */
+            promised_date: string | null;
+            /** Format: date */
+            window_start: string | null;
+            /** Format: date */
+            window_end: string | null;
+            status: string;
+            note: string | null;
+            /** Format: uuid */
+            created_by: string;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        CommitmentPageOut: {
+            items: components["schemas"]["CommitmentOut"][];
+            snoozes: components["schemas"]["SnoozeOut"][];
+            next_cursor: string | null;
+        };
+        CommitmentRecordedOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            /** Format: uuid */
+            source_message_id: string | null;
+            strength: string;
+            /** Format: date */
+            promised_date: string | null;
+            /** Format: date */
+            window_start: string | null;
+            /** Format: date */
+            window_end: string | null;
+            status: string;
+            note: string | null;
+            /** Format: uuid */
+            created_by: string;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            snooze: components["schemas"]["SnoozeProposalOut"] | null;
+            snooze_note: string | null;
+        };
+        /**
+         * @description * `WITHDRAWN` - WITHDRAWN
+         *     * `BROKEN` - BROKEN
+         * @enum {string}
+         */
+        CommitmentUpdateInStatusEnum: "WITHDRAWN" | "BROKEN";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ContactInRequest: {
             /** Format: email */
@@ -1445,6 +1675,12 @@ export interface components {
             /** Format: uuid */
             duplicate_of: string;
         };
+        EffectOut: {
+            /** Format: uuid */
+            invoice_id: string;
+            label: string;
+            effect: string | null;
+        };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         EmailInRequest: {
             /** Format: email */
@@ -1684,6 +1920,20 @@ export interface components {
          * @enum {string}
          */
         LabelEnum: "Strong" | "Possible" | "Weak";
+        /**
+         * @description * `PAYMENT_CLAIM` - PAYMENT_CLAIM
+         *     * `COMMITMENT_EXPLICIT` - COMMITMENT_EXPLICIT
+         *     * `EXPECTATION_TENTATIVE` - EXPECTATION_TENTATIVE
+         *     * `DOCUMENT_REQUEST` - DOCUMENT_REQUEST
+         *     * `DISPUTE` - DISPUTE
+         *     * `PAUSE_REQUEST` - PAUSE_REQUEST
+         *     * `CLARIFICATION_REQUEST` - CLARIFICATION_REQUEST
+         *     * `PARTIAL_PAYMENT_PROPOSAL` - PARTIAL_PAYMENT_PROPOSAL
+         *     * `WRONG_RECIPIENT_OR_OPT_OUT` - WRONG_RECIPIENT_OR_OPT_OUT
+         *     * `UNRELATED_OR_AMBIGUOUS` - UNRELATED_OR_AMBIGUOUS
+         * @enum {string}
+         */
+        LabelsEnum: "PAYMENT_CLAIM" | "COMMITMENT_EXPLICIT" | "EXPECTATION_TENTATIVE" | "DOCUMENT_REQUEST" | "DISPUTE" | "PAUSE_REQUEST" | "CLARIFICATION_REQUEST" | "PARTIAL_PAYMENT_PROPOSAL" | "WRONG_RECIPIENT_OR_OPT_OUT" | "UNRELATED_OR_AMBIGUOUS";
         LedgerResultOut: {
             payment: components["schemas"]["PaymentOut"];
             allocations: components["schemas"]["PaymentAllocationOut"][];
@@ -1705,6 +1955,28 @@ export interface components {
         };
         MemberPageOut: {
             items: components["schemas"]["MemberOut"][];
+            next_cursor: string | null;
+        };
+        MessageOut: {
+            /** Format: uuid */
+            id: string;
+            source: string;
+            sender: string | null;
+            subject: string | null;
+            /** Format: date-time */
+            received_at: string;
+            /** Format: uuid */
+            uploaded_by: string;
+            /** Format: date-time */
+            created_at: string;
+            is_customer_statement: boolean;
+            associations: components["schemas"]["AssociationOut"][];
+            body?: string;
+            preview?: string;
+            effects?: components["schemas"]["EffectOut"][];
+        };
+        MessagePageOut: {
+            items: components["schemas"]["MessageOut"][];
             next_cursor: string | null;
         };
         /**
@@ -1754,6 +2026,11 @@ export interface components {
             display_name?: string;
             sensitivity?: components["schemas"]["SensitivityEnum"];
             tone?: components["schemas"]["ToneEnum"];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedCommitmentUpdateInRequest: {
+            status?: components["schemas"]["CommitmentUpdateInStatusEnum"];
+            note?: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedContactUpdateInRequest: {
@@ -2144,6 +2421,54 @@ export interface components {
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
             csrf_token: string;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        SnoozeApproveInRequest: {
+            /** Format: uuid */
+            approval_id: string;
+        };
+        SnoozeOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            /** Format: uuid */
+            commitment_id: string | null;
+            /** Format: date */
+            until: string;
+            status: string;
+            /** Format: uuid */
+            approval_id: string;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            activated_at: string | null;
+            /** Format: date-time */
+            ended_at: string | null;
+        };
+        SnoozeProposalOut: {
+            outcome: string;
+            reasons: string[];
+            /** Format: uuid */
+            approval_id: string | null;
+            /** Format: date */
+            until: string;
+        };
+        SnoozeStartedOut: {
+            /** Format: uuid */
+            invoice_id: string;
+            reminder_status: string;
+            /** Format: date */
+            until: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        SnoozeUndoInRequest: {
+            reason?: string;
+        };
+        SnoozeUndoneOut: {
+            /** Format: uuid */
+            invoice_id: string;
+            reminder_status: string;
+        };
         StatementCountsOut: {
             total_rows: number;
             added: number;
@@ -2177,9 +2502,21 @@ export interface components {
             field: string;
             message: string;
         };
+        /**
+         * @description * `EXPLICIT` - EXPLICIT
+         *     * `TENTATIVE` - TENTATIVE
+         * @enum {string}
+         */
+        StrengthEnum: "EXPLICIT" | "TENTATIVE";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         SuppressionInRequest: {
             reason: string;
+        };
+        TimelinePageOut: {
+            items: {
+                [key: string]: unknown;
+            }[];
+            next_cursor: string | null;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         TokenInRequest: {
@@ -3083,6 +3420,63 @@ export interface operations {
             };
         };
     };
+    E072: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommitmentInRequest"];
+                "multipart/form-data": components["schemas"]["CommitmentInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentRecordedOut"];
+                };
+            };
+        };
+    };
+    E073: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                commitment_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCommitmentUpdateInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCommitmentUpdateInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentOut"];
+                };
+            };
+        };
+    };
     E027: {
         parameters: {
             query?: never;
@@ -3539,6 +3933,31 @@ export interface operations {
             };
         };
     };
+    E071: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CommitmentPageOut"];
+                };
+            };
+        };
+    };
     E082: {
         parameters: {
             query?: never;
@@ -3568,6 +3987,31 @@ export interface operations {
             };
         };
     };
+    E065: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TimelinePageOut"];
+                };
+            };
+        };
+    };
     E119: {
         parameters: {
             query?: never;
@@ -3586,6 +4030,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InvoicePaymentHistoryOut"];
+                };
+            };
+        };
+    };
+    E074: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SnoozeApproveInRequest"];
+                "multipart/form-data": components["schemas"]["SnoozeApproveInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnoozeStartedOut"];
+                };
+            };
+        };
+    };
+    E075: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["SnoozeUndoInRequest"];
+                "multipart/form-data": components["schemas"]["SnoozeUndoInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnoozeUndoneOut"];
                 };
             };
         };
@@ -3660,6 +4162,119 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"];
+                };
+            };
+        };
+    };
+    E063: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessagePageOut"];
+                };
+            };
+        };
+    };
+    E062: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** @enum {string} */
+                    source: "PASTE" | "EML" | "TXT";
+                    text?: string;
+                    /** Format: binary */
+                    file?: string;
+                    sender?: string;
+                    subject?: string;
+                    /** Format: date-time */
+                    received_at?: string;
+                    /** @description JSON objects */
+                    invoice_ids?: string[];
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"];
+                };
+            };
+        };
+    };
+    E064: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                message_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"];
+                };
+            };
+        };
+    };
+    E066: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                message_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssociationsInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MessageOut"];
                 };
             };
         };
