@@ -179,3 +179,9 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - The inbox shows only what the server returns (kind, action, date); it invents no detail. Items link to the screen that resolves them, so resolving there removes the item (the inbox is derived on read).
 - Onboarding skips are kept per workspace in the browser (`collectiq.onboarding.<ws>`), not on the server; they hide nothing that matters and need no endpoint.
 - The Task 14-27 screens that had no nav link now have one, in directive order. Remaining unbuilt nav labels: Integrations, Audit History.
+
+## Task 29 rulings
+- The gateway is pure Python with no Django or database import, so the `ai` isolation contract holds. The caller persists `ai_processing_records` from `AIResult` (provider, model version, input hash, redacted input, dropped fields).
+- Output validation is strict: exact key set, enums for labels and `LOW|MEDIUM|HIGH` confidence, so a numeric confidence or an unknown label is refused as `INVALID_OUTPUT`.
+- Account detection treats digit runs of nine or more as accounts; phones are seven or more digits. Over-redaction is accepted over leakage.
+- Rate limit is in-process per scope (workspace); a shared limiter is deferred until there is more than one worker (T39).
