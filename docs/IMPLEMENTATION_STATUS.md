@@ -8,8 +8,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** dashboard (SCR-02), receivables queue and all-invoices list (SCR-03), invoice details with correct, cancel and archive (SCR-04), read-only client profile (SCR-14).
 - **Done:** payment accounts, statement coverage and attestations (API only).
 - **Done:** statement import (E053, API only): generic CSV parser, credit-only default, fingerprint dedupe, coverage confirmation.
-- **Done:** Task 17, payment state derivation.
-- **Next:** Task 18, matcher and proposals (E055-E057).
+- **Done:** Task 18, explainable match suggestions (E055, E056).
+- **Next:** Task 19, allocation, reversal, manual payment, void, duplicate (E049-E052, E057-E061).
 
 ## T1 spike outcome
 

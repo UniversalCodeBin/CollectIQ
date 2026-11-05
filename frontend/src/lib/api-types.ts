@@ -597,6 +597,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/reconciliation/proposals": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E056"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/transactions/unmatched": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E055"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1114,6 +1146,13 @@ export interface components {
          * @enum {string}
          */
         KindEnum: "BANK" | "PAYPAL" | "UPI" | "CASH";
+        /**
+         * @description * `Strong` - Strong
+         *     * `Possible` - Possible
+         *     * `Weak` - Weak
+         * @enum {string}
+         */
+        LabelEnum: "Strong" | "Possible" | "Weak";
         LoginOut: {
             user: components["schemas"]["UserOut"];
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
@@ -1218,6 +1257,27 @@ export interface components {
             gaps: {
                 [key: string]: unknown;
             }[];
+        };
+        ProposalOut: {
+            /** Format: uuid */
+            id: string;
+            label: components["schemas"]["LabelEnum"];
+            ambiguous: boolean;
+            reasons: components["schemas"]["ProposalReasonOut"][];
+            transaction: {
+                [key: string]: unknown;
+            };
+            invoice: {
+                [key: string]: unknown;
+            };
+        };
+        ProposalPageOut: {
+            items: components["schemas"]["ProposalOut"][];
+            next_cursor: string | null;
+        };
+        ProposalReasonOut: {
+            code: string;
+            text: string;
         };
         QueueItemOut: {
             /** Format: uuid */
@@ -1347,6 +1407,22 @@ export interface components {
          * @enum {string}
          */
         TotalSourceEnum: "TOTAL" | "SUM";
+        UnmatchedPageOut: {
+            items: components["schemas"]["UnmatchedTransactionOut"][];
+            next_cursor: string | null;
+        };
+        UnmatchedTransactionOut: {
+            /** Format: uuid */
+            id: string;
+            amount_minor: number;
+            currency: string;
+            /** Format: date */
+            value_date: string;
+            reference: string | null;
+            payer_descriptor: string | null;
+            account_label: string;
+            proposal_count: number;
+        };
         UserOut: {
             /** Format: uuid */
             id: string;
@@ -2578,6 +2654,54 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["QueuePageOut"];
+                };
+            };
+        };
+    };
+    E056: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalPageOut"];
+                };
+            };
+        };
+    };
+    E055: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UnmatchedPageOut"];
                 };
             };
         };

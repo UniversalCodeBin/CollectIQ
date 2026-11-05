@@ -1463,6 +1463,62 @@ paths:
                 $ref: '#/components/schemas/QueuePageOut'
           description: ''
       x-endpoint-id: E047
+  /api/v1/workspaces/{ws}/reconciliation/proposals:
+    get:
+      operationId: E056
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposalPageOut'
+          description: ''
+      x-endpoint-id: E056
+  /api/v1/workspaces/{ws}/transactions/unmatched:
+    get:
+      operationId: E055
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnmatchedPageOut'
+          description: ''
+      x-endpoint-id: E055
 components:
   schemas:
     AccountCoverageOut:
@@ -2649,6 +2705,16 @@ components:
         * `PAYPAL` - PAYPAL
         * `UPI` - UPI
         * `CASH` - CASH
+    LabelEnum:
+      enum:
+      - Strong
+      - Possible
+      - Weak
+      type: string
+      description: |-
+        * `Strong` - Strong
+        * `Possible` - Possible
+        * `Weak` - Weak
     LoginOut:
       type: object
       properties:
@@ -2920,6 +2986,56 @@ components:
       - statements_through
       - status
       - version
+    ProposalOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        ambiguous:
+          type: boolean
+        reasons:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalReasonOut'
+        transaction:
+          type: object
+          additionalProperties: {}
+        invoice:
+          type: object
+          additionalProperties: {}
+      required:
+      - ambiguous
+      - id
+      - invoice
+      - label
+      - reasons
+      - transaction
+    ProposalPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProposalOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    ProposalReasonOut:
+      type: object
+      properties:
+        code:
+          type: string
+        text:
+          type: string
+      required:
+      - code
+      - text
     QueueItemOut:
       type: object
       properties:
@@ -3230,6 +3346,51 @@ components:
       description: |-
         * `TOTAL` - TOTAL
         * `SUM` - SUM
+    UnmatchedPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/UnmatchedTransactionOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    UnmatchedTransactionOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        value_date:
+          type: string
+          format: date
+        reference:
+          type: string
+          nullable: true
+        payer_descriptor:
+          type: string
+          nullable: true
+        account_label:
+          type: string
+        proposal_count:
+          type: integer
+      required:
+      - account_label
+      - amount_minor
+      - currency
+      - id
+      - payer_descriptor
+      - proposal_count
+      - reference
+      - value_date
     UserOut:
       type: object
       properties:

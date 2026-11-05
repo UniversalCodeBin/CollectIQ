@@ -532,3 +532,38 @@ class StatementImportOut(serializers.Serializer):
     errors = StatementRowErrorOut(many=True)
     held_rows = StatementHeldRowOut(many=True)
     coverage = StatementCoverageOut(allow_null=True)
+
+
+class UnmatchedTransactionOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    amount_minor = serializers.IntegerField()
+    currency = serializers.CharField()
+    value_date = serializers.DateField()
+    reference = serializers.CharField(allow_null=True)
+    payer_descriptor = serializers.CharField(allow_null=True)
+    account_label = serializers.CharField()
+    proposal_count = serializers.IntegerField()
+
+
+class UnmatchedPageOut(serializers.Serializer):
+    items = UnmatchedTransactionOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class ProposalReasonOut(serializers.Serializer):
+    code = serializers.CharField()
+    text = serializers.CharField()
+
+
+class ProposalOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    label = serializers.ChoiceField(choices=["Strong", "Possible", "Weak"])
+    ambiguous = serializers.BooleanField()
+    reasons = ProposalReasonOut(many=True)
+    transaction = serializers.DictField()
+    invoice = serializers.DictField()
+
+
+class ProposalPageOut(serializers.Serializer):
+    items = ProposalOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)

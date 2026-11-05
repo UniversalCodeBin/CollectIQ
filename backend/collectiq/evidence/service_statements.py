@@ -20,7 +20,7 @@ from collectiq.evidence import service_accounts
 from collectiq.evidence.parsers.base import MappingError, RawRow, StatementMapping
 from collectiq.evidence.parsers.generic_csv import GenericCsvParser, fingerprint, reference_candidates
 from collectiq.invoices.domain.csv_parse import DATE_FORMATS, CsvRejected, sniff_upload
-from collectiq.platform import clock
+from collectiq.platform import clock, outbox
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, execute_many, fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
@@ -318,6 +318,8 @@ def _store(
             "source_type": options.source_type,
         },
     )
+    if plan["counts"].get("added"):
+        outbox.publish(ctx, "TransactionsImported", {"batch_id": str(batch_id)})
     if options.coverage_from and options.coverage_to:
         service_accounts.record_coverage(
             ctx, account["id"], options.coverage_from, options.coverage_to, batch_id

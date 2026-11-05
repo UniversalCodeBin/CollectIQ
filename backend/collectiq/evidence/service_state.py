@@ -43,10 +43,16 @@ def load_facts(invoice_id: UUID | str) -> Facts:
     )
     if row is None:
         raise LookupError(str(invoice_id))
+    proposals = fetch_all(
+        "SELECT count(*) FILTER (WHERE NOT ambiguous) AS single, count(*) FILTER (WHERE ambiguous) AS unclear"
+        "  FROM reconciliation_matches WHERE invoice_id = %s AND status = 'PROPOSED' AND band <> 'LOW'",
+        [invoice_id],
+    )
     return Facts(
         gross_minor=row["gross_minor"],
         allocations=_allocation_amounts(invoice_id),
-        open_verification_tasks=row["open_task_count"],
+        open_verification_tasks=row["open_task_count"] + proposals[0]["single"],
+        conflict=proposals[0]["unclear"] > 0,
     )
 
 
