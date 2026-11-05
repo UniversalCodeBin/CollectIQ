@@ -65,7 +65,7 @@ function open(path: string) {
 const SIGNED_OUT = PROBLEM(401, "AUTH_REQUIRED", "Sign in to continue.");
 
 async function signIn(email = "a@example.test", password = "correct horse battery") { // pragma: allowlist secret
-  await userEvent.type(screen.getByLabelText("Email"), email);
+  await userEvent.type(await screen.findByLabelText("Email"), email);
   await userEvent.type(screen.getByLabelText("Password"), password);
   await userEvent.click(screen.getByRole("button", { name: "Sign in" }));
 }

@@ -53,6 +53,7 @@ MIDDLEWARE = [
     "collectiq.platform.middleware.CorrelationIdMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "collectiq.platform.middleware.SecurityHeadersMiddleware",
     "collectiq.platform.middleware.UploadLimitMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
 ]

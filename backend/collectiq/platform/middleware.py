@@ -51,3 +51,23 @@ class UploadLimitMiddleware:
                 content_type="application/problem+json",
             )
         return self.get_response(request)
+
+
+class SecurityHeadersMiddleware:
+    """The API only returns data, so it declares that nothing on its responses may load or frame anything."""
+
+    HEADERS = {
+        "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'",
+        "Cache-Control": "no-store",
+        "Referrer-Policy": "same-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    }
+
+    def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
+        self.get_response = get_response
+
+    def __call__(self, request: HttpRequest) -> HttpResponse:
+        response = self.get_response(request)
+        for name, value in self.HEADERS.items():
+            response.headers.setdefault(name, value)
+        return response

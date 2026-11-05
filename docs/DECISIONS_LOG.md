@@ -238,3 +238,11 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Journeys are covered by the existing specs (onboarding, import, reconciliation, follow-up, pause) plus `fl-viewports.spec.ts` and `fl-recovery.spec.ts`. FL-03, 08, 09, 10, 12, 13, 14 and 16 depend on UI that is not built (PDF review is flagged, no snooze/commitment controls, connect/send controls and AI correction UI are owed) and are not claimed as covered.
 - Pausing automation is not an idempotent mutation: a dropped request shows the problem and the person may press Pause again, which is safe because pausing twice is the same state.
 - Worker-killed-mid-job recovery is proven at the backend level by the job-lease tests, not in the browser.
+
+## Task 39 rulings
+- `scripts/check_claims.py` is the 13th `make check` gate. A line passes if it is a negative statement, or names immutable policy versions. It scans `frontend/src`, `backend/collectiq`, `docs`, `README.md` and `deploy`.
+- API responses now carry a CSP of `default-src 'none'; frame-ancestors 'none'; base-uri 'none'`, `Cache-Control: no-store`, `Referrer-Policy` and `Permissions-Policy`. The SPA's static host must set its own CSP (Task 40 deployment notes).
+- The 10 moderate `npm audit` findings are all dev tooling (minimatch via lint); production dependencies show none. No `--force` upgrade was applied.
+- Schemathesis ran unauthenticated; authenticated behaviour is covered by integration tests. axe covers empty states. Neither is a conformance claim.
+- Owed: PDF size and page limits, break-glass process, off-database audit anchor, image scanning, load test re-run on target hardware.
+- Two frontend tests were timing-sensitive under load and are now robust without weaker assertions: `raw-hex` first test has a 30 s timeout (cold ESLint start), and `auth.test.tsx` `signIn` waits for the lazily loaded form with `findByLabelText`.

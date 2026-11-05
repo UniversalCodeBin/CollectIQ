@@ -8,7 +8,7 @@ Receivables follow-up product: Django 5.2 + DRF + PostgreSQL 16 (forced row secu
 - Backend `backend/collectiq/`, layers top to bottom (import-linter enforces): api, settings_privacy, notifications, integrations, comms, conversations, cases, evidence, invoices, policy, tenancy, identity, audit, platform.
 
 ## Commands (repo root)
-`make migrate`, `make test`, `make check` (12 gates), `make openapi` (regenerate after endpoint changes), `make seed`, `make e2e`.
+`make migrate`, `make test`, `make check` (13 gates), `make openapi` (regenerate after endpoint changes), `make seed`, `make e2e`.
 Benchmarks: `backend/perf/` (k6).
 
 ## Rules that must not bend

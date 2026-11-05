@@ -422,3 +422,11 @@ def test_ready_hides_the_failure(pg, monkeypatch) -> None:
     monkeypatch.setattr("collectiq.api.identity_views.check_ready", lambda: False)
     response = APIClient().get(f"{API}/health/ready")
     assert (response.status_code, response.json()) == (503, {"status": "unavailable"})
+
+
+def test_api_responses_carry_security_headers(pg) -> None:
+    response = APIClient().get(f"{API}/health/live")
+    assert "default-src 'none'" in response["Content-Security-Policy"]
+    assert "frame-ancestors 'none'" in response["Content-Security-Policy"]
+    assert response["Cache-Control"] == "no-store"
+    assert response["X-Content-Type-Options"] == "nosniff"

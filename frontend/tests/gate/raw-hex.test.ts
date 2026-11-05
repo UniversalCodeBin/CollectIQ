@@ -15,7 +15,7 @@ async function lint(code: string, filePath = "src/features/example/Example.tsx")
 describe("no-raw-hex", () => {
   it("rejects a raw hex colour in a component", async () => {
     expect((await lint(fixture)).length).toBeGreaterThan(0);
-  });
+  }, 30_000); // first ESLint load is a cold start and can pass 5 s when other workers are busy
 
   it("rejects a raw hex colour inside a template literal", async () => {
     expect((await lint("export const c = `1px solid #0E5A6B`;\n")).length).toBeGreaterThan(0);

@@ -57,6 +57,7 @@ def all_steps() -> list[Step]:
              *_tracked_files()],
             REPO,
         ),
+        Step("claims", ["python3", "scripts/check_claims.py"], REPO),
         Step("openapi diff", [*uv_run, "python", "../scripts/check_openapi.py"], BACKEND),
         Step("traceability", [*uv_run, "python", "../scripts/check_traceability.py"], BACKEND),
         Step("eslint", ["npm", "run", "--silent", "lint"], FRONTEND),
