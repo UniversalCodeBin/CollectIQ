@@ -1,4 +1,4 @@
-import { Inbox, Landmark, LayoutDashboard, List, MessagesSquare, Scale, Send, Settings, ShieldAlert, type LucideIcon } from "lucide-react";
+import { History, Inbox, Landmark, Plug, LayoutDashboard, List, MessagesSquare, Scale, Send, Settings, ShieldAlert, type LucideIcon } from "lucide-react";
 
 export const DIRECTIVE_NAV = [
   "Dashboard",
@@ -32,6 +32,8 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Disputes & Blockers", route: "cases", to: "cases", icon: ShieldAlert },
   { label: "Follow-ups", route: "followups", to: "followups", icon: Send },
   { label: "Review Inbox", route: "inbox", to: "inbox", icon: Inbox },
+  { label: "Integrations", route: "integrations", to: "integrations", icon: Plug },
   { label: "Payment Accounts", route: "accounts", to: "accounts", icon: Landmark },
+  { label: "Audit History", route: "audit", to: "audit", icon: History },
   { label: "Settings", route: "settings/:tab", to: "settings/automation", icon: Settings },
 ];

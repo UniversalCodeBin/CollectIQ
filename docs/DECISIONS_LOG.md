@@ -215,3 +215,10 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Submitted and unknown reminders count toward the contact window and the idempotency key, so a second send cannot slip through.
 - PayPal events are stored as `EVIDENCE_ONLY` in `webhook_events`, keyed by event id. They never allocate or mark anything paid. An event for an unknown merchant is acknowledged and not stored. The workspace is found by two narrow SECURITY DEFINER functions (`consume_oauth_state`, `paypal_workspace_for`).
 - Not built: Gmail monitoring (E096), token refresh, thread ids, backoff classes, PayPal connect endpoint, UI controls for connect/send/confirm-unknown.
+
+## Task 35 rulings
+- Audit history lives in `audit/history.py`. Permission checks (`AUDIT_READ`, `EXPORT`) are made in the views, because tenancy sits above audit in the layer order.
+- Search filters: action, object_type, object_id, actor_id, from, to; newest first with a numeric cursor. Unknown filters are refused by name. Rows come from the masked columns only.
+- Export is synchronous JSON (`content` holds the CSV or JSON text), capped at 10,000 rows with a `truncated` flag, idempotent, and writes an `audit.exported` record. CSV cells starting with `= + - @` tab or CR get a leading quote.
+- `audit.verify_chain` recomputes each link with `audit_event_hash`; a break records `audit.chain_break_detected`. Scheduling it nightly is owed to T40. E101 was already built in Task 21.
+- The Audit History and Integrations links are now in the nav. The screen shows the append-only wording with the superuser limit.

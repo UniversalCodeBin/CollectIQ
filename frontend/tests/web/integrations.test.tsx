@@ -73,3 +73,33 @@ describe("Integrations", () => {
     await waitFor(() => expect(called(`GET ${API}/integrations`)).toHaveLength(1));
   });
 });
+
+describe("Audit History", () => {
+  it("states the append-only limit, lists records and exports", async () => {
+    stub({
+      [`GET ${API}/audit-events`]: {
+        status: 200,
+        body: {
+          items: [
+            { id: 2, occurred_at: "2026-11-05T00:00:00Z", actor_type: "USER", actor_id: null, action: "reminder.approved", object_type: "reminder", object_id: "r1", before: null, after: null, reason_codes: ["HUMAN_APPROVED"], policy_decision_id: null, correlation_id: "c" },
+          ],
+          next_cursor: null,
+          notice: "Audit records are append-only by database permissions, with a hash chain that detects casual edits; not tamper-resistant against a database superuser.",
+        },
+      },
+      [`POST ${API}/audit-events/exports`]: {
+        status: 200,
+        body: { format: "CSV", filename: "audit-events.csv", rows: 1, truncated: false, content: "id\r\n", notice: "" },
+      },
+    });
+    URL.createObjectURL = vi.fn(() => "blob:x");
+    URL.revokeObjectURL = vi.fn();
+    open("audit");
+    expect(await screen.findByText("reminder.approved")).toBeInTheDocument();
+    expect(screen.getByText(/not tamper-resistant against a database superuser/)).toBeInTheDocument();
+    screen.getByRole("button", { name: "Export CSV" }).click();
+    await waitFor(() => expect(called(`POST ${API}/audit-events/exports`)).toHaveLength(1));
+    expect(await screen.findByText(/Exported 1 records/)).toBeInTheDocument();
+    expect(called(`POST ${API}/audit-events/exports`)[0]?.headers.get("Idempotency-Key")).toBeTruthy();
+  });
+});

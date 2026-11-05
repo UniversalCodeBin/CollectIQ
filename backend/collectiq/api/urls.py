@@ -2,6 +2,7 @@ from django.urls import path
 
 from . import account_views as accounts
 from . import ai_views as ai
+from . import audit_views as audit_history
 from . import case_views as cases
 from . import client_views as clients
 from . import conversation_views as conversations
@@ -199,6 +200,8 @@ urlpatterns: list = [
         inbox.NotificationReadView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/audit-events", audit_history.AuditEventsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/audit-events/exports", audit_history.AuditExportView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/integrations", integrations.IntegrationsView.as_view()),
     path(
         f"{_V1}workspaces/<uuid:ws>/integrations/gmail/connect", integrations.GmailConnectView.as_view()

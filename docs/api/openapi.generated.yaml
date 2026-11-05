@@ -523,6 +523,92 @@ paths:
                 $ref: '#/components/schemas/AttestationOut'
           description: ''
       x-endpoint-id: E054
+  /api/v1/workspaces/{ws}/audit-events:
+    get:
+      operationId: E099
+      parameters:
+      - in: query
+        name: action
+        schema:
+          type: string
+      - in: query
+        name: actor_id
+        schema:
+          type: string
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: from
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: string
+      - in: query
+        name: object_id
+        schema:
+          type: string
+      - in: query
+        name: object_type
+        schema:
+          type: string
+      - in: query
+        name: to
+        schema:
+          type: string
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditPageOut'
+          description: ''
+      x-endpoint-id: E099
+  /api/v1/workspaces/{ws}/audit-events/exports:
+    post:
+      operationId: E100
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditExportInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AuditExportInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditExportOut'
+          description: ''
+      x-endpoint-id: E100
   /api/v1/workspaces/{ws}/automation/pause:
     post:
       operationId: E019
@@ -3849,6 +3935,103 @@ components:
       - attestation_ids
       - coverage_date
       - scope
+    AuditEventOut:
+      type: object
+      properties:
+        id:
+          type: integer
+        occurred_at:
+          type: string
+          format: date-time
+        actor_type:
+          type: string
+        actor_id:
+          type: string
+          format: uuid
+          nullable: true
+        action:
+          type: string
+        object_type:
+          type: string
+        object_id:
+          type: string
+        before:
+          nullable: true
+        after:
+          nullable: true
+        reason_codes:
+          type: array
+          items:
+            type: string
+        policy_decision_id:
+          type: string
+          format: uuid
+          nullable: true
+        correlation_id:
+          type: string
+      required:
+      - action
+      - actor_id
+      - actor_type
+      - after
+      - before
+      - correlation_id
+      - id
+      - object_id
+      - object_type
+      - occurred_at
+      - policy_decision_id
+      - reason_codes
+    AuditExportInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        format:
+          $ref: '#/components/schemas/FormatEnum'
+        filters:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+    AuditExportOut:
+      type: object
+      properties:
+        format:
+          type: string
+        filename:
+          type: string
+        rows:
+          type: integer
+        truncated:
+          type: boolean
+        content:
+          type: string
+        notice:
+          type: string
+      required:
+      - content
+      - filename
+      - format
+      - notice
+      - rows
+      - truncated
+    AuditPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/AuditEventOut'
+        next_cursor:
+          type: string
+          nullable: true
+        notice:
+          type: string
+      required:
+      - items
+      - next_cursor
+      - notice
     AuthorizationOut:
       type: object
       properties:
@@ -5060,6 +5243,14 @@ components:
       - updated_at
       - verified
       - version
+    FormatEnum:
+      enum:
+      - CSV
+      - JSON
+      type: string
+      description: |-
+        * `CSV` - CSV
+        * `JSON` - JSON
     GateOut:
       type: object
       properties:

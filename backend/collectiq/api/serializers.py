@@ -1230,3 +1230,39 @@ class IntegrationItemOut(serializers.Serializer):
 
 class IntegrationListOut(serializers.Serializer):
     items = IntegrationItemOut(many=True)
+
+
+# --- audit history (E099, E100) -----------------------------------------------------------------------------
+class AuditExportIn(StrictSerializer):
+    format = serializers.ChoiceField(choices=["CSV", "JSON"], required=False)
+    filters = serializers.DictField(child=serializers.CharField(), required=False)
+
+
+class AuditEventOut(serializers.Serializer):
+    id = serializers.IntegerField()
+    occurred_at = serializers.DateTimeField()
+    actor_type = serializers.CharField()
+    actor_id = serializers.UUIDField(allow_null=True)
+    action = serializers.CharField()
+    object_type = serializers.CharField()
+    object_id = serializers.CharField()
+    before = serializers.JSONField(allow_null=True)
+    after = serializers.JSONField(allow_null=True)
+    reason_codes = serializers.ListField(child=serializers.CharField())
+    policy_decision_id = serializers.UUIDField(allow_null=True)
+    correlation_id = serializers.CharField()
+
+
+class AuditPageOut(serializers.Serializer):
+    items = AuditEventOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+    notice = serializers.CharField()
+
+
+class AuditExportOut(serializers.Serializer):
+    format = serializers.CharField()
+    filename = serializers.CharField()
+    rows = serializers.IntegerField()
+    truncated = serializers.BooleanField()
+    content = serializers.CharField()
+    notice = serializers.CharField()

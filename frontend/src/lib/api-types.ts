@@ -324,6 +324,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/audit-events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E099"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/audit-events/exports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E100"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/automation/pause": {
         parameters: {
             query?: never;
@@ -1615,6 +1647,43 @@ export interface components {
             coverage_date: string;
             attestation_ids: string[];
         };
+        AuditEventOut: {
+            id: number;
+            /** Format: date-time */
+            occurred_at: string;
+            actor_type: string;
+            /** Format: uuid */
+            actor_id: string | null;
+            action: string;
+            object_type: string;
+            object_id: string;
+            before: unknown;
+            after: unknown;
+            reason_codes: string[];
+            /** Format: uuid */
+            policy_decision_id: string | null;
+            correlation_id: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AuditExportInRequest: {
+            format?: components["schemas"]["FormatEnum"];
+            filters?: {
+                [key: string]: string;
+            };
+        };
+        AuditExportOut: {
+            format: string;
+            filename: string;
+            rows: number;
+            truncated: boolean;
+            content: string;
+            notice: string;
+        };
+        AuditPageOut: {
+            items: components["schemas"]["AuditEventOut"][];
+            next_cursor: string | null;
+            notice: string;
+        };
         AuthorizationOut: {
             /** Format: uri */
             authorization_url: string;
@@ -2155,6 +2224,12 @@ export interface components {
             /** Format: date-time */
             updated_at: string;
         };
+        /**
+         * @description * `CSV` - CSV
+         *     * `JSON` - JSON
+         * @enum {string}
+         */
+        FormatEnum: "CSV" | "JSON";
         GateOut: {
             gate: string;
             passed: boolean;
@@ -3803,6 +3878,64 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttestationOut"];
+                };
+            };
+        };
+    };
+    E099: {
+        parameters: {
+            query?: {
+                action?: string;
+                actor_id?: string;
+                cursor?: string;
+                from?: string;
+                limit?: string;
+                object_id?: string;
+                object_type?: string;
+                to?: string;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditPageOut"];
+                };
+            };
+        };
+    };
+    E100: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["AuditExportInRequest"];
+                "multipart/form-data": components["schemas"]["AuditExportInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuditExportOut"];
                 };
             };
         };

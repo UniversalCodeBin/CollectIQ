@@ -19,6 +19,7 @@ import { ImportPage } from "../features/import/ImportPage";
 import { InvoicePage } from "../features/invoice/InvoicePage";
 import { OnboardingPage } from "../features/onboarding/OnboardingPage";
 import { IntegrationsPage } from "../features/integrations/IntegrationsPage";
+import { AuditPage } from "../features/audit/AuditPage";
 import { AutomationPage } from "../features/automation/AutomationPage";
 import { AccountsPage } from "../features/accounts/AccountsPage";
 import { ReconciliationPage } from "../features/reconciliation/ReconciliationPage";
@@ -82,6 +83,7 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   "reminders/:id": ReminderPage,
   inbox: InboxPage,
   integrations: IntegrationsPage,
+  audit: AuditPage,
   "settings/:tab": AutomationPage,
 };
 

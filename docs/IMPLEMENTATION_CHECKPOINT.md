@@ -6,10 +6,10 @@ Sources of record:
 - Ledger: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 34** (Gmail send-only and PayPal webhook adapters on fake transports) complete; commit follows. Task 33 is `2032577`. Task 32 deferred (OD-05).
+- **Task 35** (Audit History: search, export, chain check) complete; commit follows. Task 34 is `21306d3`. Task 32 deferred (OD-05).
 
 ## Current task
-- **Task 35** (Audit History: search, export, chain check; E099-E100, SCR-12). Next free endpoint E120. Owed from T34: UI for connect/send/confirm-unknown, PayPal connect endpoint, token refresh, webhook events as match candidates. No nav link to `import/pdf` yet; Audit History nav still unbuilt.
+- **Task 36** (Workspace Settings and Payload Inspector; E102-E105, SCR-13). Next free endpoint E120. Owed from T35: nightly scheduling of `audit.verify_chain`; why-view link from audit rows.
 
 ## Owed carry-forwards
 - Per-client and per-invoice pause; end snoozes when their date passes (`end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; close `verification_tasks` and decrement `open_task_count`; nightly `evidence.integrity_check` (T37/T40); N+1 `_history`, candidate loading and E065 cursor paging (T37); 90-day notification retention; notification preferences (FR-146).
