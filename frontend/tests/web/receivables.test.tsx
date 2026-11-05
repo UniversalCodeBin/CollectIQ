@@ -347,7 +347,7 @@ describe("Invoice details (SCR-04)", () => {
     open(`invoices/${INV}/overview`);
     await screen.findByRole("heading", { name: "Invoice INV-2041" });
     const tabs = screen.getByRole("navigation", { name: "Invoice sections" });
-    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history", "Conversation"]);
+    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history", "Conversation", "Follow-up"]);
     for (const hidden of [/payment evidence/i, /timeline/i, /reconciliation/i, /tasks/i]) {
       expect(within(tabs).queryByText(hidden)).not.toBeInTheDocument();
     }

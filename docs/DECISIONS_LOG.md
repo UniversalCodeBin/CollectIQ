@@ -168,3 +168,9 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - The invoice timeline renders by event type through `TIMELINE_RENDERERS`; an unknown type still shows its title and time, so a newer server never breaks the page.
 - Resolving a case requires an outcome on the client before any request is sent. An AI-derived case summary is labelled as AI-drafted.
 - Two older receivables tests that asserted "no timeline tab" were updated for the new Conversation tab; the not-found test now uses the still-unbuilt evidence section. No assertion was removed.
+
+## Task 27 rulings
+- Approving a draft only marks it ready to send; the page says CollectIQ has not sent it, and only "I sent it" records a send, shown as "Marked sent by you" (reminder DTO now carries `marked_by`).
+- Blocked drafts show plain reasons from a gate-to-words map; gate ids (G4 etc.) are never rendered. Approve is disabled while blocked or while edits are unsaved.
+- The e2e seeds the one client contact and evidence coverage a draft needs through an owner connection with the workspace set (`seedDraftPrerequisites`), because no screen creates either yet. Test-only; never reached through the app.
+- Owed: per-client and per-invoice pause (only the workspace pause exists in the UI).

@@ -89,6 +89,7 @@ def _dto(row: dict[str, Any]) -> dict[str, Any]:
         "approved_at": row["approved_at"],
         "sent_at": row["sent_at"],
         "method": row["method"],
+        "marked_by": row["marked_by"],
         "reason": row["reason"],
         "version": row["version"],
         "created_at": row["created_at"],

@@ -6303,6 +6303,10 @@ components:
         method:
           type: string
           nullable: true
+        marked_by:
+          type: string
+          format: uuid
+          nullable: true
         reason:
           type: string
           nullable: true
@@ -6327,6 +6331,7 @@ components:
       - intended_date
       - invoice_id
       - invoice_number
+      - marked_by
       - method
       - reason
       - recipient
@@ -6406,6 +6411,10 @@ components:
         method:
           type: string
           nullable: true
+        marked_by:
+          type: string
+          format: uuid
+          nullable: true
         reason:
           type: string
           nullable: true
@@ -6425,6 +6434,7 @@ components:
       - intended_date
       - invoice_id
       - invoice_number
+      - marked_by
       - method
       - reason
       - recipient

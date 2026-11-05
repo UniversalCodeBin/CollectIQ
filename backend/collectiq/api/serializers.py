@@ -1061,6 +1061,7 @@ class ReminderOut(serializers.Serializer):
     approved_at = serializers.DateTimeField(allow_null=True)
     sent_at = serializers.DateTimeField(allow_null=True)
     method = serializers.CharField(allow_null=True)
+    marked_by = serializers.UUIDField(allow_null=True)
     reason = serializers.CharField(allow_null=True)
     version = serializers.IntegerField()
     created_at = serializers.DateTimeField()

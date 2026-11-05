@@ -2626,6 +2626,8 @@ export interface components {
             /** Format: date-time */
             sent_at: string | null;
             method: string | null;
+            /** Format: uuid */
+            marked_by: string | null;
             reason: string | null;
             version: number;
             /** Format: date-time */
@@ -2665,6 +2667,8 @@ export interface components {
             /** Format: date-time */
             sent_at: string | null;
             method: string | null;
+            /** Format: uuid */
+            marked_by: string | null;
             reason: string | null;
             version: number;
             /** Format: date-time */

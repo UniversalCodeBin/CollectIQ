@@ -1,3 +1,4 @@
+import { execFile } from "node:child_process";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import { expect, type Page } from "@playwright/test";
@@ -46,4 +47,36 @@ export async function signUpThroughToDashboard(page: Page, address: string, busi
   await page.getByRole("button", { name: "Create workspace" }).click();
   await expect(page).toHaveURL(/\/w\/[0-9a-f-]{36}\/dashboard$/);
   return page.url();
+}
+
+/**
+ * Test-only: gives every client in the workspace an active contact and marks its invoices as supported by
+ * evidence. The app has no screen for either yet, and a draft needs both. Runs as the database owner against
+ * the e2e database with the workspace set, so row security still applies; it never goes through the app.
+ */
+export async function seedDraftPrerequisites(page: Page): Promise<void> {
+  const workspace = /\/w\/([0-9a-f-]{36})\//.exec(page.url())?.[1];
+  if (!workspace) throw new Error(`not inside a workspace: ${page.url()}`);
+  const script = `
+import os, psycopg
+with psycopg.connect(os.environ["MIGRATION_DATABASE_URL"]) as db:
+    ws = os.environ["SEED_WORKSPACE"]
+    db.execute("SELECT set_config('app.workspace_id', %s, true)", [ws])
+    db.execute(
+        "INSERT INTO client_contacts (workspace_id, client_id, email, name) "
+        "SELECT workspace_id, id, 'ap@seeded.example.test', 'Accounts' FROM clients WHERE workspace_id = %s "
+        "ON CONFLICT DO NOTHING",
+        [ws],
+    )
+    db.execute("UPDATE invoice_state SET evidence_coverage = 'SUPPORTED' WHERE workspace_id = %s", [ws])
+`;
+  const root = path.resolve(import.meta.dirname, "../..");
+  await new Promise<void>((resolve, reject) => {
+    execFile(
+      "bash",
+      ["-c", 'set -a; . ./.env; set +a; cd backend && uv run python -c "$SEED_SCRIPT"'],
+      { cwd: root, env: { ...process.env, SEED_SCRIPT: script, SEED_WORKSPACE: workspace } },
+      (error, _out, stderr) => (error ? reject(new Error(stderr || String(error))) : resolve()),
+    );
+  });
 }

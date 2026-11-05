@@ -8,6 +8,7 @@ import { QueryState } from "../../components/ui/QueryState";
 import { apiRequest } from "../../lib/api";
 import { formatDate, formatMinor } from "../../lib/format";
 import { InvoiceTimeline } from "../conversations/Timeline";
+import { InvoiceFollowup } from "../followups/InvoiceFollowup";
 import { ActionDialog, CorrectDialog } from "./Dialogs";
 import { History } from "./History";
 import styles from "./InvoicePage.module.css";
@@ -151,6 +152,7 @@ const SECTIONS: Record<string, Section> = {
   overview: { label: "Overview", Screen: Overview },
   history: { label: "Payment history", Screen: History },
   timeline: { label: "Conversation", Screen: InvoiceTimeline },
+  followups: { label: "Follow-up", Screen: InvoiceFollowup },
 };
 
 export function InvoicePage() {
