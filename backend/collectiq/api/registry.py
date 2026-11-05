@@ -298,6 +298,8 @@ _SPECS = (
     _spec("E114", "POST", "/invitations/accept", "session", "A", "P0"),
     _spec("E115", "PATCH", "/workspaces/{ws}/members/{member_id}", MEMBERS_MANAGE, "A", "P0"),
     _spec("E116", "GET", "/workspaces/{ws}/imports/{import_id}/error-report", FINANCE_READ, "", "P0"),
+    _spec("E117", "POST", "/workspaces/{ws}/payments/{payment_id}/attachment", LEDGER_WRITE, "AI", "P0"),
+    _spec("E118", "GET", "/workspaces/{ws}/payments/{payment_id}/attachment", FINANCE_READ, "", "P0"),
 )
 
 ENDPOINTS: dict[str, EndpointSpec] = {spec.id: spec for spec in _SPECS}

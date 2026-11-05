@@ -645,6 +645,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/payments/{payment_id}/attachment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E118"];
+        put?: never;
+        post: operations["E117"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/payments/{payment_id}/void": {
         parameters: {
             query?: never;
@@ -1468,6 +1484,11 @@ export interface components {
          * @enum {string}
          */
         PaymentAllocationOutKindEnum: "ALLOCATION" | "REVERSAL";
+        PaymentAttachmentOut: {
+            file_name: string;
+            size_bytes: number;
+            content_type: string;
+        };
         PaymentDetailOut: {
             /** Format: uuid */
             id: string;
@@ -1493,6 +1514,7 @@ export interface components {
             void_reason: string | null;
             /** Format: uuid */
             duplicate_of_transaction_id: string | null;
+            attachment: components["schemas"]["PaymentAttachmentOut"] | null;
             allocations: components["schemas"]["PaymentAllocationOut"][];
             matches: components["schemas"]["PaymentMatchOut"][];
         };
@@ -1544,6 +1566,7 @@ export interface components {
             void_reason: string | null;
             /** Format: uuid */
             duplicate_of_transaction_id: string | null;
+            attachment: components["schemas"]["PaymentAttachmentOut"] | null;
         };
         PaymentPageOut: {
             items: components["schemas"]["PaymentOut"][];
@@ -3056,6 +3079,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PaymentDetailOut"];
+                };
+            };
+        };
+    };
+    E118: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                payment_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/octet-stream": string;
+                };
+            };
+        };
+    };
+    E117: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                payment_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentAttachmentOut"];
                 };
             };
         };

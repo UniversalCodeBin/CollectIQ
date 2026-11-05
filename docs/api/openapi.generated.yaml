@@ -1539,6 +1539,75 @@ paths:
                 $ref: '#/components/schemas/PaymentDetailOut'
           description: ''
       x-endpoint-id: E051
+  /api/v1/workspaces/{ws}/payments/{payment_id}/attachment:
+    get:
+      operationId: E118
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+          description: ''
+      x-endpoint-id: E118
+    post:
+      operationId: E117
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+              required:
+              - file
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAttachmentOut'
+          description: ''
+      x-endpoint-id: E117
   /api/v1/workspaces/{ws}/payments/{payment_id}/void:
     post:
       operationId: E052
@@ -3493,6 +3562,19 @@ components:
       description: |-
         * `ALLOCATION` - ALLOCATION
         * `REVERSAL` - REVERSAL
+    PaymentAttachmentOut:
+      type: object
+      properties:
+        file_name:
+          type: string
+        size_bytes:
+          type: integer
+        content_type:
+          type: string
+      required:
+      - content_type
+      - file_name
+      - size_bytes
     PaymentDetailOut:
       type: object
       properties:
@@ -3546,6 +3628,10 @@ components:
           type: string
           format: uuid
           nullable: true
+        attachment:
+          allOf:
+          - $ref: '#/components/schemas/PaymentAttachmentOut'
+          nullable: true
         allocations:
           type: array
           items:
@@ -3559,6 +3645,7 @@ components:
       - allocated_minor
       - allocations
       - amount_minor
+      - attachment
       - created_at
       - currency
       - duplicate_of_transaction_id
@@ -3691,10 +3778,15 @@ components:
           type: string
           format: uuid
           nullable: true
+        attachment:
+          allOf:
+          - $ref: '#/components/schemas/PaymentAttachmentOut'
+          nullable: true
       required:
       - account_label
       - allocated_minor
       - amount_minor
+      - attachment
       - created_at
       - currency
       - duplicate_of_transaction_id

@@ -641,6 +641,12 @@ class PaymentIn(StrictSerializer):
     allocations = AllocationLineIn(many=True, required=False)
 
 
+class PaymentAttachmentOut(serializers.Serializer):
+    file_name = serializers.CharField()
+    size_bytes = serializers.IntegerField()
+    content_type = serializers.CharField()
+
+
 class PaymentOut(serializers.Serializer):
     id = serializers.UUIDField()
     source_type = serializers.CharField()
@@ -661,6 +667,7 @@ class PaymentOut(serializers.Serializer):
     created_at = serializers.DateTimeField()
     void_reason = serializers.CharField(allow_null=True)
     duplicate_of_transaction_id = serializers.UUIDField(allow_null=True)
+    attachment = PaymentAttachmentOut(allow_null=True)
 
 
 class PaymentPageOut(serializers.Serializer):

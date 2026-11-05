@@ -32,12 +32,16 @@ _PAYMENT_COLUMNS = (
     "t.id, t.source_type, t.method, t.amount_minor, t.currency, t.value_date, t.reference,"
     " t.payer_descriptor, t.notes, t.status, t.evidence_type, t.entered_by, t.created_at, t.void_reason,"
     " t.duplicate_of_transaction_id, a.label AS account_label,"
+    " sf.file_name AS attachment_name, sf.size_bytes AS attachment_size, pat.content_type AS attachment_type,"
     " (SELECT COALESCE(sum(pa.amount_minor), 0)::bigint FROM payment_allocations pa"
     "   WHERE pa.transaction_id = t.id AND pa.workspace_id = t.workspace_id) AS allocated_minor"
 )
 _PAYMENT_FROM = (
     "payment_transactions t LEFT JOIN payment_accounts a"
     " ON a.id = t.payment_account_id AND a.workspace_id = t.workspace_id"
+    " LEFT JOIN payment_attachments pat ON pat.transaction_id = t.id AND pat.workspace_id = t.workspace_id"
+    " LEFT JOIN stored_files sf ON sf.id = pat.file_id AND sf.workspace_id = pat.workspace_id"
+    "  AND sf.deleted_at IS NULL"
 )
 _ALLOCATION_COLUMNS = (
     "id, invoice_id, amount_minor, kind, reverses_allocation_id, match_id, overpayment_confirmed,"
@@ -661,6 +665,13 @@ def _payment_dto(row: dict[str, Any]) -> dict[str, Any]:
         "created_at": row["created_at"].isoformat(),
         "void_reason": row["void_reason"],
         "duplicate_of_transaction_id": _text(row["duplicate_of_transaction_id"]),
+        "attachment": None
+        if row["attachment_name"] is None
+        else {
+            "file_name": row["attachment_name"],
+            "size_bytes": row["attachment_size"],
+            "content_type": row["attachment_type"],
+        },
     }
 
 

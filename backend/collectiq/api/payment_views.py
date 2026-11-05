@@ -2,22 +2,27 @@
 
 from collections.abc import Iterable
 from typing import Any
+from urllib.parse import quote
 from uuid import UUID
 
+from django.http import HttpResponse
+from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from collectiq.evidence import service_allocation as ledger
+from collectiq.evidence import service_attachment as attachments
 from collectiq.evidence import service_matching as matching
 from collectiq.platform.idempotency import idempotent
 
-from .common import page_params, validated
+from .common import invalid, page_params, validated
 from .registry import endpoint
 from .serializers import (
     AllocationIn,
     DuplicateIn,
     LedgerResultOut,
+    PaymentAttachmentOut,
     PaymentDetailOut,
     PaymentIn,
     PaymentPageOut,
@@ -112,3 +117,33 @@ class TransactionDuplicateView(APIView):
     def post(self, request: Any, ws: UUID, transaction_id: UUID) -> Response:
         data = validated(DuplicateIn, request)
         return Response(ledger.mark_duplicate(request.ctx, transaction_id, data["duplicate_of"]))
+
+
+_ATTACHMENT_BODY = {
+    "multipart/form-data": {
+        "type": "object",
+        "properties": {"file": {"type": "string", "format": "binary"}},
+        "required": ["file"],
+    }
+}
+
+
+class PaymentAttachmentView(APIView):
+    @endpoint("E118", responses={(200, "application/octet-stream"): OpenApiTypes.BINARY})
+    def get(self, request: Any, ws: UUID, payment_id: UUID) -> HttpResponse:
+        data, name, content_type = attachments.read(request.ctx, payment_id)
+        response = HttpResponse(data, content_type=content_type)
+        response["Content-Disposition"] = f"attachment; filename*=UTF-8''{quote(name)}"
+        response["X-Content-Type-Options"] = "nosniff"
+        response["Cache-Control"] = "private, no-store"
+        return response
+
+    @endpoint("E117", request=_ATTACHMENT_BODY, responses={201: PaymentAttachmentOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID, payment_id: UUID) -> Response:
+        upload = request.FILES.get("file")
+        if upload is None:
+            raise invalid("file", "Choose a file to attach.")
+        if upload.size > attachments.MAX_BYTES:
+            raise invalid("file", "That file is larger than 5 MB.")
+        return Response(attachments.attach(request.ctx, payment_id, upload.name, upload.read()), status=201)
