@@ -1,0 +1,8 @@
+.page { display: grid; gap: var(--space-4); max-width: 40rem; }
+.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
+.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-3); }
+.muted { color: var(--color-secondary); margin: 0; }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
+.form { display: grid; gap: var(--space-3); }
+.banner { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; justify-content: space-between; padding: var(--space-3) var(--space-4); border: 1px solid var(--color-border-subtle); border-radius: 8px; background: var(--color-surface); }
+.list { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }

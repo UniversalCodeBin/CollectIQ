@@ -367,6 +367,47 @@ paths:
                 $ref: '#/components/schemas/LedgerResultOut'
           description: ''
       x-endpoint-id: E060
+  /api/v1/workspaces/{ws}/approvals/{approval_id}/decide:
+    post:
+      operationId: E092
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: approval_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApprovalDecisionInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ApprovalDecisionInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApprovalOut'
+          description: ''
+      x-endpoint-id: E092
   /api/v1/workspaces/{ws}/attestations:
     post:
       operationId: E054
@@ -402,6 +443,54 @@ paths:
                 $ref: '#/components/schemas/AttestationOut'
           description: ''
       x-endpoint-id: E054
+  /api/v1/workspaces/{ws}/automation/pause:
+    post:
+      operationId: E019
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PauseInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PauseInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOut'
+          description: ''
+      x-endpoint-id: E019
+  /api/v1/workspaces/{ws}/automation/resume:
+    post:
+      operationId: E020
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOut'
+          description: ''
+      x-endpoint-id: E020
   /api/v1/workspaces/{ws}/clients:
     get:
       operationId: E021
@@ -1675,6 +1764,105 @@ paths:
                 $ref: '#/components/schemas/LedgerResultOut'
           description: ''
       x-endpoint-id: E052
+  /api/v1/workspaces/{ws}/policy:
+    get:
+      operationId: E016
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOut'
+          description: ''
+      x-endpoint-id: E016
+    put:
+      operationId: E017
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PolicyInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PolicyInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyOut'
+          description: ''
+      x-endpoint-id: E017
+  /api/v1/workspaces/{ws}/policy-decisions/{decision_id}:
+    get:
+      operationId: E101
+      parameters:
+      - in: path
+        name: decision_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyDecisionOut'
+          description: ''
+      x-endpoint-id: E101
+  /api/v1/workspaces/{ws}/policy/versions:
+    get:
+      operationId: E018
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PolicyVersionsOut'
+          description: ''
+      x-endpoint-id: E018
   /api/v1/workspaces/{ws}/queue:
     get:
       operationId: E047
@@ -2056,6 +2244,58 @@ components:
       - action
       - allowed
       - reason
+    ApprovalDecisionInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        decision:
+          $ref: '#/components/schemas/DecisionEnum'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - decision
+    ApprovalOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        decision_id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ApprovalOutStatusEnum'
+        decided_by:
+          type: string
+          format: uuid
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        note:
+          type: string
+          nullable: true
+      required:
+      - decided_at
+      - decided_by
+      - decision_id
+      - id
+      - note
+      - status
+    ApprovalOutStatusEnum:
+      enum:
+      - PENDING
+      - APPROVED
+      - REJECTED
+      type: string
+      description: |-
+        * `PENDING` - PENDING
+        * `APPROVED` - APPROVED
+        * `REJECTED` - REJECTED
     AttestationInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2693,6 +2933,14 @@ components:
       - count
       - filter
       - key
+    DecisionEnum:
+      enum:
+      - APPROVED
+      - REJECTED
+      type: string
+      description: |-
+        * `APPROVED` - APPROVED
+        * `REJECTED` - REJECTED
     DetailOut:
       type: object
       properties:
@@ -2722,6 +2970,19 @@ components:
           maxLength: 254
       required:
       - email
+    GateOut:
+      type: object
+      properties:
+        gate:
+          type: string
+        passed:
+          type: boolean
+        text:
+          type: string
+      required:
+      - gate
+      - passed
+      - text
     HealthOut:
       type: object
       properties:
@@ -3354,6 +3615,14 @@ components:
         * `CASH` - CASH
         * `PAYPAL_MANUAL` - PAYPAL_MANUAL
         * `OTHER` - OTHER
+    ModeEnum:
+      enum:
+      - MANUAL
+      - ASSISTED
+      type: string
+      description: |-
+        * `MANUAL` - MANUAL
+        * `ASSISTED` - ASSISTED
     MoneyInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -3492,6 +3761,15 @@ components:
         business_hours:
           type: object
           additionalProperties: {}
+    PauseInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
     PaymentAccountInKindEnum:
       enum:
       - BANK
@@ -3908,6 +4186,149 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/PaymentOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    PolicyDecisionOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        action_type:
+          type: string
+        outcome:
+          type: string
+        explanation:
+          type: array
+          items:
+            type: string
+        gates:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateOut'
+        policy_version:
+          type: integer
+        rules_version:
+          type: string
+        state_version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+        consumed_at:
+          type: string
+          format: date-time
+          nullable: true
+        approval:
+          allOf:
+          - $ref: '#/components/schemas/ApprovalOut'
+          nullable: true
+      required:
+      - action_type
+      - approval
+      - consumed_at
+      - created_at
+      - expires_at
+      - explanation
+      - gates
+      - id
+      - outcome
+      - policy_version
+      - rules_version
+      - state_version
+    PolicyInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        mode:
+          $ref: '#/components/schemas/ModeEnum'
+        auto_snooze_enabled:
+          type: boolean
+        cadence:
+          type: object
+          additionalProperties:
+            type: integer
+            maximum: 365
+            minimum: 0
+        limits:
+          $ref: '#/components/schemas/PolicyLimitsInRequest'
+        business_hours:
+          type: object
+          additionalProperties: {}
+        sensitivity_defaults:
+          type: object
+          additionalProperties:
+            type: string
+            minLength: 1
+            maxLength: 100
+    PolicyLimitsInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        max_contacts:
+          type: integer
+          maximum: 20
+          minimum: 1
+    PolicyOut:
+      type: object
+      properties:
+        version:
+          type: integer
+        mode:
+          $ref: '#/components/schemas/ModeEnum'
+        automation_paused:
+          type: boolean
+        auto_snooze_enabled:
+          type: boolean
+        auto_snooze_available:
+          type: boolean
+        cadence:
+          type: object
+          additionalProperties: {}
+        limits:
+          type: object
+          additionalProperties: {}
+        business_hours:
+          type: object
+          additionalProperties: {}
+        sensitivity_defaults:
+          type: object
+          additionalProperties: {}
+        changed_by:
+          type: string
+          format: uuid
+          nullable: true
+        effective_from:
+          type: string
+          format: date-time
+      required:
+      - auto_snooze_available
+      - auto_snooze_enabled
+      - automation_paused
+      - business_hours
+      - cadence
+      - changed_by
+      - effective_from
+      - limits
+      - mode
+      - sensitivity_defaults
+      - version
+    PolicyVersionsOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PolicyOut'
         next_cursor:
           type: string
           nullable: true

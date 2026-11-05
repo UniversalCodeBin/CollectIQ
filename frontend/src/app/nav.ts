@@ -1,4 +1,4 @@
-import { Landmark, LayoutDashboard, Scale, type LucideIcon } from "lucide-react";
+import { Landmark, LayoutDashboard, Scale, Settings, type LucideIcon } from "lucide-react";
 
 export const DIRECTIVE_NAV = [
   "Dashboard",
@@ -28,4 +28,5 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", route: "dashboard", to: "dashboard", icon: LayoutDashboard },
   { label: "Payment Reconciliation", route: "reconciliation/:tab", to: "reconciliation/review", icon: Scale },
   { label: "Payment Accounts", route: "accounts", to: "accounts", icon: Landmark },
+  { label: "Settings", route: "settings/:tab", to: "settings/automation", icon: Settings },
 ];

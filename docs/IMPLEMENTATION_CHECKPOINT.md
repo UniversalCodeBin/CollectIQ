@@ -6,10 +6,10 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 20** is complete; the commit follows this checkpoint. Evidence: 884 pytest, 199 vitest, Playwright 14 passed, make check 12 of 12.
+- **Task 21** is complete; the commit follows this checkpoint. Evidence: see the Task 21 commit message (pytest, vitest, Playwright, make check 12 of 12).
 
 ## Current task
-- **Task 21: Policy engine (E016-E020, E092, E101).** Later subscribers still owed on `AllocationConfirmed`/`AllocationReversed`: MATCH_REVIEW case, reminder re-evaluation, draft and snooze cancellation (FR-057). Nightly scheduling of evidence.integrity_check is still to wire (T37/T40). Next free endpoint is E120.
+- **Task 22: Disputes and blockers (E076-E082).** Later subscribers still owed on `AllocationConfirmed`/`AllocationReversed`: MATCH_REVIEW case, reminder re-evaluation, draft and snooze cancellation (FR-057). Nightly scheduling of evidence.integrity_check is still to wire (T37/T40). Next free endpoint is E120. Policy: callers must use `policy.service.decide` then `authorize_execution` and hold the `AuthorizedAction`.
 
 ## Relevant files
 - Frontend T14: frontend/src/features/{dashboard,receivables,invoice,client}/*, components/ui/QueryState.tsx, lib/format.ts (formatDate), lib/statusMap.ts; e2e/receivables.spec.ts; tests/web/receivables.test.tsx. Backend: invoices/read_models.py (null issue_date).
@@ -24,7 +24,7 @@ Sources of record:
 - SCR-02/03/04/14 not yet compared against the Stitch screen.png (T38/T39). No filter or sort controls (FR-025/026). Client edit UI deferred. Invoice tabs for evidence, timeline, reconciliation and tasks arrive with their tasks.
 
 ## Next exact action
-- Start Task 21 with tests first. Candidate loading in service_matching is O(transactions x open invoices) in Python and `_history` is N+1; benchmark both in T37. Cleanup left in UnmatchedTab/ReviewTab: unused `create` mutation in PaymentDialog, unreachable `needChoice` alert.
+- Start Task 22 with tests first. Candidate loading in service_matching is O(transactions x open invoices) in Python and `_history` is N+1; benchmark both in T37.
 
 ## Unresolved decisions
 - `CollectIQ_Post_Implementation_Audit.md` (root, untracked) predates commit `a1448f4` and is stale on Task 2 and the frontend scaffold. Left untouched and uncommitted; the user decides whether to keep it.

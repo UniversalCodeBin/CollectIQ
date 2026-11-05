@@ -244,6 +244,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/approvals/{approval_id}/decide": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E092"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/attestations": {
         parameters: {
             query?: never;
@@ -254,6 +270,38 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E054"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/automation/pause": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E019"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/automation/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E020"];
         delete?: never;
         options?: never;
         head?: never;
@@ -693,6 +741,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/policy": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E016"];
+        put: operations["E017"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/policy-decisions/{decision_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E101"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/policy/versions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E018"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/queue": {
         parameters: {
             query?: never;
@@ -841,6 +937,30 @@ export interface components {
             allowed: boolean;
             reason: string | null;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ApprovalDecisionInRequest: {
+            decision: components["schemas"]["DecisionEnum"];
+            note?: string;
+        };
+        ApprovalOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            decision_id: string;
+            status: components["schemas"]["ApprovalOutStatusEnum"];
+            /** Format: uuid */
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            note: string | null;
+        };
+        /**
+         * @description * `PENDING` - PENDING
+         *     * `APPROVED` - APPROVED
+         *     * `REJECTED` - REJECTED
+         * @enum {string}
+         */
+        ApprovalOutStatusEnum: "PENDING" | "APPROVED" | "REJECTED";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         AttestationInRequest: {
             scope: components["schemas"]["ScopeEnum"];
@@ -1128,6 +1248,12 @@ export interface components {
             };
             key: string;
         };
+        /**
+         * @description * `APPROVED` - APPROVED
+         *     * `REJECTED` - REJECTED
+         * @enum {string}
+         */
+        DecisionEnum: "APPROVED" | "REJECTED";
         DetailOut: {
             detail: string;
         };
@@ -1140,6 +1266,11 @@ export interface components {
         EmailInRequest: {
             /** Format: email */
             email: string;
+        };
+        GateOut: {
+            gate: string;
+            passed: boolean;
+            text: string;
         };
         HealthOut: {
             status: string;
@@ -1402,6 +1533,12 @@ export interface components {
          * @enum {string}
          */
         MethodEnum: "BANK_TRANSFER" | "UPI" | "CASH" | "PAYPAL_MANUAL" | "OTHER";
+        /**
+         * @description * `MANUAL` - MANUAL
+         *     * `ASSISTED` - ASSISTED
+         * @enum {string}
+         */
+        ModeEnum: "MANUAL" | "ASSISTED";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         MoneyInRequest: {
             /** Format: int64 */
@@ -1456,6 +1593,10 @@ export interface components {
             business_hours?: {
                 [key: string]: unknown;
             };
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PauseInRequest: {
+            reason?: string;
         };
         /**
          * @description * `BANK` - BANK
@@ -1615,6 +1756,70 @@ export interface components {
         };
         PaymentPageOut: {
             items: components["schemas"]["PaymentOut"][];
+            next_cursor: string | null;
+        };
+        PolicyDecisionOut: {
+            /** Format: uuid */
+            id: string;
+            action_type: string;
+            outcome: string;
+            explanation: string[];
+            gates: components["schemas"]["GateOut"][];
+            policy_version: number;
+            rules_version: string;
+            state_version: number;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: date-time */
+            expires_at: string;
+            /** Format: date-time */
+            consumed_at: string | null;
+            approval: components["schemas"]["ApprovalOut"] | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PolicyInRequest: {
+            mode?: components["schemas"]["ModeEnum"];
+            auto_snooze_enabled?: boolean;
+            cadence?: {
+                [key: string]: number;
+            };
+            limits?: components["schemas"]["PolicyLimitsInRequest"];
+            business_hours?: {
+                [key: string]: unknown;
+            };
+            sensitivity_defaults?: {
+                [key: string]: string;
+            };
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PolicyLimitsInRequest: {
+            max_contacts?: number;
+        };
+        PolicyOut: {
+            version: number;
+            mode: components["schemas"]["ModeEnum"];
+            automation_paused: boolean;
+            auto_snooze_enabled: boolean;
+            auto_snooze_available: boolean;
+            cadence: {
+                [key: string]: unknown;
+            };
+            limits: {
+                [key: string]: unknown;
+            };
+            business_hours: {
+                [key: string]: unknown;
+            };
+            sensitivity_defaults: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            changed_by: string | null;
+            /** Format: date-time */
+            effective_from: string;
+        };
+        PolicyVersionsOut: {
+            items: components["schemas"]["PolicyOut"][];
             next_cursor: string | null;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
@@ -2233,6 +2438,35 @@ export interface operations {
             };
         };
     };
+    E092: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                approval_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApprovalDecisionInRequest"];
+                "multipart/form-data": components["schemas"]["ApprovalDecisionInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApprovalOut"];
+                };
+            };
+        };
+    };
     E054: {
         parameters: {
             query?: never;
@@ -2257,6 +2491,53 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AttestationOut"];
+                };
+            };
+        };
+    };
+    E019: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PauseInRequest"];
+                "multipart/form-data": components["schemas"]["PauseInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyOut"];
+                };
+            };
+        };
+    };
+    E020: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyOut"];
                 };
             };
         };
@@ -3228,6 +3509,98 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["LedgerResultOut"];
+                };
+            };
+        };
+    };
+    E016: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyOut"];
+                };
+            };
+        };
+    };
+    E017: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PolicyInRequest"];
+                "multipart/form-data": components["schemas"]["PolicyInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyOut"];
+                };
+            };
+        };
+    };
+    E101: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                decision_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyDecisionOut"];
+                };
+            };
+        };
+    };
+    E018: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PolicyVersionsOut"];
                 };
             };
         };

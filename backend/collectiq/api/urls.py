@@ -6,6 +6,7 @@ from . import identity_views as identity
 from . import import_views as imports
 from . import invoice_views as invoices
 from . import payment_views as payments
+from . import policy_views as policy
 from . import reconciliation_views as reconciliation
 from . import statement_views as statements
 from . import tenancy_views as tenancy
@@ -82,6 +83,18 @@ urlpatterns: list = [
         payments.InvoicePaymentHistoryView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/void", payments.PaymentVoidView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/policy", policy.PolicyView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/policy/versions", policy.PolicyVersionsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/automation/pause", policy.AutomationPauseView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/automation/resume", policy.AutomationResumeView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/approvals/<uuid:approval_id>/decide",
+        policy.ApprovalDecideView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/policy-decisions/<uuid:decision_id>",
+        policy.PolicyDecisionView.as_view(),
+    ),
     path(
         f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/attachment",
         payments.PaymentAttachmentView.as_view(),

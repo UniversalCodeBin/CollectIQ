@@ -25,7 +25,6 @@ const refuse = (field: string, message: string) =>
 
 function PaymentDialog({ workspace, onClose }: { workspace: string; onClose: () => void }) {
   const client = useQueryClient();
-  const create = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/payments" }, { idempotent: true });
   const [method, setMethod] = useState("BANK_TRANSFER");
   const [currency, setCurrency] = useState("INR");
   const [amount, setAmount] = useState("");
@@ -80,7 +79,6 @@ function PaymentDialog({ workspace, onClose }: { workspace: string; onClose: () 
       setBusy(false);
     }
   }
-  void create;
 
   return (
     <Dialog open onClose={onClose} title="Record a payment">
@@ -111,7 +109,6 @@ function PaymentDialog({ workspace, onClose }: { workspace: string; onClose: () 
         />
         {local && <ProblemMessage problem={local} />}
         {attachProblem && <p role="alert">{attachProblem}</p>}
-        <MutationFeedback mutation={create} />
         <div className={styles.actions}>
           <Button variant="primary" type="submit" aria-disabled={busy || undefined}>
             Save payment

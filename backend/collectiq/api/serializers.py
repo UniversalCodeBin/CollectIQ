@@ -736,3 +736,79 @@ class ProposalRejectedOut(serializers.Serializer):
     id = serializers.UUIDField()
     status = serializers.ChoiceField(choices=["REJECTED"])
     invoice_states = InvoiceStateOut(many=True)
+
+
+# --- policy (E016-E020, E092, E101) -------------------------------------------------------------------------
+
+
+class PolicyLimitsIn(StrictSerializer):
+    max_contacts = serializers.IntegerField(min_value=1, max_value=20, required=False)
+
+
+class PolicyIn(StrictSerializer):
+    mode = serializers.ChoiceField(choices=["MANUAL", "ASSISTED"], required=False)
+    auto_snooze_enabled = serializers.BooleanField(required=False)
+    cadence = serializers.DictField(
+        child=serializers.IntegerField(min_value=0, max_value=365), required=False
+    )
+    limits = PolicyLimitsIn(required=False)
+    business_hours = serializers.DictField(required=False)
+    sensitivity_defaults = serializers.DictField(child=serializers.CharField(max_length=100), required=False)
+
+
+class PauseIn(StrictSerializer):
+    reason = serializers.CharField(max_length=500, required=False, allow_blank=False)
+
+
+class PolicyOut(serializers.Serializer):
+    version = serializers.IntegerField()
+    mode = serializers.ChoiceField(choices=["MANUAL", "ASSISTED"])
+    automation_paused = serializers.BooleanField()
+    auto_snooze_enabled = serializers.BooleanField()
+    auto_snooze_available = serializers.BooleanField()
+    cadence = serializers.DictField()
+    limits = serializers.DictField()
+    business_hours = serializers.DictField()
+    sensitivity_defaults = serializers.DictField()
+    changed_by = serializers.UUIDField(allow_null=True)
+    effective_from = serializers.DateTimeField()
+
+
+class PolicyVersionsOut(serializers.Serializer):
+    items = PolicyOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class ApprovalDecisionIn(StrictSerializer):
+    decision = serializers.ChoiceField(choices=["APPROVED", "REJECTED"])
+    note = serializers.CharField(max_length=500, required=False, allow_blank=False)
+
+
+class ApprovalOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    decision_id = serializers.UUIDField()
+    status = serializers.ChoiceField(choices=["PENDING", "APPROVED", "REJECTED"])
+    decided_by = serializers.UUIDField(allow_null=True)
+    decided_at = serializers.DateTimeField(allow_null=True)
+    note = serializers.CharField(allow_null=True)
+
+
+class GateOut(serializers.Serializer):
+    gate = serializers.CharField()
+    passed = serializers.BooleanField()
+    text = serializers.CharField()
+
+
+class PolicyDecisionOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    action_type = serializers.CharField()
+    outcome = serializers.CharField()
+    explanation = serializers.ListField(child=serializers.CharField())
+    gates = GateOut(many=True)
+    policy_version = serializers.IntegerField()
+    rules_version = serializers.CharField()
+    state_version = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+    expires_at = serializers.DateTimeField()
+    consumed_at = serializers.DateTimeField(allow_null=True)
+    approval = ApprovalOut(allow_null=True)

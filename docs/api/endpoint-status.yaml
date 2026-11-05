@@ -2,11 +2,6 @@
 # scripts/check_openapi.py reads this. Remove an entry once its view carries x-endpoint-id.
 # planned: endpoint -> plan task. `check_openapi.py --final` fails on anything still here.
 planned:
-  E016: 21
-  E017: 21
-  E018: 21
-  E019: 21
-  E020: 21
   E038: 31
   E039: 31
   E040: 31
@@ -41,7 +36,6 @@ planned:
   E089: 24
   E090: 34
   E091: 34
-  E092: 21
   E093: 33
   E094: 34
   E095: 34
@@ -49,7 +43,6 @@ planned:
   E098: 34
   E099: 35
   E100: 35
-  E101: 21
   E102: 36
   E103: 36
   E104: 36

@@ -5,6 +5,7 @@ import { Button } from "../components/ui/Button";
 import { MutationFeedback } from "../components/ui/MutationFeedback";
 import { OfflineBanner } from "../components/ui/OfflineBanner";
 import { SampleDataBanner } from "../components/ui/SampleDataBanner";
+import { PauseControl } from "../features/automation/PauseControl";
 import { useApiMutation } from "../lib/api";
 import { NAV_ITEMS } from "./nav";
 import styles from "./Shell.module.css";
@@ -53,6 +54,7 @@ export function Shell({ workspaceId, workspaceName, sampleData = false, children
       <div className={styles.column}>
         <OfflineBanner />
         {sampleData && <SampleDataBanner />}
+        <PauseControl workspace={workspaceId} />
         <MutationFeedback mutation={signOut} />
         <main id="main" tabIndex={-1} className={styles.main}>
           {children}
