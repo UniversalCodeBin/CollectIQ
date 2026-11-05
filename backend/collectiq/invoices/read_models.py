@@ -14,6 +14,7 @@ from typing import Any
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
+from collectiq.platform import clock
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
@@ -63,7 +64,7 @@ SELECT i.id, i.invoice_number, i.currency, i.due_date, i.issue_date, i.gross_min
 
 
 def _now() -> datetime:
-    return datetime.now(UTC)
+    return clock.now()
 
 
 @dataclass(frozen=True, slots=True)

@@ -430,3 +430,70 @@ class DashboardOut(serializers.Serializer):
     currencies = DashboardCurrencyOut(many=True)
     has_sample_data = serializers.BooleanField()
     as_of_date = serializers.DateField()
+
+
+# ---- payment accounts, coverage and attestations (E029-E032, E054) -----------------------------
+
+_ACCOUNT_KIND = ["BANK", "PAYPAL", "UPI", "CASH"]
+_ACCOUNT_STATUS = ["ACTIVE", "INACTIVE"]
+
+
+class PaymentAccountIn(StrictSerializer):
+    kind = serializers.ChoiceField(choices=_ACCOUNT_KIND)
+    label = serializers.CharField(max_length=100)
+    currency = serializers.ChoiceField(choices=sorted(ISO_4217_CODES))
+
+
+class PaymentAccountUpdateIn(StrictSerializer):
+    label = serializers.CharField(max_length=100, required=False)
+    status = serializers.ChoiceField(choices=_ACCOUNT_STATUS, required=False)
+
+
+class PaymentAccountOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    kind = serializers.CharField()
+    label = serializers.CharField()
+    currency = serializers.CharField()
+    status = serializers.CharField()
+    version = serializers.IntegerField()
+
+
+class PaymentAccountSummaryOut(PaymentAccountOut):
+    covered_through = serializers.DateField(allow_null=True)
+    statements_through = serializers.DateField(allow_null=True)
+    attested_through = serializers.DateField(allow_null=True)
+    coverage_status = serializers.CharField()
+    gaps = serializers.ListField(child=serializers.DictField())
+
+
+class PaymentAccountPageOut(serializers.Serializer):
+    items = PaymentAccountSummaryOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class AccountCoverageOut(serializers.Serializer):
+    account = PaymentAccountOut()
+    covered_through = serializers.DateField(allow_null=True)
+    statements_through = serializers.DateField(allow_null=True)
+    attested_through = serializers.DateField(allow_null=True)
+    coverage_status = serializers.CharField()
+    freshness_window_days = serializers.IntegerField()
+    fresh_until = serializers.DateField(allow_null=True)
+    gaps = serializers.ListField(child=serializers.DictField())
+    ranges = serializers.ListField(child=serializers.DictField())
+    attestations = serializers.ListField(child=serializers.DictField())
+
+
+class AttestationIn(StrictSerializer):
+    scope = serializers.ChoiceField(choices=["ACCOUNT", "INVOICE"])
+    account_id = serializers.UUIDField(required=False)
+    invoice_ids = serializers.ListField(child=serializers.UUIDField(), required=False, allow_empty=False)
+    as_of = serializers.DateTimeField()
+    note = serializers.CharField(max_length=1000, required=False, allow_blank=False)
+
+
+class AttestationOut(serializers.Serializer):
+    scope = serializers.CharField()
+    as_of = serializers.DateTimeField()
+    coverage_date = serializers.DateField()
+    attestation_ids = serializers.ListField(child=serializers.UUIDField())

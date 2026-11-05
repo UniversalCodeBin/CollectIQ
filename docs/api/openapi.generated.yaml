@@ -291,6 +291,41 @@ paths:
                 $ref: '#/components/schemas/WorkspaceOut'
           description: ''
       x-endpoint-id: E012
+  /api/v1/workspaces/{ws}/attestations:
+    post:
+      operationId: E054
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttestationInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttestationInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttestationOut'
+          description: ''
+      x-endpoint-id: E054
   /api/v1/workspaces/{ws}/clients:
     get:
       operationId: E021
@@ -1139,6 +1174,133 @@ paths:
         '204':
           description: No response body
       x-endpoint-id: E015
+  /api/v1/workspaces/{ws}/payment-accounts:
+    get:
+      operationId: E029
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAccountPageOut'
+          description: ''
+      x-endpoint-id: E029
+    post:
+      operationId: E030
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentAccountInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentAccountInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAccountOut'
+          description: ''
+      x-endpoint-id: E030
+  /api/v1/workspaces/{ws}/payment-accounts/{account_id}:
+    patch:
+      operationId: E031
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: account_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentAccountUpdateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPaymentAccountUpdateInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentAccountOut'
+          description: ''
+      x-endpoint-id: E031
+  /api/v1/workspaces/{ws}/payment-accounts/{account_id}/coverage:
+    get:
+      operationId: E032
+      parameters:
+      - in: path
+        name: account_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountCoverageOut'
+          description: ''
+      x-endpoint-id: E032
   /api/v1/workspaces/{ws}/queue:
     get:
       operationId: E047
@@ -1229,6 +1391,57 @@ paths:
       x-endpoint-id: E047
 components:
   schemas:
+    AccountCoverageOut:
+      type: object
+      properties:
+        account:
+          $ref: '#/components/schemas/PaymentAccountOut'
+        covered_through:
+          type: string
+          format: date
+          nullable: true
+        statements_through:
+          type: string
+          format: date
+          nullable: true
+        attested_through:
+          type: string
+          format: date
+          nullable: true
+        coverage_status:
+          type: string
+        freshness_window_days:
+          type: integer
+        fresh_until:
+          type: string
+          format: date
+          nullable: true
+        gaps:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        ranges:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        attestations:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - account
+      - attestations
+      - attested_through
+      - coverage_status
+      - covered_through
+      - fresh_until
+      - freshness_window_days
+      - gaps
+      - ranges
+      - statements_through
     AliasOut:
       type: object
       properties:
@@ -1257,6 +1470,52 @@ components:
       - action
       - allowed
       - reason
+    AttestationInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        scope:
+          $ref: '#/components/schemas/ScopeEnum'
+        account_id:
+          type: string
+          format: uuid
+        invoice_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        as_of:
+          type: string
+          format: date-time
+        note:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+      - as_of
+      - scope
+    AttestationOut:
+      type: object
+      properties:
+        scope:
+          type: string
+        as_of:
+          type: string
+          format: date-time
+        coverage_date:
+          type: string
+          format: date
+        attestation_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - as_of
+      - attestation_ids
+      - coverage_date
+      - scope
     ClientInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -1417,6 +1676,368 @@ components:
       required:
       - email
       - password
+    CurrencyEnum:
+      enum:
+      - AED
+      - AFN
+      - ALL
+      - AMD
+      - ANG
+      - AOA
+      - ARS
+      - AUD
+      - AWG
+      - AZN
+      - BAM
+      - BBD
+      - BDT
+      - BGN
+      - BHD
+      - BIF
+      - BMD
+      - BND
+      - BOB
+      - BOV
+      - BRL
+      - BSD
+      - BTN
+      - BWP
+      - BYN
+      - BZD
+      - CAD
+      - CDF
+      - CHE
+      - CHF
+      - CHW
+      - CLF
+      - CLP
+      - CNY
+      - COP
+      - COU
+      - CRC
+      - CUP
+      - CVE
+      - CZK
+      - DJF
+      - DKK
+      - DOP
+      - DZD
+      - EGP
+      - ERN
+      - ETB
+      - EUR
+      - FJD
+      - FKP
+      - GBP
+      - GEL
+      - GHS
+      - GIP
+      - GMD
+      - GNF
+      - GTQ
+      - GYD
+      - HKD
+      - HNL
+      - HTG
+      - HUF
+      - IDR
+      - ILS
+      - INR
+      - IQD
+      - IRR
+      - ISK
+      - JMD
+      - JOD
+      - JPY
+      - KES
+      - KGS
+      - KHR
+      - KMF
+      - KPW
+      - KRW
+      - KWD
+      - KYD
+      - KZT
+      - LAK
+      - LBP
+      - LKR
+      - LRD
+      - LSL
+      - LYD
+      - MAD
+      - MDL
+      - MGA
+      - MKD
+      - MMK
+      - MNT
+      - MOP
+      - MRU
+      - MUR
+      - MVR
+      - MWK
+      - MXN
+      - MXV
+      - MYR
+      - MZN
+      - NAD
+      - NGN
+      - NIO
+      - NOK
+      - NPR
+      - NZD
+      - OMR
+      - PAB
+      - PEN
+      - PGK
+      - PHP
+      - PKR
+      - PLN
+      - PYG
+      - QAR
+      - RON
+      - RSD
+      - RUB
+      - RWF
+      - SAR
+      - SBD
+      - SCR
+      - SDG
+      - SEK
+      - SGD
+      - SHP
+      - SLE
+      - SOS
+      - SRD
+      - SSP
+      - STN
+      - SVC
+      - SYP
+      - SZL
+      - THB
+      - TJS
+      - TMT
+      - TND
+      - TOP
+      - TRY
+      - TTD
+      - TWD
+      - TZS
+      - UAH
+      - UGX
+      - USD
+      - USN
+      - UYI
+      - UYU
+      - UYW
+      - UZS
+      - VED
+      - VES
+      - VND
+      - VUV
+      - WST
+      - XAF
+      - XAG
+      - XAU
+      - XBA
+      - XBB
+      - XBC
+      - XBD
+      - XCD
+      - XCG
+      - XDR
+      - XOF
+      - XPD
+      - XPF
+      - XPT
+      - XSU
+      - XTS
+      - XUA
+      - XXX
+      - YER
+      - ZAR
+      - ZMW
+      - ZWG
+      type: string
+      description: |-
+        * `AED` - AED
+        * `AFN` - AFN
+        * `ALL` - ALL
+        * `AMD` - AMD
+        * `ANG` - ANG
+        * `AOA` - AOA
+        * `ARS` - ARS
+        * `AUD` - AUD
+        * `AWG` - AWG
+        * `AZN` - AZN
+        * `BAM` - BAM
+        * `BBD` - BBD
+        * `BDT` - BDT
+        * `BGN` - BGN
+        * `BHD` - BHD
+        * `BIF` - BIF
+        * `BMD` - BMD
+        * `BND` - BND
+        * `BOB` - BOB
+        * `BOV` - BOV
+        * `BRL` - BRL
+        * `BSD` - BSD
+        * `BTN` - BTN
+        * `BWP` - BWP
+        * `BYN` - BYN
+        * `BZD` - BZD
+        * `CAD` - CAD
+        * `CDF` - CDF
+        * `CHE` - CHE
+        * `CHF` - CHF
+        * `CHW` - CHW
+        * `CLF` - CLF
+        * `CLP` - CLP
+        * `CNY` - CNY
+        * `COP` - COP
+        * `COU` - COU
+        * `CRC` - CRC
+        * `CUP` - CUP
+        * `CVE` - CVE
+        * `CZK` - CZK
+        * `DJF` - DJF
+        * `DKK` - DKK
+        * `DOP` - DOP
+        * `DZD` - DZD
+        * `EGP` - EGP
+        * `ERN` - ERN
+        * `ETB` - ETB
+        * `EUR` - EUR
+        * `FJD` - FJD
+        * `FKP` - FKP
+        * `GBP` - GBP
+        * `GEL` - GEL
+        * `GHS` - GHS
+        * `GIP` - GIP
+        * `GMD` - GMD
+        * `GNF` - GNF
+        * `GTQ` - GTQ
+        * `GYD` - GYD
+        * `HKD` - HKD
+        * `HNL` - HNL
+        * `HTG` - HTG
+        * `HUF` - HUF
+        * `IDR` - IDR
+        * `ILS` - ILS
+        * `INR` - INR
+        * `IQD` - IQD
+        * `IRR` - IRR
+        * `ISK` - ISK
+        * `JMD` - JMD
+        * `JOD` - JOD
+        * `JPY` - JPY
+        * `KES` - KES
+        * `KGS` - KGS
+        * `KHR` - KHR
+        * `KMF` - KMF
+        * `KPW` - KPW
+        * `KRW` - KRW
+        * `KWD` - KWD
+        * `KYD` - KYD
+        * `KZT` - KZT
+        * `LAK` - LAK
+        * `LBP` - LBP
+        * `LKR` - LKR
+        * `LRD` - LRD
+        * `LSL` - LSL
+        * `LYD` - LYD
+        * `MAD` - MAD
+        * `MDL` - MDL
+        * `MGA` - MGA
+        * `MKD` - MKD
+        * `MMK` - MMK
+        * `MNT` - MNT
+        * `MOP` - MOP
+        * `MRU` - MRU
+        * `MUR` - MUR
+        * `MVR` - MVR
+        * `MWK` - MWK
+        * `MXN` - MXN
+        * `MXV` - MXV
+        * `MYR` - MYR
+        * `MZN` - MZN
+        * `NAD` - NAD
+        * `NGN` - NGN
+        * `NIO` - NIO
+        * `NOK` - NOK
+        * `NPR` - NPR
+        * `NZD` - NZD
+        * `OMR` - OMR
+        * `PAB` - PAB
+        * `PEN` - PEN
+        * `PGK` - PGK
+        * `PHP` - PHP
+        * `PKR` - PKR
+        * `PLN` - PLN
+        * `PYG` - PYG
+        * `QAR` - QAR
+        * `RON` - RON
+        * `RSD` - RSD
+        * `RUB` - RUB
+        * `RWF` - RWF
+        * `SAR` - SAR
+        * `SBD` - SBD
+        * `SCR` - SCR
+        * `SDG` - SDG
+        * `SEK` - SEK
+        * `SGD` - SGD
+        * `SHP` - SHP
+        * `SLE` - SLE
+        * `SOS` - SOS
+        * `SRD` - SRD
+        * `SSP` - SSP
+        * `STN` - STN
+        * `SVC` - SVC
+        * `SYP` - SYP
+        * `SZL` - SZL
+        * `THB` - THB
+        * `TJS` - TJS
+        * `TMT` - TMT
+        * `TND` - TND
+        * `TOP` - TOP
+        * `TRY` - TRY
+        * `TTD` - TTD
+        * `TWD` - TWD
+        * `TZS` - TZS
+        * `UAH` - UAH
+        * `UGX` - UGX
+        * `USD` - USD
+        * `USN` - USN
+        * `UYI` - UYI
+        * `UYU` - UYU
+        * `UYW` - UYW
+        * `UZS` - UZS
+        * `VED` - VED
+        * `VES` - VES
+        * `VND` - VND
+        * `VUV` - VUV
+        * `WST` - WST
+        * `XAF` - XAF
+        * `XAG` - XAG
+        * `XAU` - XAU
+        * `XBA` - XBA
+        * `XBB` - XBB
+        * `XBC` - XBC
+        * `XBD` - XBD
+        * `XCD` - XCD
+        * `XCG` - XCG
+        * `XDR` - XDR
+        * `XOF` - XOF
+        * `XPD` - XPD
+        * `XPF` - XPF
+        * `XPT` - XPT
+        * `XSU` - XSU
+        * `XTS` - XTS
+        * `XUA` - XUA
+        * `XXX` - XXX
+        * `YER` - YER
+        * `ZAR` - ZAR
+        * `ZMW` - ZMW
+        * `ZWG` - ZWG
     DashboardAgingOut:
       type: object
       properties:
@@ -1942,6 +2563,18 @@ components:
       - payment_status
       - reminder_status
       - status
+    KindEnum:
+      enum:
+      - BANK
+      - PAYPAL
+      - UPI
+      - CASH
+      type: string
+      description: |-
+        * `BANK` - BANK
+        * `PAYPAL` - PAYPAL
+        * `UPI` - UPI
+        * `CASH` - CASH
     LoginOut:
       type: object
       properties:
@@ -2082,6 +2715,17 @@ components:
       properties:
         role:
           $ref: '#/components/schemas/RoleEnum'
+    PatchedPaymentAccountUpdateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        status:
+          $ref: '#/components/schemas/StatusEnum'
     PatchedWorkspaceUpdateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2102,6 +2746,106 @@ components:
         business_hours:
           type: object
           additionalProperties: {}
+    PaymentAccountInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        label:
+          type: string
+          minLength: 1
+          maxLength: 100
+        currency:
+          $ref: '#/components/schemas/CurrencyEnum'
+      required:
+      - currency
+      - kind
+      - label
+    PaymentAccountOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        label:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+      required:
+      - currency
+      - id
+      - kind
+      - label
+      - status
+      - version
+    PaymentAccountPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAccountSummaryOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    PaymentAccountSummaryOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        label:
+          type: string
+        currency:
+          type: string
+        status:
+          type: string
+        version:
+          type: integer
+        covered_through:
+          type: string
+          format: date
+          nullable: true
+        statements_through:
+          type: string
+          format: date
+          nullable: true
+        attested_through:
+          type: string
+          format: date
+          nullable: true
+        coverage_status:
+          type: string
+        gaps:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+      required:
+      - attested_through
+      - coverage_status
+      - covered_through
+      - currency
+      - gaps
+      - id
+      - kind
+      - label
+      - statements_through
+      - status
+      - version
     QueueItemOut:
       type: object
       properties:
@@ -2241,6 +2985,14 @@ components:
       description: |-
         * `OWNER` - OWNER
         * `FINANCE_ADMIN` - FINANCE_ADMIN
+    ScopeEnum:
+      enum:
+      - ACCOUNT
+      - INVOICE
+      type: string
+      description: |-
+        * `ACCOUNT` - ACCOUNT
+        * `INVOICE` - INVOICE
     SensitivityEnum:
       enum:
       - STANDARD
@@ -2266,6 +3018,14 @@ components:
       - csrf_token
       - user
       - workspaces
+    StatusEnum:
+      enum:
+      - ACTIVE
+      - INACTIVE
+      type: string
+      description: |-
+        * `ACTIVE` - ACTIVE
+        * `INACTIVE` - INACTIVE
     SuppressionInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional

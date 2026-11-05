@@ -1,5 +1,6 @@
 from django.urls import path
 
+from . import account_views as accounts
 from . import client_views as clients
 from . import identity_views as identity
 from . import import_views as imports
@@ -55,6 +56,16 @@ urlpatterns: list = [
     ),
     path(f"{_V1}workspaces/<uuid:ws>/queue", invoices.QueueView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/dashboard", invoices.DashboardView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/payment-accounts", accounts.PaymentAccountCollectionView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/payment-accounts/<uuid:account_id>",
+        accounts.PaymentAccountDetailView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/payment-accounts/<uuid:account_id>/coverage",
+        accounts.AccountCoverageView.as_view(),
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/attestations", accounts.AttestationView.as_view()),
     path(f"{_V1}health/live", identity.HealthLiveView.as_view()),
     path(f"{_V1}health/ready", identity.HealthReadyView.as_view()),
 ]

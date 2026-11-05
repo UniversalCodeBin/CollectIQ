@@ -212,6 +212,22 @@ export interface paths {
         patch: operations["E012"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/attestations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E054"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/clients": {
         parameters: {
             query?: never;
@@ -501,6 +517,54 @@ export interface paths {
         patch: operations["E115"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/payment-accounts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E029"];
+        put?: never;
+        post: operations["E030"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/payment-accounts/{account_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E031"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/payment-accounts/{account_id}/coverage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E032"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/queue": {
         parameters: {
             query?: never;
@@ -521,6 +585,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AccountCoverageOut: {
+            account: components["schemas"]["PaymentAccountOut"];
+            /** Format: date */
+            covered_through: string | null;
+            /** Format: date */
+            statements_through: string | null;
+            /** Format: date */
+            attested_through: string | null;
+            coverage_status: string;
+            freshness_window_days: number;
+            /** Format: date */
+            fresh_until: string | null;
+            gaps: {
+                [key: string]: unknown;
+            }[];
+            ranges: {
+                [key: string]: unknown;
+            }[];
+            attestations: {
+                [key: string]: unknown;
+            }[];
+        };
         AliasOut: {
             /** Format: uuid */
             id: string;
@@ -531,6 +617,24 @@ export interface components {
             action: string;
             allowed: boolean;
             reason: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AttestationInRequest: {
+            scope: components["schemas"]["ScopeEnum"];
+            /** Format: uuid */
+            account_id?: string;
+            invoice_ids?: string[];
+            /** Format: date-time */
+            as_of: string;
+            note?: string;
+        };
+        AttestationOut: {
+            scope: string;
+            /** Format: date-time */
+            as_of: string;
+            /** Format: date */
+            coverage_date: string;
+            attestation_ids: string[];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ClientInRequest: {
@@ -591,6 +695,189 @@ export interface components {
             email: string;
             password: string;
         };
+        /**
+         * @description * `AED` - AED
+         *     * `AFN` - AFN
+         *     * `ALL` - ALL
+         *     * `AMD` - AMD
+         *     * `ANG` - ANG
+         *     * `AOA` - AOA
+         *     * `ARS` - ARS
+         *     * `AUD` - AUD
+         *     * `AWG` - AWG
+         *     * `AZN` - AZN
+         *     * `BAM` - BAM
+         *     * `BBD` - BBD
+         *     * `BDT` - BDT
+         *     * `BGN` - BGN
+         *     * `BHD` - BHD
+         *     * `BIF` - BIF
+         *     * `BMD` - BMD
+         *     * `BND` - BND
+         *     * `BOB` - BOB
+         *     * `BOV` - BOV
+         *     * `BRL` - BRL
+         *     * `BSD` - BSD
+         *     * `BTN` - BTN
+         *     * `BWP` - BWP
+         *     * `BYN` - BYN
+         *     * `BZD` - BZD
+         *     * `CAD` - CAD
+         *     * `CDF` - CDF
+         *     * `CHE` - CHE
+         *     * `CHF` - CHF
+         *     * `CHW` - CHW
+         *     * `CLF` - CLF
+         *     * `CLP` - CLP
+         *     * `CNY` - CNY
+         *     * `COP` - COP
+         *     * `COU` - COU
+         *     * `CRC` - CRC
+         *     * `CUP` - CUP
+         *     * `CVE` - CVE
+         *     * `CZK` - CZK
+         *     * `DJF` - DJF
+         *     * `DKK` - DKK
+         *     * `DOP` - DOP
+         *     * `DZD` - DZD
+         *     * `EGP` - EGP
+         *     * `ERN` - ERN
+         *     * `ETB` - ETB
+         *     * `EUR` - EUR
+         *     * `FJD` - FJD
+         *     * `FKP` - FKP
+         *     * `GBP` - GBP
+         *     * `GEL` - GEL
+         *     * `GHS` - GHS
+         *     * `GIP` - GIP
+         *     * `GMD` - GMD
+         *     * `GNF` - GNF
+         *     * `GTQ` - GTQ
+         *     * `GYD` - GYD
+         *     * `HKD` - HKD
+         *     * `HNL` - HNL
+         *     * `HTG` - HTG
+         *     * `HUF` - HUF
+         *     * `IDR` - IDR
+         *     * `ILS` - ILS
+         *     * `INR` - INR
+         *     * `IQD` - IQD
+         *     * `IRR` - IRR
+         *     * `ISK` - ISK
+         *     * `JMD` - JMD
+         *     * `JOD` - JOD
+         *     * `JPY` - JPY
+         *     * `KES` - KES
+         *     * `KGS` - KGS
+         *     * `KHR` - KHR
+         *     * `KMF` - KMF
+         *     * `KPW` - KPW
+         *     * `KRW` - KRW
+         *     * `KWD` - KWD
+         *     * `KYD` - KYD
+         *     * `KZT` - KZT
+         *     * `LAK` - LAK
+         *     * `LBP` - LBP
+         *     * `LKR` - LKR
+         *     * `LRD` - LRD
+         *     * `LSL` - LSL
+         *     * `LYD` - LYD
+         *     * `MAD` - MAD
+         *     * `MDL` - MDL
+         *     * `MGA` - MGA
+         *     * `MKD` - MKD
+         *     * `MMK` - MMK
+         *     * `MNT` - MNT
+         *     * `MOP` - MOP
+         *     * `MRU` - MRU
+         *     * `MUR` - MUR
+         *     * `MVR` - MVR
+         *     * `MWK` - MWK
+         *     * `MXN` - MXN
+         *     * `MXV` - MXV
+         *     * `MYR` - MYR
+         *     * `MZN` - MZN
+         *     * `NAD` - NAD
+         *     * `NGN` - NGN
+         *     * `NIO` - NIO
+         *     * `NOK` - NOK
+         *     * `NPR` - NPR
+         *     * `NZD` - NZD
+         *     * `OMR` - OMR
+         *     * `PAB` - PAB
+         *     * `PEN` - PEN
+         *     * `PGK` - PGK
+         *     * `PHP` - PHP
+         *     * `PKR` - PKR
+         *     * `PLN` - PLN
+         *     * `PYG` - PYG
+         *     * `QAR` - QAR
+         *     * `RON` - RON
+         *     * `RSD` - RSD
+         *     * `RUB` - RUB
+         *     * `RWF` - RWF
+         *     * `SAR` - SAR
+         *     * `SBD` - SBD
+         *     * `SCR` - SCR
+         *     * `SDG` - SDG
+         *     * `SEK` - SEK
+         *     * `SGD` - SGD
+         *     * `SHP` - SHP
+         *     * `SLE` - SLE
+         *     * `SOS` - SOS
+         *     * `SRD` - SRD
+         *     * `SSP` - SSP
+         *     * `STN` - STN
+         *     * `SVC` - SVC
+         *     * `SYP` - SYP
+         *     * `SZL` - SZL
+         *     * `THB` - THB
+         *     * `TJS` - TJS
+         *     * `TMT` - TMT
+         *     * `TND` - TND
+         *     * `TOP` - TOP
+         *     * `TRY` - TRY
+         *     * `TTD` - TTD
+         *     * `TWD` - TWD
+         *     * `TZS` - TZS
+         *     * `UAH` - UAH
+         *     * `UGX` - UGX
+         *     * `USD` - USD
+         *     * `USN` - USN
+         *     * `UYI` - UYI
+         *     * `UYU` - UYU
+         *     * `UYW` - UYW
+         *     * `UZS` - UZS
+         *     * `VED` - VED
+         *     * `VES` - VES
+         *     * `VND` - VND
+         *     * `VUV` - VUV
+         *     * `WST` - WST
+         *     * `XAF` - XAF
+         *     * `XAG` - XAG
+         *     * `XAU` - XAU
+         *     * `XBA` - XBA
+         *     * `XBB` - XBB
+         *     * `XBC` - XBC
+         *     * `XBD` - XBD
+         *     * `XCD` - XCD
+         *     * `XCG` - XCG
+         *     * `XDR` - XDR
+         *     * `XOF` - XOF
+         *     * `XPD` - XPD
+         *     * `XPF` - XPF
+         *     * `XPT` - XPT
+         *     * `XSU` - XSU
+         *     * `XTS` - XTS
+         *     * `XUA` - XUA
+         *     * `XXX` - XXX
+         *     * `YER` - YER
+         *     * `ZAR` - ZAR
+         *     * `ZMW` - ZMW
+         *     * `ZWG` - ZWG
+         * @enum {string}
+         */
+        CurrencyEnum: "AED" | "AFN" | "ALL" | "AMD" | "ANG" | "AOA" | "ARS" | "AUD" | "AWG" | "AZN" | "BAM" | "BBD" | "BDT" | "BGN" | "BHD" | "BIF" | "BMD" | "BND" | "BOB" | "BOV" | "BRL" | "BSD" | "BTN" | "BWP" | "BYN" | "BZD" | "CAD" | "CDF" | "CHE" | "CHF" | "CHW" | "CLF" | "CLP" | "CNY" | "COP" | "COU" | "CRC" | "CUP" | "CVE" | "CZK" | "DJF" | "DKK" | "DOP" | "DZD" | "EGP" | "ERN" | "ETB" | "EUR" | "FJD" | "FKP" | "GBP" | "GEL" | "GHS" | "GIP" | "GMD" | "GNF" | "GTQ" | "GYD" | "HKD" | "HNL" | "HTG" | "HUF" | "IDR" | "ILS" | "INR" | "IQD" | "IRR" | "ISK" | "JMD" | "JOD" | "JPY" | "KES" | "KGS" | "KHR" | "KMF" | "KPW" | "KRW" | "KWD" | "KYD" | "KZT" | "LAK" | "LBP" | "LKR" | "LRD" | "LSL" | "LYD" | "MAD" | "MDL" | "MGA" | "MKD" | "MMK" | "MNT" | "MOP" | "MRU" | "MUR" | "MVR" | "MWK" | "MXN" | "MXV" | "MYR" | "MZN" | "NAD" | "NGN" | "NIO" | "NOK" | "NPR" | "NZD" | "OMR" | "PAB" | "PEN" | "PGK" | "PHP" | "PKR" | "PLN" | "PYG" | "QAR" | "RON" | "RSD" | "RUB" | "RWF" | "SAR" | "SBD" | "SCR" | "SDG" | "SEK" | "SGD" | "SHP" | "SLE" | "SOS" | "SRD" | "SSP" | "STN" | "SVC" | "SYP" | "SZL" | "THB" | "TJS" | "TMT" | "TND" | "TOP" | "TRY" | "TTD" | "TWD" | "TZS" | "UAH" | "UGX" | "USD" | "USN" | "UYI" | "UYU" | "UYW" | "UZS" | "VED" | "VES" | "VND" | "VUV" | "WST" | "XAF" | "XAG" | "XAU" | "XBA" | "XBB" | "XBC" | "XBD" | "XCD" | "XCG" | "XDR" | "XOF" | "XPD" | "XPF" | "XPT" | "XSU" | "XTS" | "XUA" | "XXX" | "YER" | "ZAR" | "ZMW" | "ZWG";
         DashboardAgingOut: {
             count: number;
             amount_minor: number;
@@ -803,6 +1090,14 @@ export interface components {
             due_bucket: string;
             allowed_actions: components["schemas"]["AllowedActionOut"][];
         };
+        /**
+         * @description * `BANK` - BANK
+         *     * `PAYPAL` - PAYPAL
+         *     * `UPI` - UPI
+         *     * `CASH` - CASH
+         * @enum {string}
+         */
+        KindEnum: "BANK" | "PAYPAL" | "UPI" | "CASH";
         LoginOut: {
             user: components["schemas"]["UserOut"];
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
@@ -857,6 +1152,11 @@ export interface components {
             role?: components["schemas"]["RoleEnum"];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedPaymentAccountUpdateInRequest: {
+            label?: string;
+            status?: components["schemas"]["StatusEnum"];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedWorkspaceUpdateInRequest: {
             name?: string;
             timezone?: string;
@@ -864,6 +1164,44 @@ export interface components {
             business_hours?: {
                 [key: string]: unknown;
             };
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PaymentAccountInRequest: {
+            kind: components["schemas"]["KindEnum"];
+            label: string;
+            currency: components["schemas"]["CurrencyEnum"];
+        };
+        PaymentAccountOut: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            label: string;
+            currency: string;
+            status: string;
+            version: number;
+        };
+        PaymentAccountPageOut: {
+            items: components["schemas"]["PaymentAccountSummaryOut"][];
+            next_cursor: string | null;
+        };
+        PaymentAccountSummaryOut: {
+            /** Format: uuid */
+            id: string;
+            kind: string;
+            label: string;
+            currency: string;
+            status: string;
+            version: number;
+            /** Format: date */
+            covered_through: string | null;
+            /** Format: date */
+            statements_through: string | null;
+            /** Format: date */
+            attested_through: string | null;
+            coverage_status: string;
+            gaps: {
+                [key: string]: unknown;
+            }[];
         };
         QueueItemOut: {
             /** Format: uuid */
@@ -916,6 +1254,12 @@ export interface components {
          */
         RoleEnum: "OWNER" | "FINANCE_ADMIN";
         /**
+         * @description * `ACCOUNT` - ACCOUNT
+         *     * `INVOICE` - INVOICE
+         * @enum {string}
+         */
+        ScopeEnum: "ACCOUNT" | "INVOICE";
+        /**
          * @description * `STANDARD` - STANDARD
          *     * `LONG_TERM` - LONG_TERM
          *     * `SENSITIVE` - SENSITIVE
@@ -927,6 +1271,12 @@ export interface components {
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
             csrf_token: string;
         };
+        /**
+         * @description * `ACTIVE` - ACTIVE
+         *     * `INACTIVE` - INACTIVE
+         * @enum {string}
+         */
+        StatusEnum: "ACTIVE" | "INACTIVE";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         SuppressionInRequest: {
             reason: string;
@@ -1319,6 +1669,34 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkspaceOut"];
+                };
+            };
+        };
+    };
+    E054: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AttestationInRequest"];
+                "multipart/form-data": components["schemas"]["AttestationInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttestationOut"];
                 };
             };
         };
@@ -1956,6 +2334,109 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["MemberOut"];
+                };
+            };
+        };
+    };
+    E029: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentAccountPageOut"];
+                };
+            };
+        };
+    };
+    E030: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentAccountInRequest"];
+                "multipart/form-data": components["schemas"]["PaymentAccountInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentAccountOut"];
+                };
+            };
+        };
+    };
+    E031: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                account_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedPaymentAccountUpdateInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedPaymentAccountUpdateInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentAccountOut"];
+                };
+            };
+        };
+    };
+    E032: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                account_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccountCoverageOut"];
                 };
             };
         };
