@@ -291,6 +291,82 @@ paths:
                 $ref: '#/components/schemas/WorkspaceOut'
           description: ''
       x-endpoint-id: E012
+  /api/v1/workspaces/{ws}/allocations:
+    post:
+      operationId: E059
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AllocationInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerResultOut'
+          description: ''
+      x-endpoint-id: E059
+  /api/v1/workspaces/{ws}/allocations/{allocation_id}/reverse:
+    post:
+      operationId: E060
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: allocation_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerResultOut'
+          description: ''
+      x-endpoint-id: E060
   /api/v1/workspaces/{ws}/attestations:
     post:
       operationId: E054
@@ -1375,6 +1451,135 @@ paths:
                 $ref: '#/components/schemas/AccountCoverageOut'
           description: ''
       x-endpoint-id: E032
+  /api/v1/workspaces/{ws}/payments:
+    get:
+      operationId: E050
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentPageOut'
+          description: ''
+      x-endpoint-id: E050
+    post:
+      operationId: E049
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PaymentInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerResultOut'
+          description: ''
+      x-endpoint-id: E049
+  /api/v1/workspaces/{ws}/payments/{payment_id}:
+    get:
+      operationId: E051
+      parameters:
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentDetailOut'
+          description: ''
+      x-endpoint-id: E051
+  /api/v1/workspaces/{ws}/payments/{payment_id}/void:
+    post:
+      operationId: E052
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: payment_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReasonInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReasonInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerResultOut'
+          description: ''
+      x-endpoint-id: E052
   /api/v1/workspaces/{ws}/queue:
     get:
       operationId: E047
@@ -1491,6 +1696,128 @@ paths:
                 $ref: '#/components/schemas/ProposalPageOut'
           description: ''
       x-endpoint-id: E056
+  /api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/confirm:
+    post:
+      operationId: E057
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: proposal_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalConfirmInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProposalConfirmInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerResultOut'
+          description: ''
+      x-endpoint-id: E057
+  /api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/reject:
+    post:
+      operationId: E058
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: proposal_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProposalRejectInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProposalRejectInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProposalRejectedOut'
+          description: ''
+      x-endpoint-id: E058
+  /api/v1/workspaces/{ws}/transactions/{transaction_id}/mark-duplicate:
+    post:
+      operationId: E061
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: transaction_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DuplicateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DuplicateInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LedgerResultOut'
+          description: ''
+      x-endpoint-id: E061
   /api/v1/workspaces/{ws}/transactions/unmatched:
     get:
       operationId: E055
@@ -1586,6 +1913,40 @@ components:
       - id
       - kind
       - text
+    AllocationInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        transaction_id:
+          type: string
+          format: uuid
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationLineInRequest'
+      required:
+      - allocations
+      - transaction_id
+    AllocationLineInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        amount_minor:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
+        overpayment_confirmed:
+          type: boolean
+          default: false
+      required:
+      - amount_minor
+      - invoice_id
     AllowedActionOut:
       type: object
       properties:
@@ -2244,6 +2605,16 @@ components:
           type: string
       required:
       - detail
+    DuplicateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        duplicate_of:
+          type: string
+          format: uuid
+      required:
+      - duplicate_of
     EmailInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2693,18 +3064,32 @@ components:
       - payment_status
       - reminder_status
       - status
-    KindEnum:
-      enum:
-      - BANK
-      - PAYPAL
-      - UPI
-      - CASH
-      type: string
-      description: |-
-        * `BANK` - BANK
-        * `PAYPAL` - PAYPAL
-        * `UPI` - UPI
-        * `CASH` - CASH
+    InvoiceStateOut:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        payment_status:
+          type: string
+        paid_minor:
+          type: integer
+        outstanding_minor:
+          type: integer
+        overpayment_flag:
+          type: boolean
+        reminder_status:
+          type: string
+        version:
+          type: integer
+      required:
+      - invoice_id
+      - outstanding_minor
+      - overpayment_flag
+      - paid_minor
+      - payment_status
+      - reminder_status
+      - version
     LabelEnum:
       enum:
       - Strong
@@ -2715,6 +3100,23 @@ components:
         * `Strong` - Strong
         * `Possible` - Possible
         * `Weak` - Weak
+    LedgerResultOut:
+      type: object
+      properties:
+        payment:
+          $ref: '#/components/schemas/PaymentOut'
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAllocationOut'
+        invoice_states:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceStateOut'
+      required:
+      - allocations
+      - invoice_states
+      - payment
     LoginOut:
       type: object
       properties:
@@ -2763,6 +3165,35 @@ components:
       required:
       - items
       - next_cursor
+    MethodEnum:
+      enum:
+      - BANK_TRANSFER
+      - UPI
+      - CASH
+      - PAYPAL_MANUAL
+      - OTHER
+      type: string
+      description: |-
+        * `BANK_TRANSFER` - BANK_TRANSFER
+        * `UPI` - UPI
+        * `CASH` - CASH
+        * `PAYPAL_MANUAL` - PAYPAL_MANUAL
+        * `OTHER` - OTHER
+    MoneyInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        amount_minor:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: 1
+          format: int64
+        currency:
+          $ref: '#/components/schemas/CurrencyEnum'
+      required:
+      - amount_minor
+      - currency
     PasswordResetConfirmInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2865,7 +3296,7 @@ components:
           minLength: 1
           maxLength: 100
         status:
-          $ref: '#/components/schemas/StatusEnum'
+          $ref: '#/components/schemas/PaymentAccountUpdateInStatusEnum'
     PatchedWorkspaceUpdateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2886,13 +3317,25 @@ components:
         business_hours:
           type: object
           additionalProperties: {}
+    PaymentAccountInKindEnum:
+      enum:
+      - BANK
+      - PAYPAL
+      - UPI
+      - CASH
+      type: string
+      description: |-
+        * `BANK` - BANK
+        * `PAYPAL` - PAYPAL
+        * `UPI` - UPI
+        * `CASH` - CASH
     PaymentAccountInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
         field left out.
       properties:
         kind:
-          $ref: '#/components/schemas/KindEnum'
+          $ref: '#/components/schemas/PaymentAccountInKindEnum'
         label:
           type: string
           minLength: 1
@@ -2986,6 +3429,312 @@ components:
       - statements_through
       - status
       - version
+    PaymentAccountUpdateInStatusEnum:
+      enum:
+      - ACTIVE
+      - INACTIVE
+      type: string
+      description: |-
+        * `ACTIVE` - ACTIVE
+        * `INACTIVE` - INACTIVE
+    PaymentAllocationOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        amount_minor:
+          type: integer
+        kind:
+          $ref: '#/components/schemas/PaymentAllocationOutKindEnum'
+        reverses_allocation_id:
+          type: string
+          format: uuid
+          nullable: true
+        match_id:
+          type: string
+          format: uuid
+          nullable: true
+        overpayment_confirmed:
+          type: boolean
+        evidence_type:
+          type: string
+        confirmed_by:
+          type: string
+          format: uuid
+        note:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - amount_minor
+      - confirmed_by
+      - created_at
+      - evidence_type
+      - id
+      - invoice_id
+      - kind
+      - match_id
+      - note
+      - overpayment_confirmed
+      - reverses_allocation_id
+    PaymentAllocationOutKindEnum:
+      enum:
+      - ALLOCATION
+      - REVERSAL
+      type: string
+      description: |-
+        * `ALLOCATION` - ALLOCATION
+        * `REVERSAL` - REVERSAL
+    PaymentDetailOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        source_type:
+          type: string
+        method:
+          type: string
+          nullable: true
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        allocated_minor:
+          type: integer
+        unallocated_minor:
+          type: integer
+        value_date:
+          type: string
+          format: date
+        reference:
+          type: string
+          nullable: true
+        payer_descriptor:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+        evidence_type:
+          type: string
+        lower_assurance:
+          type: boolean
+        account_label:
+          type: string
+          nullable: true
+        entered_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        void_reason:
+          type: string
+          nullable: true
+        duplicate_of_transaction_id:
+          type: string
+          format: uuid
+          nullable: true
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentAllocationOut'
+        matches:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentMatchOut'
+      required:
+      - account_label
+      - allocated_minor
+      - allocations
+      - amount_minor
+      - created_at
+      - currency
+      - duplicate_of_transaction_id
+      - entered_by
+      - evidence_type
+      - id
+      - lower_assurance
+      - matches
+      - method
+      - notes
+      - payer_descriptor
+      - reference
+      - source_type
+      - status
+      - unallocated_minor
+      - value_date
+      - void_reason
+    PaymentInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        method:
+          $ref: '#/components/schemas/MethodEnum'
+        amount:
+          $ref: '#/components/schemas/MoneyInRequest'
+        value_date:
+          type: string
+          format: date
+        reference:
+          type: string
+          minLength: 1
+          maxLength: 140
+        payer:
+          type: string
+          minLength: 1
+          maxLength: 200
+        notes:
+          type: string
+          minLength: 1
+          maxLength: 500
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationLineInRequest'
+      required:
+      - amount
+      - method
+      - value_date
+    PaymentMatchOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        label:
+          $ref: '#/components/schemas/LabelEnum'
+        ambiguous:
+          type: boolean
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_reason:
+          type: string
+          nullable: true
+      required:
+      - ambiguous
+      - decided_at
+      - decision_reason
+      - id
+      - invoice_id
+      - label
+      - status
+    PaymentOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        source_type:
+          type: string
+        method:
+          type: string
+          nullable: true
+        amount_minor:
+          type: integer
+        currency:
+          type: string
+        allocated_minor:
+          type: integer
+        unallocated_minor:
+          type: integer
+        value_date:
+          type: string
+          format: date
+        reference:
+          type: string
+          nullable: true
+        payer_descriptor:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        status:
+          type: string
+        evidence_type:
+          type: string
+        lower_assurance:
+          type: boolean
+        account_label:
+          type: string
+          nullable: true
+        entered_by:
+          type: string
+          format: uuid
+        created_at:
+          type: string
+          format: date-time
+        void_reason:
+          type: string
+          nullable: true
+        duplicate_of_transaction_id:
+          type: string
+          format: uuid
+          nullable: true
+      required:
+      - account_label
+      - allocated_minor
+      - amount_minor
+      - created_at
+      - currency
+      - duplicate_of_transaction_id
+      - entered_by
+      - evidence_type
+      - id
+      - lower_assurance
+      - method
+      - notes
+      - payer_descriptor
+      - reference
+      - source_type
+      - status
+      - unallocated_minor
+      - value_date
+      - void_reason
+    PaymentPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    ProposalConfirmInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        allocations:
+          type: array
+          items:
+            $ref: '#/components/schemas/AllocationLineInRequest'
+      required:
+      - allocations
     ProposalOut:
       type: object
       properties:
@@ -3036,6 +3785,36 @@ components:
       required:
       - code
       - text
+    ProposalRejectInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+    ProposalRejectedOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          $ref: '#/components/schemas/ProposalRejectedOutStatusEnum'
+        invoice_states:
+          type: array
+          items:
+            $ref: '#/components/schemas/InvoiceStateOut'
+      required:
+      - id
+      - invoice_states
+      - status
+    ProposalRejectedOutStatusEnum:
+      enum:
+      - REJECTED
+      type: string
+      description: '* `REJECTED` - REJECTED'
     QueueItemOut:
       type: object
       properties:
@@ -3132,6 +3911,17 @@ components:
       required:
       - items
       - next_cursor
+    ReasonInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - reason
     ReasonOut:
       type: object
       properties:
@@ -3298,14 +4088,6 @@ components:
       - field
       - message
       - row
-    StatusEnum:
-      enum:
-      - ACTIVE
-      - INACTIVE
-      type: string
-      description: |-
-        * `ACTIVE` - ACTIVE
-        * `INACTIVE` - INACTIVE
     SuppressionInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -3380,6 +4162,11 @@ components:
           nullable: true
         account_label:
           type: string
+          nullable: true
+        source_type:
+          type: string
+        remaining_minor:
+          type: integer
         proposal_count:
           type: integer
       required:
@@ -3390,6 +4177,8 @@ components:
       - payer_descriptor
       - proposal_count
       - reference
+      - remaining_minor
+      - source_type
       - value_date
     UserOut:
       type: object

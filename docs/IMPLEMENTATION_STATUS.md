@@ -9,7 +9,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** payment accounts, statement coverage and attestations (API only).
 - **Done:** statement import (E053, API only): generic CSV parser, credit-only default, fingerprint dedupe, coverage confirmation.
 - **Done:** Task 18, explainable match suggestions (E055, E056).
-- **Next:** Task 19, allocation, reversal, manual payment, void, duplicate (E049-E052, E057-E061).
+- **Done:** Task 19, confirmed allocations, reversal, manual payment, void and duplicate (E049-E052, E057-E061, API only).
+- **Next:** Task 20, Reconciliation and Payment Accounts screens (SCR-06, SCR-15).
 
 ## T1 spike outcome
 
@@ -41,6 +42,7 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T15 Accounts, coverage and attestations | 26 unit tests (99% branch on evidence domain, gate ≥95%), 17 integration tests incl. TS-032 sequence, tenant isolation, append-only rows; make check 12 of 12 | See `git log` |
 | T16 Statement import (E053) | 15 parser unit tests, 20 integration tests (TS-031 overlap, F-6 re-import, credit-only default, locale/BOM, coverage, row immutability), make check 12 of 12 | `feat(evidence): statement import` |
 | T17 derive() and state maintenance | 20 property/table tests (every precedence branch, TS-011/012, INV-01, Hypothesis), 4 integration tests (recompute/version, outbox follow, seeded-drift detection and audited repair), make check 12 of 12 | `feat(evidence): payment state derivation` |
+| T19 Confirmed allocations and reversals | 874 pytest in total, of which the two new allocation files cover triggers, TS-011/012, F-8 races, the database backstop and a Hypothesis state-equals-derive property; `evidence.domain` 96% combined statement and branch on the full run, gate ≥95%, before one further matcher test; make check 12 of 12 | `feat(evidence): confirmed allocations and reversals` |
 
 ## Open items carried forward
 
@@ -51,7 +53,7 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 - Endpoint gaps in the audit are added as `proposed-new` by T7, T25 and T31, then listed in the final report for approval.
 - `X-Forwarded-For` is not trusted yet, and stale `auth_throttles` rows are not purged. Revisit at T40.
 - T14: proposed-new endpoint to add a client alias (SCR-14 'add alias'), plus contact rules (FR-149).
-- T17/T19: updating gross_minor on an invoice with allocations must be handled once allocations exist
+- T19 handled gross changes on an invoice with allocations: a total lowered below what is paid derives UNCERTAIN with a flag (test_lowered_total_below_paid_becomes_uncertain_not_paid). A guard on the correction path remains an option.
 - T13: COMMIT allowed_actions reflects no decisions; the UI works out readiness from local decisions
 - Next free endpoint id is E117
 FR-025 filter controls and FR-026 sort and Reset to exception order have no UI yet; FR-023 supporting-evidence links wait for T15+.

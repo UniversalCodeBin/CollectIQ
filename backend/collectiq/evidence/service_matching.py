@@ -17,11 +17,14 @@ from collectiq.platform import outbox
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_all, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
+from collectiq.tenancy.permissions import LEDGER_WRITE, authorize
 
 from . import service_state
 from .domain.matcher import MATCHER_VERSION, Candidate, MatchResult, Txn, match
 
 TRANSACTIONS_IMPORTED = "TransactionsImported"
+ALLOCATION_REVERSED = "AllocationReversed"
+BAND_LABELS = {"HIGH": "Strong", "MEDIUM": "Possible", "LOW": "Weak"}
 _OPEN_STATES = ("OUTSTANDING", "PARTIALLY_PAID", "AWAITING_VERIFICATION", "UNCERTAIN")
 
 
@@ -72,12 +75,16 @@ def _candidates(currency: str) -> tuple[list[dict[str, Any]], list[Candidate]]:
 
 
 def _history(txn: dict[str, Any], client_id: Any) -> tuple[bool, bool]:
-    """(same payer confirmed for this client before, this account paid this client before)."""
+    """(same payer confirmed for this client before, this account paid this client before).
+
+    Learned from allocations that still stand, so a person's own E059 choice teaches and a reversal unteaches.
+    """
     rows = fetch_all(
-        "SELECT t.payer_descriptor, t.payment_account_id FROM reconciliation_matches m"
-        "  JOIN payment_transactions t ON t.id = m.transaction_id AND t.workspace_id = m.workspace_id"
-        "  JOIN invoices i ON i.id = m.invoice_id AND i.workspace_id = m.workspace_id"
-        " WHERE m.status = 'CONFIRMED' AND i.client_id = %s",
+        "SELECT t.payer_descriptor, t.payment_account_id FROM payment_allocations a"
+        "  JOIN payment_transactions t ON t.id = a.transaction_id AND t.workspace_id = a.workspace_id"
+        "  JOIN invoices i ON i.id = a.invoice_id AND i.workspace_id = a.workspace_id"
+        " WHERE a.kind = 'ALLOCATION' AND i.client_id = %s"
+        "   AND NOT EXISTS (SELECT 1 FROM payment_allocations r WHERE r.reverses_allocation_id = a.id)",
         [client_id],
     )
     payer = (txn["payer_descriptor"] or "").casefold()
@@ -97,11 +104,19 @@ def _factor_json(result: MatchResult) -> str:
 
 
 def reconcile(ctx: RequestContext, transaction_ids: Sequence[UUID | str]) -> int:
-    """Propose matches for active credits. Runs in the caller's transaction. Returns proposals made."""
+    """Propose matches for statement credits with money left. Runs in the caller's transaction.
+
+    Returns proposals made. Locks each transaction row first, the same order as allocation. Manual entries
+    are never proposed: a person entered them, and a person chooses their invoices.
+    """
     txns = fetch_all(
         "SELECT id, payment_account_id, amount_minor, currency, value_date, reference_candidates,"
         "       payer_descriptor FROM payment_transactions"
-        " WHERE id = ANY(%s::uuid[]) AND direction = 'CREDIT' AND status = 'ACTIVE' ORDER BY id",
+        " WHERE id = ANY(%s::uuid[]) AND direction = 'CREDIT' AND status = 'ACTIVE'"
+        "   AND source_type <> 'MANUAL'"
+        "   AND amount_minor > (SELECT COALESCE(sum(a.amount_minor), 0) FROM payment_allocations a"
+        "                        WHERE a.transaction_id = payment_transactions.id)"
+        " ORDER BY id FOR NO KEY UPDATE",
         [list(transaction_ids)],
     )
     pool: dict[str, tuple[list[dict[str, Any]], list[Candidate]]] = {}
@@ -128,14 +143,15 @@ def reconcile(ctx: RequestContext, transaction_ids: Sequence[UUID | str]) -> int
         )
         old = fetch_all(
             "SELECT id, invoice_id, inputs_hash, status FROM reconciliation_matches"
-            " WHERE transaction_id = %s AND status IN ('PROPOSED', 'REJECTED')",
+            " WHERE transaction_id = %s AND status IN ('PROPOSED', 'REJECTED', 'CONFIRMED')",
             [t["id"]],
         )
         rejected = {(str(o["invoice_id"]), o["inputs_hash"]) for o in old if o["status"] == "REJECTED"}
+        settled = {str(o["invoice_id"]) for o in old if o["status"] == "CONFIRMED"}
         keep: set[str] = set()
         for r in results:
             digest = _inputs_hash(t, by_id[r.invoice_id])
-            if (r.invoice_id, digest) in rejected:
+            if (r.invoice_id, digest) in rejected or r.invoice_id in settled:
                 continue
             same = next(
                 (
@@ -206,18 +222,23 @@ def _supersede(match_id: Any) -> None:
     )
 
 
-def reject(ctx: RequestContext, match_id: UUID, reason: str) -> None:
+def reject(ctx: RequestContext, match_id: UUID, reason: str | None = None) -> dict[str, Any]:
     """A person declines a proposal. It is remembered with the inputs it was made on (BR-15)."""
+    authorize(ctx, LEDGER_WRITE)
     with tenant_tx(ctx):
-        row = fetch_one(
-            "SELECT id, invoice_id, transaction_id, status FROM reconciliation_matches"
-            " WHERE id = %s FOR UPDATE",
-            [match_id],
+        found = fetch_one(
+            "SELECT id, invoice_id, transaction_id FROM reconciliation_matches WHERE id = %s", [match_id]
         )
-        if row is None:
+        if found is None:
             raise ProblemError("NOT_FOUND", 404, "That proposal does not exist.")
+        # the invoice first, the same order as allocation, and the status only after waiting for it
+        fetch_one(
+            "SELECT 1 AS locked FROM invoice_state WHERE invoice_id = %s FOR UPDATE", [found["invoice_id"]]
+        )
+        row = fetch_one("SELECT status FROM reconciliation_matches WHERE id = %s FOR UPDATE", [match_id])
+        assert row is not None
         if row["status"] != "PROPOSED":
-            raise ProblemError("CONFLICT_STATE", 409, "That proposal has already been decided.")
+            raise ProblemError("STATE_TRANSITION_INVALID", 409, "That proposal has already been decided.")
         execute(
             "UPDATE reconciliation_matches SET status = 'REJECTED', decided_by = %s, decided_at = now(),"
             " decision_reason = %s WHERE id = %s",
@@ -229,13 +250,18 @@ def reject(ctx: RequestContext, match_id: UUID, reason: str) -> None:
             "reconciliation_match",
             str(match_id),
             after={
-                "invoice_id": str(row["invoice_id"]),
-                "transaction_id": str(row["transaction_id"]),
+                "invoice_id": str(found["invoice_id"]),
+                "transaction_id": str(found["transaction_id"]),
                 "reason": reason,
             },
             reason_codes=["MATCH_REJECTED"],
         )
-        service_state.recompute(ctx, row["invoice_id"])
+        service_state.recompute(ctx, found["invoice_id"])
+        return {
+            "id": str(match_id),
+            "status": "REJECTED",
+            "invoice_states": service_state.snapshot([found["invoice_id"]]),
+        }
 
 
 @outbox.subscriber(TRANSACTIONS_IMPORTED)
@@ -251,6 +277,17 @@ def _on_transactions_imported(ctx: RequestContext, payload: dict[str, Any]) -> N
         reconcile(ctx, ids)
 
 
+@outbox.subscriber(ALLOCATION_REVERSED)
+def _on_allocation_reversed(ctx: RequestContext, payload: dict[str, Any]) -> None:
+    """Money came back. Consider it again, and the rivals that were withdrawn when the invoice settled."""
+    rivals = fetch_all(
+        "SELECT DISTINCT transaction_id FROM reconciliation_matches"
+        " WHERE invoice_id = %s AND status = 'SUPERSEDED'",
+        [payload["invoice_id"]],
+    )
+    reconcile(ctx, sorted({payload["transaction_id"], *(str(r["transaction_id"]) for r in rivals)}))
+
+
 # ---- reads ------------------------------------------------------------------------------------------
 
 
@@ -258,14 +295,14 @@ def list_unmatched(ctx: RequestContext, limit: int, cursor: UUID | None) -> dict
     with tenant_tx(ctx):
         rows = fetch_all(
             "SELECT t.id, t.amount_minor, t.currency, t.value_date, t.reference, t.payer_descriptor,"
-            "       a.label AS account_label,"
+            "       t.source_type, a.label AS account_label, t.amount_minor - x.allocated AS remaining_minor,"
             "       (SELECT count(*) FROM reconciliation_matches m WHERE m.transaction_id = t.id"
             "           AND m.status = 'PROPOSED' AND m.band <> 'LOW') AS proposal_count"
-            "  FROM payment_transactions t JOIN payment_accounts a"
+            "  FROM payment_transactions t LEFT JOIN payment_accounts a"
             "    ON a.id = t.payment_account_id AND a.workspace_id = t.workspace_id"
-            " WHERE t.direction = 'CREDIT' AND t.status = 'ACTIVE'"
-            "   AND NOT EXISTS (SELECT 1 FROM reconciliation_matches m WHERE m.transaction_id = t.id"
-            "                   AND m.status = 'CONFIRMED')"
+            "  CROSS JOIN LATERAL (SELECT COALESCE(sum(pa.amount_minor), 0)::bigint AS allocated"
+            "                        FROM payment_allocations pa WHERE pa.transaction_id = t.id) x"
+            " WHERE t.direction = 'CREDIT' AND t.status = 'ACTIVE' AND t.amount_minor > x.allocated"
             "   AND (%(cursor)s::uuid IS NULL OR t.id > %(cursor)s::uuid) ORDER BY t.id LIMIT %(limit)s",
             {"cursor": cursor, "limit": limit + 1},
         )
@@ -277,7 +314,6 @@ def list_unmatched(ctx: RequestContext, limit: int, cursor: UUID | None) -> dict
 
 
 def list_proposals(ctx: RequestContext, limit: int, cursor: UUID | None) -> dict[str, Any]:
-    labels = {"HIGH": "Strong", "MEDIUM": "Possible", "LOW": "Weak"}
     with tenant_tx(ctx):
         rows = fetch_all(
             "SELECT m.id, m.band, m.ambiguous, m.factors, m.transaction_id, m.invoice_id,"
@@ -297,7 +333,7 @@ def list_proposals(ctx: RequestContext, limit: int, cursor: UUID | None) -> dict
     items = [
         {
             "id": str(r["id"]),
-            "label": labels[r["band"]],
+            "label": BAND_LABELS[r["band"]],
             "ambiguous": r["ambiguous"],
             "reasons": [{"code": f["code"], "text": f["text"]} for f in _factors(r["factors"])],
             "transaction": {

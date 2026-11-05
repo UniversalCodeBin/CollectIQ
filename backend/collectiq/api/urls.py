@@ -5,6 +5,7 @@ from . import client_views as clients
 from . import identity_views as identity
 from . import import_views as imports
 from . import invoice_views as invoices
+from . import payment_views as payments
 from . import reconciliation_views as reconciliation
 from . import statement_views as statements
 from . import tenancy_views as tenancy
@@ -74,6 +75,26 @@ urlpatterns: list = [
         reconciliation.UnmatchedTransactionsView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/reconciliation/proposals", reconciliation.ProposalsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/payments", payments.PaymentsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>", payments.PaymentDetailView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/void", payments.PaymentVoidView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reconciliation/proposals/<uuid:proposal_id>/confirm",
+        payments.ProposalConfirmView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reconciliation/proposals/<uuid:proposal_id>/reject",
+        payments.ProposalRejectView.as_view(),
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/allocations", payments.AllocationsView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/allocations/<uuid:allocation_id>/reverse",
+        payments.AllocationReverseView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/transactions/<uuid:transaction_id>/mark-duplicate",
+        payments.TransactionDuplicateView.as_view(),
+    ),
     path(f"{_V1}health/live", identity.HealthLiveView.as_view()),
     path(f"{_V1}health/ready", identity.HealthReadyView.as_view()),
 ]

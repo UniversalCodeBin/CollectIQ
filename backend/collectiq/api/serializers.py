@@ -7,6 +7,8 @@ from rest_framework import serializers
 
 from collectiq.platform.money import ISO_4217_CODES
 
+_BIGINT_MAX = 2**63 - 1
+
 
 class StrictSerializer(serializers.Serializer):
     """An unexpected field is refused, so a typo cannot pass as an optional field left out."""
@@ -541,7 +543,9 @@ class UnmatchedTransactionOut(serializers.Serializer):
     value_date = serializers.DateField()
     reference = serializers.CharField(allow_null=True)
     payer_descriptor = serializers.CharField(allow_null=True)
-    account_label = serializers.CharField()
+    account_label = serializers.CharField(allow_null=True)
+    source_type = serializers.CharField()
+    remaining_minor = serializers.IntegerField()
     proposal_count = serializers.IntegerField()
 
 
@@ -567,3 +571,150 @@ class ProposalOut(serializers.Serializer):
 class ProposalPageOut(serializers.Serializer):
     items = ProposalOut(many=True)
     next_cursor = serializers.CharField(allow_null=True)
+
+
+class _StrictIntegerField(serializers.IntegerField):
+    """Money is a JSON integer. "100", 100.0 and true are refused rather than coerced."""
+
+    def to_internal_value(self, data: Any) -> int:
+        if isinstance(data, bool) or not isinstance(data, int):
+            self.fail("invalid")
+        return super().to_internal_value(data)
+
+
+class _StrictBooleanField(serializers.BooleanField):
+    """A money decision is a JSON boolean, never "true" or 1 by accident."""
+
+    def to_internal_value(self, data: Any) -> bool:
+        if not isinstance(data, bool):
+            self.fail("invalid", input=data)
+        return data
+
+
+def _amount_minor() -> _StrictIntegerField:
+    return _StrictIntegerField(min_value=1, max_value=_BIGINT_MAX)
+
+
+def _reason_text(required: bool = True) -> serializers.CharField:
+    return serializers.CharField(max_length=500, required=required)
+
+
+class AllocationLineIn(StrictSerializer):
+    invoice_id = serializers.UUIDField()
+    amount_minor = _amount_minor()
+    overpayment_confirmed = _StrictBooleanField(required=False, default=False)
+
+
+class AllocationIn(StrictSerializer):
+    transaction_id = serializers.UUIDField()
+    allocations = AllocationLineIn(many=True, allow_empty=False)
+
+
+class ProposalConfirmIn(StrictSerializer):
+    allocations = AllocationLineIn(many=True, allow_empty=False)
+
+
+class ProposalRejectIn(StrictSerializer):
+    reason = _reason_text(required=False)
+
+
+class ReasonIn(StrictSerializer):
+    reason = _reason_text()
+
+
+class DuplicateIn(StrictSerializer):
+    duplicate_of = serializers.UUIDField()
+
+
+class MoneyIn(StrictSerializer):
+    amount_minor = _amount_minor()
+    currency = serializers.ChoiceField(choices=sorted(ISO_4217_CODES))
+
+
+class PaymentIn(StrictSerializer):
+    method = serializers.ChoiceField(choices=["BANK_TRANSFER", "UPI", "CASH", "PAYPAL_MANUAL", "OTHER"])
+    amount = MoneyIn()
+    value_date = serializers.DateField()
+    reference = serializers.CharField(max_length=140, required=False)
+    payer = serializers.CharField(max_length=200, required=False)
+    notes = serializers.CharField(max_length=500, required=False)
+    allocations = AllocationLineIn(many=True, required=False)
+
+
+class PaymentOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    source_type = serializers.CharField()
+    method = serializers.CharField(allow_null=True)
+    amount_minor = serializers.IntegerField()
+    currency = serializers.CharField()
+    allocated_minor = serializers.IntegerField()
+    unallocated_minor = serializers.IntegerField()
+    value_date = serializers.DateField()
+    reference = serializers.CharField(allow_null=True)
+    payer_descriptor = serializers.CharField(allow_null=True)
+    notes = serializers.CharField(allow_null=True)
+    status = serializers.CharField()
+    evidence_type = serializers.CharField()
+    lower_assurance = serializers.BooleanField()
+    account_label = serializers.CharField(allow_null=True)
+    entered_by = serializers.UUIDField()
+    created_at = serializers.DateTimeField()
+    void_reason = serializers.CharField(allow_null=True)
+    duplicate_of_transaction_id = serializers.UUIDField(allow_null=True)
+
+
+class PaymentPageOut(serializers.Serializer):
+    items = PaymentOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class PaymentAllocationOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    invoice_number = serializers.CharField(required=False)
+    amount_minor = serializers.IntegerField()
+    kind = serializers.ChoiceField(choices=["ALLOCATION", "REVERSAL"])
+    reverses_allocation_id = serializers.UUIDField(allow_null=True)
+    match_id = serializers.UUIDField(allow_null=True)
+    overpayment_confirmed = serializers.BooleanField()
+    evidence_type = serializers.CharField()
+    confirmed_by = serializers.UUIDField()
+    note = serializers.CharField(allow_null=True)
+    created_at = serializers.DateTimeField()
+
+
+class InvoiceStateOut(serializers.Serializer):
+    invoice_id = serializers.UUIDField()
+    payment_status = serializers.CharField()
+    paid_minor = serializers.IntegerField()
+    outstanding_minor = serializers.IntegerField()
+    overpayment_flag = serializers.BooleanField()
+    reminder_status = serializers.CharField()
+    version = serializers.IntegerField()
+
+
+class LedgerResultOut(serializers.Serializer):
+    payment = PaymentOut()
+    allocations = PaymentAllocationOut(many=True)
+    invoice_states = InvoiceStateOut(many=True)
+
+
+class PaymentMatchOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    status = serializers.CharField()
+    label = serializers.ChoiceField(choices=["Strong", "Possible", "Weak"])
+    ambiguous = serializers.BooleanField()
+    decided_at = serializers.DateTimeField(allow_null=True)
+    decision_reason = serializers.CharField(allow_null=True)
+
+
+class PaymentDetailOut(PaymentOut):
+    allocations = PaymentAllocationOut(many=True)
+    matches = PaymentMatchOut(many=True)
+
+
+class ProposalRejectedOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    status = serializers.ChoiceField(choices=["REJECTED"])
+    invoice_states = InvoiceStateOut(many=True)

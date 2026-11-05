@@ -212,6 +212,38 @@ export interface paths {
         patch: operations["E012"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/allocations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E059"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/allocations/{allocation_id}/reverse": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E060"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/attestations": {
         parameters: {
             query?: never;
@@ -581,6 +613,54 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E050"];
+        put?: never;
+        post: operations["E049"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/payments/{payment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E051"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/payments/{payment_id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E052"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/queue": {
         parameters: {
             query?: never;
@@ -607,6 +687,54 @@ export interface paths {
         get: operations["E056"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/confirm": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E057"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E058"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/transactions/{transaction_id}/mark-duplicate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E061"];
         delete?: never;
         options?: never;
         head?: never;
@@ -660,6 +788,21 @@ export interface components {
             id: string;
             text: string;
             kind: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AllocationInRequest: {
+            /** Format: uuid */
+            transaction_id: string;
+            allocations: components["schemas"]["AllocationLineInRequest"][];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        AllocationLineInRequest: {
+            /** Format: uuid */
+            invoice_id: string;
+            /** Format: int64 */
+            amount_minor: number;
+            /** @default false */
+            overpayment_confirmed: boolean;
         };
         AllowedActionOut: {
             action: string;
@@ -957,6 +1100,11 @@ export interface components {
             detail: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        DuplicateInRequest: {
+            /** Format: uuid */
+            duplicate_of: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         EmailInRequest: {
             /** Format: email */
             email: string;
@@ -1138,14 +1286,16 @@ export interface components {
             due_bucket: string;
             allowed_actions: components["schemas"]["AllowedActionOut"][];
         };
-        /**
-         * @description * `BANK` - BANK
-         *     * `PAYPAL` - PAYPAL
-         *     * `UPI` - UPI
-         *     * `CASH` - CASH
-         * @enum {string}
-         */
-        KindEnum: "BANK" | "PAYPAL" | "UPI" | "CASH";
+        InvoiceStateOut: {
+            /** Format: uuid */
+            invoice_id: string;
+            payment_status: string;
+            paid_minor: number;
+            outstanding_minor: number;
+            overpayment_flag: boolean;
+            reminder_status: string;
+            version: number;
+        };
         /**
          * @description * `Strong` - Strong
          *     * `Possible` - Possible
@@ -1153,6 +1303,11 @@ export interface components {
          * @enum {string}
          */
         LabelEnum: "Strong" | "Possible" | "Weak";
+        LedgerResultOut: {
+            payment: components["schemas"]["PaymentOut"];
+            allocations: components["schemas"]["PaymentAllocationOut"][];
+            invoice_states: components["schemas"]["InvoiceStateOut"][];
+        };
         LoginOut: {
             user: components["schemas"]["UserOut"];
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
@@ -1170,6 +1325,21 @@ export interface components {
         MemberPageOut: {
             items: components["schemas"]["MemberOut"][];
             next_cursor: string | null;
+        };
+        /**
+         * @description * `BANK_TRANSFER` - BANK_TRANSFER
+         *     * `UPI` - UPI
+         *     * `CASH` - CASH
+         *     * `PAYPAL_MANUAL` - PAYPAL_MANUAL
+         *     * `OTHER` - OTHER
+         * @enum {string}
+         */
+        MethodEnum: "BANK_TRANSFER" | "UPI" | "CASH" | "PAYPAL_MANUAL" | "OTHER";
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        MoneyInRequest: {
+            /** Format: int64 */
+            amount_minor: number;
+            currency: components["schemas"]["CurrencyEnum"];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PasswordResetConfirmInRequest: {
@@ -1209,7 +1379,7 @@ export interface components {
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedPaymentAccountUpdateInRequest: {
             label?: string;
-            status?: components["schemas"]["StatusEnum"];
+            status?: components["schemas"]["PaymentAccountUpdateInStatusEnum"];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedWorkspaceUpdateInRequest: {
@@ -1220,9 +1390,17 @@ export interface components {
                 [key: string]: unknown;
             };
         };
+        /**
+         * @description * `BANK` - BANK
+         *     * `PAYPAL` - PAYPAL
+         *     * `UPI` - UPI
+         *     * `CASH` - CASH
+         * @enum {string}
+         */
+        PaymentAccountInKindEnum: "BANK" | "PAYPAL" | "UPI" | "CASH";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PaymentAccountInRequest: {
-            kind: components["schemas"]["KindEnum"];
+            kind: components["schemas"]["PaymentAccountInKindEnum"];
             label: string;
             currency: components["schemas"]["CurrencyEnum"];
         };
@@ -1258,6 +1436,123 @@ export interface components {
                 [key: string]: unknown;
             }[];
         };
+        /**
+         * @description * `ACTIVE` - ACTIVE
+         *     * `INACTIVE` - INACTIVE
+         * @enum {string}
+         */
+        PaymentAccountUpdateInStatusEnum: "ACTIVE" | "INACTIVE";
+        PaymentAllocationOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number?: string;
+            amount_minor: number;
+            kind: components["schemas"]["PaymentAllocationOutKindEnum"];
+            /** Format: uuid */
+            reverses_allocation_id: string | null;
+            /** Format: uuid */
+            match_id: string | null;
+            overpayment_confirmed: boolean;
+            evidence_type: string;
+            /** Format: uuid */
+            confirmed_by: string;
+            note: string | null;
+            /** Format: date-time */
+            created_at: string;
+        };
+        /**
+         * @description * `ALLOCATION` - ALLOCATION
+         *     * `REVERSAL` - REVERSAL
+         * @enum {string}
+         */
+        PaymentAllocationOutKindEnum: "ALLOCATION" | "REVERSAL";
+        PaymentDetailOut: {
+            /** Format: uuid */
+            id: string;
+            source_type: string;
+            method: string | null;
+            amount_minor: number;
+            currency: string;
+            allocated_minor: number;
+            unallocated_minor: number;
+            /** Format: date */
+            value_date: string;
+            reference: string | null;
+            payer_descriptor: string | null;
+            notes: string | null;
+            status: string;
+            evidence_type: string;
+            lower_assurance: boolean;
+            account_label: string | null;
+            /** Format: uuid */
+            entered_by: string;
+            /** Format: date-time */
+            created_at: string;
+            void_reason: string | null;
+            /** Format: uuid */
+            duplicate_of_transaction_id: string | null;
+            allocations: components["schemas"]["PaymentAllocationOut"][];
+            matches: components["schemas"]["PaymentMatchOut"][];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PaymentInRequest: {
+            method: components["schemas"]["MethodEnum"];
+            amount: components["schemas"]["MoneyInRequest"];
+            /** Format: date */
+            value_date: string;
+            reference?: string;
+            payer?: string;
+            notes?: string;
+            allocations?: components["schemas"]["AllocationLineInRequest"][];
+        };
+        PaymentMatchOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            status: string;
+            label: components["schemas"]["LabelEnum"];
+            ambiguous: boolean;
+            /** Format: date-time */
+            decided_at: string | null;
+            decision_reason: string | null;
+        };
+        PaymentOut: {
+            /** Format: uuid */
+            id: string;
+            source_type: string;
+            method: string | null;
+            amount_minor: number;
+            currency: string;
+            allocated_minor: number;
+            unallocated_minor: number;
+            /** Format: date */
+            value_date: string;
+            reference: string | null;
+            payer_descriptor: string | null;
+            notes: string | null;
+            status: string;
+            evidence_type: string;
+            lower_assurance: boolean;
+            account_label: string | null;
+            /** Format: uuid */
+            entered_by: string;
+            /** Format: date-time */
+            created_at: string;
+            void_reason: string | null;
+            /** Format: uuid */
+            duplicate_of_transaction_id: string | null;
+        };
+        PaymentPageOut: {
+            items: components["schemas"]["PaymentOut"][];
+            next_cursor: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ProposalConfirmInRequest: {
+            allocations: components["schemas"]["AllocationLineInRequest"][];
+        };
         ProposalOut: {
             /** Format: uuid */
             id: string;
@@ -1279,6 +1574,21 @@ export interface components {
             code: string;
             text: string;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ProposalRejectInRequest: {
+            reason?: string;
+        };
+        ProposalRejectedOut: {
+            /** Format: uuid */
+            id: string;
+            status: components["schemas"]["ProposalRejectedOutStatusEnum"];
+            invoice_states: components["schemas"]["InvoiceStateOut"][];
+        };
+        /**
+         * @description * `REJECTED` - REJECTED
+         * @enum {string}
+         */
+        ProposalRejectedOutStatusEnum: "REJECTED";
         QueueItemOut: {
             /** Format: uuid */
             id: string;
@@ -1310,6 +1620,10 @@ export interface components {
         QueuePageOut: {
             items: components["schemas"]["QueueItemOut"][];
             next_cursor: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ReasonInRequest: {
+            reason: string;
         };
         ReasonOut: {
             code: string;
@@ -1380,12 +1694,6 @@ export interface components {
             field: string;
             message: string;
         };
-        /**
-         * @description * `ACTIVE` - ACTIVE
-         *     * `INACTIVE` - INACTIVE
-         * @enum {string}
-         */
-        StatusEnum: "ACTIVE" | "INACTIVE";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         SuppressionInRequest: {
             reason: string;
@@ -1420,7 +1728,9 @@ export interface components {
             value_date: string;
             reference: string | null;
             payer_descriptor: string | null;
-            account_label: string;
+            account_label: string | null;
+            source_type: string;
+            remaining_minor: number;
             proposal_count: number;
         };
         UserOut: {
@@ -1794,6 +2104,63 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["WorkspaceOut"];
+                };
+            };
+        };
+    };
+    E059: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AllocationInRequest"];
+                "multipart/form-data": components["schemas"]["AllocationInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerResultOut"];
+                };
+            };
+        };
+    };
+    E060: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                allocation_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonInRequest"];
+                "multipart/form-data": components["schemas"]["ReasonInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerResultOut"];
                 };
             };
         };
@@ -2619,6 +2986,109 @@ export interface operations {
             };
         };
     };
+    E050: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentPageOut"];
+                };
+            };
+        };
+    };
+    E049: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PaymentInRequest"];
+                "multipart/form-data": components["schemas"]["PaymentInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerResultOut"];
+                };
+            };
+        };
+    };
+    E051: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                payment_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentDetailOut"];
+                };
+            };
+        };
+    };
+    E052: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                payment_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonInRequest"];
+                "multipart/form-data": components["schemas"]["ReasonInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerResultOut"];
+                };
+            };
+        };
+    };
     E047: {
         parameters: {
             query?: {
@@ -2678,6 +3148,93 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProposalPageOut"];
+                };
+            };
+        };
+    };
+    E057: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                proposal_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ProposalConfirmInRequest"];
+                "multipart/form-data": components["schemas"]["ProposalConfirmInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerResultOut"];
+                };
+            };
+        };
+    };
+    E058: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                proposal_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ProposalRejectInRequest"];
+                "multipart/form-data": components["schemas"]["ProposalRejectInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProposalRejectedOut"];
+                };
+            };
+        };
+    };
+    E061: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                transaction_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DuplicateInRequest"];
+                "multipart/form-data": components["schemas"]["DuplicateInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LedgerResultOut"];
                 };
             };
         };

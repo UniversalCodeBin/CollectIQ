@@ -5,11 +5,9 @@ for anything that slipped past: it reports drift, then repairs it through the sa
 """
 
 import logging
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from typing import Any
 from uuid import UUID
-
-from django.db import connection
 
 from collectiq.audit import record
 from collectiq.platform import outbox
@@ -23,16 +21,26 @@ from .service_accounts import recompute_coverage
 logger = logging.getLogger(__name__)
 INVOICE_CHANGED = "InvoiceChanged"  # published by `invoices` when a figure that state follows changes
 _STORED = "payment_status, paid_minor, outstanding_minor, overpayment_flag"
+_PAID = "PAID_VERIFIED"
 
 
 def _allocation_amounts(invoice_id: UUID | str) -> tuple[int, ...]:
-    """Signed allocation amounts. The ledger table arrives with allocation (Task 19)."""
-    with connection.cursor() as cursor:
-        cursor.execute("SELECT to_regclass('payment_allocations') IS NOT NULL")
-        if not cursor.fetchone()[0]:
-            return ()
     rows = fetch_all("SELECT amount_minor FROM payment_allocations WHERE invoice_id = %s", [invoice_id])
     return tuple(int(r["amount_minor"]) for r in rows)
+
+
+def _overpayment_confirmed(invoice_id: UUID | str) -> bool:
+    """A person accepted the excess, on an allocation that still stands."""
+    return (
+        fetch_one(
+            "SELECT 1 AS confirmed FROM payment_allocations a"
+            " WHERE a.invoice_id = %s AND a.kind = 'ALLOCATION' AND a.overpayment_confirmed"
+            "   AND NOT EXISTS (SELECT 1 FROM payment_allocations r WHERE r.reverses_allocation_id = a.id)"
+            " LIMIT 1",
+            [invoice_id],
+        )
+        is not None
+    )
 
 
 def load_facts(invoice_id: UUID | str) -> Facts:
@@ -53,6 +61,7 @@ def load_facts(invoice_id: UUID | str) -> Facts:
         allocations=_allocation_amounts(invoice_id),
         open_verification_tasks=row["open_task_count"] + proposals[0]["single"],
         conflict=proposals[0]["unclear"] > 0,
+        overpayment_confirmed=_overpayment_confirmed(invoice_id),
     )
 
 
@@ -65,6 +74,15 @@ def _same(stored: dict[str, Any], derived: DerivedState) -> bool:
     )
 
 
+def _follow_up_after(old_status: str, new_status: str) -> str | None:
+    """Paid stops follow-up. Leaving paid asks a person to look, and never resumes contact by itself."""
+    if new_status == _PAID and old_status != _PAID:
+        return "RESOLVED"
+    if old_status == _PAID and new_status != _PAID:
+        return "NEEDS_REVIEW"
+    return None
+
+
 def recompute(ctx: RequestContext, invoice_id: UUID | str, facts: Facts | None = None) -> bool:
     """Re-derive one invoice in the caller's transaction. True when the stored row moved."""
     stored = fetch_one(f"SELECT {_STORED} FROM invoice_state WHERE invoice_id = %s FOR UPDATE", [invoice_id])  # noqa: S608
@@ -75,12 +93,14 @@ def recompute(ctx: RequestContext, invoice_id: UUID | str, facts: Facts | None =
     if changed:
         execute(
             "UPDATE invoice_state SET payment_status = %s, paid_minor = %s, outstanding_minor = %s,"
-            " overpayment_flag = %s, version = version + 1, updated_at = now() WHERE invoice_id = %s",
+            " overpayment_flag = %s, reminder_status = COALESCE(%s, reminder_status),"
+            " version = version + 1, updated_at = now() WHERE invoice_id = %s",
             [
                 derived.payment_status,
                 derived.paid_minor,
                 derived.outstanding_minor,
                 derived.overpayment_flag,
+                _follow_up_after(stored["payment_status"], derived.payment_status),
                 invoice_id,
             ],
         )
@@ -129,6 +149,16 @@ def _on_invoice_changed(ctx: RequestContext, payload: dict[str, Any]) -> None:
 @job_handler("evidence.integrity_check")
 def _integrity_job(ctx: RequestContext, payload: dict[str, Any]) -> None:
     check_integrity(ctx)
+
+
+def snapshot(invoice_ids: Iterable[UUID | str]) -> list[dict[str, Any]]:
+    """The stored state of these invoices, as plain JSON values, for a response or a check."""
+    rows = fetch_all(
+        f"SELECT invoice_id, {_STORED}, reminder_status, version FROM invoice_state"  # noqa: S608
+        " WHERE invoice_id = ANY(%s::uuid[]) ORDER BY invoice_id",
+        [sorted({str(i) for i in invoice_ids})],
+    )
+    return [{**r, "invoice_id": str(r["invoice_id"])} for r in rows]
 
 
 def recompute_many(ctx: RequestContext, invoice_ids: Sequence[UUID | str]) -> int:

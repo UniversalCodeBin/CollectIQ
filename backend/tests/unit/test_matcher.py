@@ -84,5 +84,13 @@ def test_candidates_capped_at_10() -> None:
     assert len(results) == 10
 
 
+def test_payer_overlapping_a_saved_name_is_a_partial_alias() -> None:
+    no_ref = Txn("t", 10_000, "INR", date(2026, 10, 20), (), "NEFT NORTHWIND TRADERS")
+    [overlap] = match(no_ref, [cand(aliases=("Northwind Traders Ltd",))])
+    assert "ALIAS_PARTIAL" in {f.code for f in overlap.factors}
+    [elsewhere] = match(no_ref, [cand(aliases=("Contoso Holdings Ltd",))])
+    assert not {f.code for f in elsewhere.factors} & {"ALIAS_PARTIAL", "ALIAS_EXACT"}
+
+
 def test_version_is_stamped() -> None:
     assert MATCHER_VERSION
