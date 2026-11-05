@@ -18,7 +18,7 @@ or a penetration test. No person has audited the screens with a screen reader.
 | T-10 | API abuse, forged webhooks | Rate limits, request caps, PayPal signature check, event-id dedupe | `test_providers.py::test_a_forged_signature_stores_nothing`, rate-limit tests. Schemathesis run: 6,657 generated cases, 0 server errors (mostly unauthenticated) | Tested |
 | T-11 | SSRF | No URL is fetched from content | Design; no fetch code on content paths. No dedicated test | Reviewed, not tested |
 | T-12 | Operator access | Least-privilege roles, app role without owner rights, Django admin not installed | Forced RLS tests run as the app role | Reviewed. Break-glass process not built |
-| T-13 | Audit tampering | Insert-only privileges, hash chain, verification job | `test_audit_core.py`, `test_audit_history.py`, `safety/test_audit_completeness.py`. Wording: append-only by database permissions, with a hash chain that detects casual edits; not tamper-resistant against a database superuser | Tested. Off-database anchor and nightly schedule not built |
+| T-13 | Audit tampering | Insert-only privileges, hash chain, verification job | `test_audit_core.py`, `test_audit_history.py`, `safety/test_audit_completeness.py`. Wording: append-only by database permissions, with a hash chain that detects casual edits; not tamper-resistant against a database superuser | Tested. The nightly schedule is built (`schedule_nightly`, Task 40). Off-database anchor not built |
 | T-14 | Backups | Restore drill planned in Task 40 | See `docs/acceptance-report.md` | Open (OPEN-09) |
 | T-15 | Dependencies | Lockfiles; `npm audit --omit=dev`: 0; `pip-audit`: none known; 10 moderate dev-tool findings (minimatch, lint tooling only) | Task 39 run output | Production dependencies clean on this date. No image scan yet |
 | T-16 | Policy bypass | No AI write path, DB CHECKs on reminders, single-use authorization, fail-closed gates | `unit/test_policy_engine.py`, `test_policy.py`, `test_reminders.py`, `meta/test_boundaries.py` | Tested |
@@ -38,5 +38,5 @@ or a penetration test. No person has audited the screens with a screen reader.
 - detect-secrets runs in `make check`.
 
 ## Not done
-- k6 is not on this machine's PATH, so the 5,000-invoice load run was not repeated in Task 39. The Task 12 result stands (5 virtual users, Django development server, developer machine: list p95 931 ms, within NFR-01; see the decisions log). It was not re-measured after later tasks, and says nothing about production hardware.
+- The 5,000-invoice k6 run was repeated in Task 40 (5 virtual users, Django development server, developer machine, 0% failed): list p95 669 ms, queue p95 657 ms, dashboard p95 694 ms, invoice detail p95 336 ms. It says nothing about production hardware or a gunicorn deployment.
 - No independent penetration test, no screen-reader audit, no live AI provider evaluation, no container image scan.

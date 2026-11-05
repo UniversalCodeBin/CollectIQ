@@ -18,3 +18,18 @@ make migrate
 make seed      # optional, synthetic sample data, labelled as sample in the UI
 make dev       # API :8000, worker, web :5173
 ```
+
+## Deploy
+
+An example layout is in [deploy/compose.prod.example.yaml](deploy/compose.prod.example.yaml): Postgres, a one-off
+`migrate` step (owner role), the API under gunicorn, the job worker, and a scheduler that queues the nightly audit-chain
+check, evidence integrity check and retention (`manage.py schedule_nightly`). Build the image with
+`podman build -t collectiq-backend:local backend`.
+
+- Secrets live in an env file outside the repository. `.env.example` holds placeholders only.
+- Production refuses `AI_PROVIDER=fake` and any `change-me` secret.
+- TLS ends at a reverse proxy that sets `X-Forwarded-Proto: https`. The API redirects plain http and sets HSTS.
+- The proxy serves `frontend/dist` and must set its own Content-Security-Policy; the API sets one for JSON only.
+- Email is file or memory only. No message reaches a real mailbox, so invitations and resets are not delivered.
+- Backup and restore: [docs/runbooks/backup-restore.md](docs/runbooks/backup-restore.md).
+- What was and was not verified: [docs/acceptance-report.md](docs/acceptance-report.md).

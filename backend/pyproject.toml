@@ -10,6 +10,7 @@ dependencies = [
     "django>=5.2,<5.3",
     "djangorestframework>=3.18.3",
     "drf-spectacular>=0.30.0",
+    "gunicorn>=26.2.0",
     "psycopg[binary]>=3.3.7",
     "pypdf>=6.21.4",
     "python-dotenv>=1.2.4",

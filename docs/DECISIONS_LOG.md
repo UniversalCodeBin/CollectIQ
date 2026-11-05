@@ -246,3 +246,10 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Schemathesis ran unauthenticated; authenticated behaviour is covered by integration tests. axe covers empty states. Neither is a conformance claim.
 - Owed: PDF size and page limits, break-glass process, off-database audit anchor, image scanning, load test re-run on target hardware.
 - Two frontend tests were timing-sensitive under load and are now robust without weaker assertions: `raw-hex` first test has a 30 s timeout (cold ESLint start), and `auth.test.tsx` `signIn` waits for the lazily loaded form with `findByLabelText`.
+
+## Task 40 rulings
+
+- Nightly work is queued by `manage.py schedule_nightly`, one job per kind per workspace, deduped on the date. Workspace ids come from a SECURITY DEFINER function with an owner-only policy, since row security hides workspaces from the app role.
+- The image has no HEALTHCHECK: the API redirects plain http in production, so the check lives in the compose file with an `X-Forwarded-Proto: https` header.
+- Email stays file or memory only; real delivery remains unbuilt and is stated in the README and acceptance report.
+- The recovery drill and the k6 run are local evidence only. No uptime, RPO or RTO figure is claimed.

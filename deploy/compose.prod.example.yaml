@@ -1,0 +1,87 @@
+# Example production layout. A starting point, not a hardened deployment: read docs/deployment.md first.
+# Every ${...} value comes from an env file you create outside the repository. Nothing here is a real secret.
+#
+#   podman build -t collectiq-backend:local backend
+#   podman compose -f deploy/compose.prod.example.yaml --env-file /secure/collectiq.env up -d
+#
+# TLS terminates at a reverse proxy that sets X-Forwarded-Proto: https (the API redirects plain http and
+# trusts that header). The proxy must also serve the built SPA (frontend/dist) and set its own
+# Content-Security-Policy for it; the API only sets one for its JSON responses.
+name: collectiq-prod
+
+x-backend: &backend
+  image: ${COLLECTIQ_IMAGE:-localhost/collectiq-backend:local}
+  restart: unless-stopped
+  environment: &backend-env
+    DJANGO_ENV: production
+    DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?set in the env file}
+    DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?set in the env file}
+    CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:?set in the env file}
+    DATABASE_URL: postgres://collectiq_app:${COLLECTIQ_APP_PASSWORD:?}@db:5432/collectiq
+    MIGRATION_DATABASE_URL: postgres://collectiq_owner:${COLLECTIQ_OWNER_PASSWORD:?}@db:5432/collectiq
+    COLLECTIQ_MASTER_KEY: ${COLLECTIQ_MASTER_KEY:?set in the env file}
+    COLLECTIQ_STORAGE_DIR: /data/storage
+    EMAIL_BACKEND_KIND: file # only local backends exist; nothing reaches a real mailbox
+    EMAIL_FILE_PATH: /data/mail
+    APP_BASE_URL: ${APP_BASE_URL:?set in the env file}
+    AI_PROVIDER: none
+  volumes:
+    - collectiq_data:/data
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  db:
+    image: docker.io/library/postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in the env file}
+      POSTGRES_DB: postgres
+    volumes:
+      - collectiq_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    # No published port: only the services below reach it.
+
+  # One-off. Creates the two roles on first run (idempotent), then migrates as the owner role.
+  # Run it with: podman compose run --rm migrate
+  migrate:
+    <<: *backend
+    restart: "no"
+    profiles: ["tools"]
+    environment:
+      <<: *backend-env
+      DJANGO_DB_ROLE: owner
+    command: ["python", "manage.py", "migrate", "--noinput"]
+
+  api:
+    <<: *backend
+    ports:
+      - "127.0.0.1:8000:8000"
+    command: ["gunicorn", "collectiq.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--access-logfile", "-"]
+    healthcheck:
+      # The API redirects plain http, so the check says what the proxy would say.
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen(u.Request('http://127.0.0.1:8000/api/v1/health/ready', headers={'X-Forwarded-Proto': 'https'}), timeout=2)"]
+      interval: 15s
+      timeout: 3s
+      retries: 5
+
+  worker:
+    <<: *backend
+    command: ["python", "manage.py", "run_worker"]
+    stop_grace_period: 60s # SIGTERM lets the current job finish
+
+  # Queues the nightly audit-chain check, evidence integrity check and retention. The date is the dedupe key,
+  # so running it hourly is harmless; a cron job or systemd timer running it once a day works as well.
+  scheduler:
+    <<: *backend
+    command: ["sh", "-c", "while true; do python manage.py schedule_nightly; sleep 3600; done"]
+
+volumes:
+  collectiq_pgdata:
+  collectiq_data:

@@ -61,7 +61,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T36 Settings and payload inspector (E102-E105) | 9 backend tests (export scope and secret exclusion, Owner-only, typed-confirmation deletion with zero-row scan, audit retained, payload inspector with tokens only, retention), 1 interpretation test, 4 vitest; members, export/deletion and payload tabs | ae2fd30 |
 | T37 Audit completeness, critical negatives, runbooks | suite-wide probe (TS-023) checks every audited mutation wrote an audit event, plus 14 critical-negative existence checks and 4 runbooks in docs/runbooks | ae2fd30 |
 | T38 End-to-end journeys and recovery | Playwright: 5 viewport widths (320, 360, 768, 1024, 1440) across 12 screens with no sideways scrolling; recovery for server 500 with Try again, offline reload, expired session redirect, dropped pause request; existing specs cover FL-01, 02, 04-07, 11, 15; Audit History table scrolls inside its own region (defect fixed) | 01e4598 |
-| T39 Accessibility, performance, security, claims | claims gate (13th check) with 3 tests; axe on 15 screens (0 violations, empty states); Schemathesis 6,657 cases, 0 server errors; npm audit prod 0, pip-audit none; API security headers added with a test; threat register mapped in docs/security-review.md; k6 not re-run | this commit |
+| T39 Accessibility, performance, security, claims | claims gate (13th check) with 3 tests; axe on 15 screens (0 violations, empty states); Schemathesis 6,657 cases, 0 server errors; npm audit prod 0, pip-audit none; API security headers added with a test; threat register mapped in docs/security-review.md; k6 not re-run | 9765c19 |
+| T40 Deployment, recovery drill, acceptance report | Containerfile and gunicorn entrypoint, example compose file, `schedule_nightly` (4 tests), backup/restore drill passed, k6 5,000-invoice run passed, `docs/acceptance-report.md` | see git log |
 
 ## Open items carried forward
 
