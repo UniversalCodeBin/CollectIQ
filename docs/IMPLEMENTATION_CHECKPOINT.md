@@ -30,3 +30,4 @@ Sources of record:
 - ~20 committed backend files (audit, identity, platform, settings, tenancy, two api views) are reformatted but uncommitted from a mistaken `ruff format`; reverting was refused by the permission check. Run `git checkout --` on them; do not commit them.
 - `CollectIQ_Post_Implementation_Audit.md` (root, untracked) predates commit `a1448f4` and is stale on Task 2 and the frontend scaffold. Left untouched and uncommitted; the user decides whether to keep it.
 - Open decisions OD-04, 05, 10, 11, 08, 14 still need the user; they do not block M0-M4.
+- Task 19 needs Opus 5.5 High (ledger triggers, deferred constraints, concurrency races: financial integrity). Resume: switch model, then say "continue Task 19". Switch back to Sonnet 5.5 Medium after Task 19 is committed.
