@@ -812,3 +812,81 @@ class PolicyDecisionOut(serializers.Serializer):
     expires_at = serializers.DateTimeField()
     consumed_at = serializers.DateTimeField(allow_null=True)
     approval = ApprovalOut(allow_null=True)
+
+
+# --- cases (E076-E082) ---
+
+
+class CaseIn(StrictSerializer):
+    invoice_id = serializers.UUIDField()
+    type = serializers.ChoiceField(choices=["DISPUTE", "MISSING_DOCUMENT", "QUESTION", "PROPOSAL"])
+    summary = serializers.CharField(max_length=2000)
+    dispute_type = serializers.ChoiceField(
+        choices=["AMOUNT", "DELIVERABLE", "SERVICE", "OTHER"], required=False
+    )
+    source_message_id = serializers.UUIDField(required=False)
+
+
+class CaseUpdateIn(StrictSerializer):
+    assignee_id = serializers.UUIDField(required=False, allow_null=True)
+    status = serializers.ChoiceField(choices=["OPEN", "IN_REVIEW", "AWAITING_CUSTOMER"], required=False)
+    note = serializers.CharField(max_length=2000, required=False)
+
+
+class CaseResolveIn(StrictSerializer):
+    outcome = serializers.ChoiceField(
+        choices=["NO_CHANGE", "INVOICE_CORRECTED", "ADJUSTMENT_AGREED", "WITHDRAWN_BY_CUSTOMER", "OTHER"]
+    )
+    note = serializers.CharField(max_length=2000, required=False)
+
+
+class CaseReopenIn(StrictSerializer):
+    reason = serializers.CharField(max_length=2000)
+
+
+class CaseNoteOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    author_id = serializers.UUIDField()
+    kind = serializers.CharField()
+    body = serializers.CharField()
+    created_at = serializers.DateTimeField()
+
+
+class CaseOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    invoice_number = serializers.CharField()
+    type = serializers.CharField()
+    status = serializers.CharField()
+    dispute_type = serializers.CharField(allow_null=True)
+    summary = serializers.CharField()
+    summary_is_ai_derived = serializers.BooleanField()
+    source_message_id = serializers.UUIDField(allow_null=True)
+    assignee_id = serializers.UUIDField(allow_null=True)
+    opened_by_kind = serializers.CharField()
+    opened_at = serializers.DateTimeField()
+    resolution_outcome = serializers.CharField(allow_null=True)
+    resolution_note = serializers.CharField(allow_null=True)
+    resolved_by = serializers.UUIDField(allow_null=True)
+    resolved_at = serializers.DateTimeField(allow_null=True)
+    reopen_count = serializers.IntegerField()
+    version = serializers.IntegerField()
+
+
+class CaseDetailOut(CaseOut):
+    notes = CaseNoteOut(many=True)
+
+
+class CasePageOut(serializers.Serializer):
+    items = CaseOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class ResumeIn(StrictSerializer):
+    approval_id = serializers.UUIDField()
+
+
+class ResumeOut(serializers.Serializer):
+    invoice_id = serializers.UUIDField()
+    dispute_status = serializers.CharField()
+    reminder_status = serializers.CharField()

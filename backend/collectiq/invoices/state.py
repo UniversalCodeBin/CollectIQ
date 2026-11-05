@@ -36,3 +36,20 @@ def refresh_after_total_changed(invoice_id: UUID | str) -> None:
         """,
         [invoice_id],
     )
+
+
+def set_follow_up(
+    invoice_id: UUID | str, *, dispute_status: str | None = None, reminder_status: str | None = None
+) -> None:
+    """Dispute and reminder status move together with the case that causes them; the version follows."""
+    execute(
+        """
+        UPDATE invoice_state
+           SET dispute_status = COALESCE(%s, dispute_status),
+               reminder_status = COALESCE(%s, reminder_status),
+               version = version + 1,
+               updated_at = now()
+         WHERE invoice_id = %s
+        """,
+        [dispute_status, reminder_status, invoice_id],
+    )

@@ -1,6 +1,7 @@
 from django.urls import path
 
 from . import account_views as accounts
+from . import case_views as cases
 from . import client_views as clients
 from . import identity_views as identity
 from . import import_views as imports
@@ -83,6 +84,14 @@ urlpatterns: list = [
         payments.InvoicePaymentHistoryView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/payments/<uuid:payment_id>/void", payments.PaymentVoidView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/cases", cases.CaseCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>", cases.CaseDetailView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>/resolve", cases.CaseResolveView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>/reopen", cases.CaseReopenView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/followups/resume",
+        cases.FollowupsResumeView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/policy", policy.PolicyView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/policy/versions", policy.PolicyVersionsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/automation/pause", policy.AutomationPauseView.as_view()),

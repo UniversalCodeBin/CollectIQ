@@ -308,6 +308,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/cases": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E076"];
+        put?: never;
+        post: operations["E078"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/cases/{case_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E077"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E079"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/cases/{case_id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E081"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/cases/{case_id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E080"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/clients": {
         parameters: {
             query?: never;
@@ -575,6 +639,22 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E045"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E082"];
         delete?: never;
         options?: never;
         head?: never;
@@ -979,6 +1059,101 @@ export interface components {
             coverage_date: string;
             attestation_ids: string[];
         };
+        CaseDetailOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number: string;
+            type: string;
+            status: string;
+            dispute_type: string | null;
+            summary: string;
+            summary_is_ai_derived: boolean;
+            /** Format: uuid */
+            source_message_id: string | null;
+            /** Format: uuid */
+            assignee_id: string | null;
+            opened_by_kind: string;
+            /** Format: date-time */
+            opened_at: string;
+            resolution_outcome: string | null;
+            resolution_note: string | null;
+            /** Format: uuid */
+            resolved_by: string | null;
+            /** Format: date-time */
+            resolved_at: string | null;
+            reopen_count: number;
+            version: number;
+            notes: components["schemas"]["CaseNoteOut"][];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        CaseInRequest: {
+            /** Format: uuid */
+            invoice_id: string;
+            type: components["schemas"]["TypeEnum"];
+            summary: string;
+            dispute_type?: components["schemas"]["DisputeTypeEnum"];
+            /** Format: uuid */
+            source_message_id?: string;
+        };
+        CaseNoteOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            author_id: string;
+            kind: string;
+            body: string;
+            /** Format: date-time */
+            created_at: string;
+        };
+        CaseOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number: string;
+            type: string;
+            status: string;
+            dispute_type: string | null;
+            summary: string;
+            summary_is_ai_derived: boolean;
+            /** Format: uuid */
+            source_message_id: string | null;
+            /** Format: uuid */
+            assignee_id: string | null;
+            opened_by_kind: string;
+            /** Format: date-time */
+            opened_at: string;
+            resolution_outcome: string | null;
+            resolution_note: string | null;
+            /** Format: uuid */
+            resolved_by: string | null;
+            /** Format: date-time */
+            resolved_at: string | null;
+            reopen_count: number;
+            version: number;
+        };
+        CasePageOut: {
+            items: components["schemas"]["CaseOut"][];
+            next_cursor: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        CaseReopenInRequest: {
+            reason: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        CaseResolveInRequest: {
+            outcome: components["schemas"]["OutcomeEnum"];
+            note?: string;
+        };
+        /**
+         * @description * `OPEN` - OPEN
+         *     * `IN_REVIEW` - IN_REVIEW
+         *     * `AWAITING_CUSTOMER` - AWAITING_CUSTOMER
+         * @enum {string}
+         */
+        CaseUpdateInStatusEnum: "OPEN" | "IN_REVIEW" | "AWAITING_CUSTOMER";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ClientInRequest: {
             display_name: string;
@@ -1257,6 +1432,14 @@ export interface components {
         DetailOut: {
             detail: string;
         };
+        /**
+         * @description * `AMOUNT` - AMOUNT
+         *     * `DELIVERABLE` - DELIVERABLE
+         *     * `SERVICE` - SERVICE
+         *     * `OTHER` - OTHER
+         * @enum {string}
+         */
+        DisputeTypeEnum: "AMOUNT" | "DELIVERABLE" | "SERVICE" | "OTHER";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         DuplicateInRequest: {
             /** Format: uuid */
@@ -1545,10 +1728,26 @@ export interface components {
             amount_minor: number;
             currency: components["schemas"]["CurrencyEnum"];
         };
+        /**
+         * @description * `NO_CHANGE` - NO_CHANGE
+         *     * `INVOICE_CORRECTED` - INVOICE_CORRECTED
+         *     * `ADJUSTMENT_AGREED` - ADJUSTMENT_AGREED
+         *     * `WITHDRAWN_BY_CUSTOMER` - WITHDRAWN_BY_CUSTOMER
+         *     * `OTHER` - OTHER
+         * @enum {string}
+         */
+        OutcomeEnum: "NO_CHANGE" | "INVOICE_CORRECTED" | "ADJUSTMENT_AGREED" | "WITHDRAWN_BY_CUSTOMER" | "OTHER";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PasswordResetConfirmInRequest: {
             token: string;
             new_password: string;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedCaseUpdateInRequest: {
+            /** Format: uuid */
+            assignee_id?: string | null;
+            status?: components["schemas"]["CaseUpdateInStatusEnum"];
+            note?: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedClientUpdateInRequest: {
@@ -1910,6 +2109,17 @@ export interface components {
             performed_by: string[];
             reason: string | null;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ResumeInRequest: {
+            /** Format: uuid */
+            approval_id: string;
+        };
+        ResumeOut: {
+            /** Format: uuid */
+            invoice_id: string;
+            dispute_status: string;
+            reminder_status: string;
+        };
         /**
          * @description * `OWNER` - OWNER
          *     * `FINANCE_ADMIN` - FINANCE_ADMIN
@@ -1988,6 +2198,14 @@ export interface components {
          * @enum {string}
          */
         TotalSourceEnum: "TOTAL" | "SUM";
+        /**
+         * @description * `DISPUTE` - DISPUTE
+         *     * `MISSING_DOCUMENT` - MISSING_DOCUMENT
+         *     * `QUESTION` - QUESTION
+         *     * `PROPOSAL` - PROPOSAL
+         * @enum {string}
+         */
+        TypeEnum: "DISPUTE" | "MISSING_DOCUMENT" | "QUESTION" | "PROPOSAL";
         UnmatchedPageOut: {
             items: components["schemas"]["UnmatchedTransactionOut"][];
             next_cursor: string | null;
@@ -2538,6 +2756,169 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["PolicyOut"];
+                };
+            };
+        };
+    };
+    E076: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                invoice_id?: string;
+                limit?: number;
+                status?: string;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CasePageOut"];
+                };
+            };
+        };
+    };
+    E078: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseInRequest"];
+                "multipart/form-data": components["schemas"]["CaseInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseDetailOut"];
+                };
+            };
+        };
+    };
+    E077: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                case_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseDetailOut"];
+                };
+            };
+        };
+    };
+    E079: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                case_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedCaseUpdateInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedCaseUpdateInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseDetailOut"];
+                };
+            };
+        };
+    };
+    E081: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                case_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseReopenInRequest"];
+                "multipart/form-data": components["schemas"]["CaseReopenInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseDetailOut"];
+                };
+            };
+        };
+    };
+    E080: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                case_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CaseResolveInRequest"];
+                "multipart/form-data": components["schemas"]["CaseResolveInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CaseDetailOut"];
                 };
             };
         };
@@ -3154,6 +3535,35 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InvoiceDetailOut"];
+                };
+            };
+        };
+    };
+    E082: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ResumeInRequest"];
+                "multipart/form-data": components["schemas"]["ResumeInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeOut"];
                 };
             };
         };

@@ -11,8 +11,9 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** Task 18, explainable match suggestions (E055, E056).
 - **Done:** Task 19, confirmed allocations, reversal, manual payment, void and duplicate (E049-E052, E057-E061, API only).
 - **Done:** Task 20, Reconciliation and Payment Accounts screens (SCR-06, SCR-15): review, confirmed, unmatched, allocate, manual payment with proof, statement upload with explicit date format, invoice Payment history (E117-E119).
-- **Done:** Task 21, policy engine (E016-E020, E092, E101): pure gates G1-G15, single-use authorization, immutable policy versions, pause and resume, approvals, header pause control and SCR-10 settings.
-- **Next:** Task 22, disputes and blockers (E076-E082).
+- **Done:** Task 22, disputes and blockers (E076-E082): dispute and blocker cases, reminders suppressed on open, human-only resolution, 24-hour cooling-off and approved resume.
+- **Done (earlier):** Task 21, policy engine (E016-E020, E092, E101): pure gates G1-G15, single-use authorization, immutable policy versions, pause and resume, approvals, header pause control and SCR-10 settings.
+- **Next:** Task 23, messages, timeline, claims, commitments and snooze (E062-E066, E071-E075).
 
 ## T1 spike outcome
 

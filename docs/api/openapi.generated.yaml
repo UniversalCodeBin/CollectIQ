@@ -491,6 +491,222 @@ paths:
                 $ref: '#/components/schemas/PolicyOut'
           description: ''
       x-endpoint-id: E020
+  /api/v1/workspaces/{ws}/cases:
+    get:
+      operationId: E076
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: invoice_id
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: query
+        name: status
+        schema:
+          type: string
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CasePageOut'
+          description: ''
+      x-endpoint-id: E076
+    post:
+      operationId: E078
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CaseInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetailOut'
+          description: ''
+      x-endpoint-id: E078
+  /api/v1/workspaces/{ws}/cases/{case_id}:
+    get:
+      operationId: E077
+      parameters:
+      - in: path
+        name: case_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetailOut'
+          description: ''
+      x-endpoint-id: E077
+    patch:
+      operationId: E079
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: case_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCaseUpdateInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCaseUpdateInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetailOut'
+          description: ''
+      x-endpoint-id: E079
+  /api/v1/workspaces/{ws}/cases/{case_id}/reopen:
+    post:
+      operationId: E081
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: case_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseReopenInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CaseReopenInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetailOut'
+          description: ''
+      x-endpoint-id: E081
+  /api/v1/workspaces/{ws}/cases/{case_id}/resolve:
+    post:
+      operationId: E080
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: case_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CaseResolveInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CaseResolveInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDetailOut'
+          description: ''
+      x-endpoint-id: E080
   /api/v1/workspaces/{ws}/clients:
     get:
       operationId: E021
@@ -1324,6 +1540,47 @@ paths:
                 $ref: '#/components/schemas/InvoiceDetailOut'
           description: ''
       x-endpoint-id: E045
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume:
+    post:
+      operationId: E082
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResumeInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeOut'
+          description: ''
+      x-endpoint-id: E082
   /api/v1/workspaces/{ws}/invoices/{invoice_id}/payments:
     get:
       operationId: E119
@@ -2342,6 +2599,247 @@ components:
       - attestation_ids
       - coverage_date
       - scope
+    CaseDetailOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        dispute_type:
+          type: string
+          nullable: true
+        summary:
+          type: string
+        summary_is_ai_derived:
+          type: boolean
+        source_message_id:
+          type: string
+          format: uuid
+          nullable: true
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+        opened_by_kind:
+          type: string
+        opened_at:
+          type: string
+          format: date-time
+        resolution_outcome:
+          type: string
+          nullable: true
+        resolution_note:
+          type: string
+          nullable: true
+        resolved_by:
+          type: string
+          format: uuid
+          nullable: true
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        reopen_count:
+          type: integer
+        version:
+          type: integer
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseNoteOut'
+      required:
+      - assignee_id
+      - dispute_type
+      - id
+      - invoice_id
+      - invoice_number
+      - notes
+      - opened_at
+      - opened_by_kind
+      - reopen_count
+      - resolution_note
+      - resolution_outcome
+      - resolved_at
+      - resolved_by
+      - source_message_id
+      - status
+      - summary
+      - summary_is_ai_derived
+      - type
+      - version
+    CaseInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/TypeEnum'
+        summary:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        dispute_type:
+          $ref: '#/components/schemas/DisputeTypeEnum'
+        source_message_id:
+          type: string
+          format: uuid
+      required:
+      - invoice_id
+      - summary
+      - type
+    CaseNoteOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        author_id:
+          type: string
+          format: uuid
+        kind:
+          type: string
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - author_id
+      - body
+      - created_at
+      - id
+      - kind
+    CaseOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        type:
+          type: string
+        status:
+          type: string
+        dispute_type:
+          type: string
+          nullable: true
+        summary:
+          type: string
+        summary_is_ai_derived:
+          type: boolean
+        source_message_id:
+          type: string
+          format: uuid
+          nullable: true
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+        opened_by_kind:
+          type: string
+        opened_at:
+          type: string
+          format: date-time
+        resolution_outcome:
+          type: string
+          nullable: true
+        resolution_note:
+          type: string
+          nullable: true
+        resolved_by:
+          type: string
+          format: uuid
+          nullable: true
+        resolved_at:
+          type: string
+          format: date-time
+          nullable: true
+        reopen_count:
+          type: integer
+        version:
+          type: integer
+      required:
+      - assignee_id
+      - dispute_type
+      - id
+      - invoice_id
+      - invoice_number
+      - opened_at
+      - opened_by_kind
+      - reopen_count
+      - resolution_note
+      - resolution_outcome
+      - resolved_at
+      - resolved_by
+      - source_message_id
+      - status
+      - summary
+      - summary_is_ai_derived
+      - type
+      - version
+    CasePageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CaseOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    CaseReopenInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - reason
+    CaseResolveInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        outcome:
+          $ref: '#/components/schemas/OutcomeEnum'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required:
+      - outcome
+    CaseUpdateInStatusEnum:
+      enum:
+      - OPEN
+      - IN_REVIEW
+      - AWAITING_CUSTOMER
+      type: string
+      description: |-
+        * `OPEN` - OPEN
+        * `IN_REVIEW` - IN_REVIEW
+        * `AWAITING_CUSTOMER` - AWAITING_CUSTOMER
     ClientInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -2948,6 +3446,18 @@ components:
           type: string
       required:
       - detail
+    DisputeTypeEnum:
+      enum:
+      - AMOUNT
+      - DELIVERABLE
+      - SERVICE
+      - OTHER
+      type: string
+      description: |-
+        * `AMOUNT` - AMOUNT
+        * `DELIVERABLE` - DELIVERABLE
+        * `SERVICE` - SERVICE
+        * `OTHER` - OTHER
     DuplicateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -3638,6 +4148,20 @@ components:
       required:
       - amount_minor
       - currency
+    OutcomeEnum:
+      enum:
+      - NO_CHANGE
+      - INVOICE_CORRECTED
+      - ADJUSTMENT_AGREED
+      - WITHDRAWN_BY_CUSTOMER
+      - OTHER
+      type: string
+      description: |-
+        * `NO_CHANGE` - NO_CHANGE
+        * `INVOICE_CORRECTED` - INVOICE_CORRECTED
+        * `ADJUSTMENT_AGREED` - ADJUSTMENT_AGREED
+        * `WITHDRAWN_BY_CUSTOMER` - WITHDRAWN_BY_CUSTOMER
+        * `OTHER` - OTHER
     PasswordResetConfirmInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -3654,6 +4178,21 @@ components:
       required:
       - new_password
       - token
+    PatchedCaseUpdateInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        assignee_id:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          $ref: '#/components/schemas/CaseUpdateInStatusEnum'
+        note:
+          type: string
+          minLength: 1
+          maxLength: 2000
     PatchedClientUpdateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -4568,6 +5107,30 @@ components:
       - label
       - performed_by
       - reason
+    ResumeInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        approval_id:
+          type: string
+          format: uuid
+      required:
+      - approval_id
+    ResumeOut:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+          format: uuid
+        dispute_status:
+          type: string
+        reminder_status:
+          type: string
+      required:
+      - dispute_status
+      - invoice_id
+      - reminder_status
     RoleEnum:
       enum:
       - OWNER
@@ -4739,6 +5302,18 @@ components:
       description: |-
         * `TOTAL` - TOTAL
         * `SUM` - SUM
+    TypeEnum:
+      enum:
+      - DISPUTE
+      - MISSING_DOCUMENT
+      - QUESTION
+      - PROPOSAL
+      type: string
+      description: |-
+        * `DISPUTE` - DISPUTE
+        * `MISSING_DOCUMENT` - MISSING_DOCUMENT
+        * `QUESTION` - QUESTION
+        * `PROPOSAL` - PROPOSAL
     UnmatchedPageOut:
       type: object
       properties:
