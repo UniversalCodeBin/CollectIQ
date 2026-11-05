@@ -7,6 +7,7 @@ import { RootPage } from "../features/auth/RootPage";
 import { SignupPage } from "../features/auth/SignupPage";
 import { VerifyEmailPage } from "../features/auth/VerifyEmailPage";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
+import { ImportPage } from "../features/import/ImportPage";
 import { OnboardingPage } from "../features/onboarding/OnboardingPage";
 import { NotFoundPage } from "./NotFoundPage";
 import { WorkspaceLayout } from "./WorkspaceLayout";
@@ -52,6 +53,7 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   "/invitations/accept": AcceptInvitationPage,
   "/onboarding/:step": OnboardingPage,
   dashboard: DashboardPage,
+  "import/invoices": ImportPage,
 };
 
 function screen(route: string): ComponentType {

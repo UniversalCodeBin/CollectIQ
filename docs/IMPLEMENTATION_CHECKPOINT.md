@@ -6,26 +6,25 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 12** is complete; the commit and ledger line follow this checkpoint. Evidence: 681 pytest, 132 vitest, make check 12 of 12, fault injection 11 of 11 killed, k6 at 5,000 invoices within NFR-01.
+- **Task 13** is complete; the commit and ledger line follow this checkpoint. Evidence: 151 vitest (19 new), Playwright 4 of 4 including a real import, make check 12 of 12.
 
 ## Current task
-- **Task 13: invoice import UI** (SCR-05 upload, mapping, preview, decisions, error report).
+- **Task 14: invoice list, queue, detail and dashboard screens** (SCR-02, 03, 04, 14). Next free endpoint is E117.
 
 ## Relevant files
-- Backend T12: api/invoice_views.py, invoices/{read_models,service_invoice,state}.py, invoices/domain/queue.py, migration 0003, management/commands/seed_sample.py.
-- Benchmark: backend/perf/{setup_read_models.py,read_models.js}.
+- Frontend T13: frontend/src/features/import/{ImportPage,UploadStep,MappingStep,ReviewStep,DoneStep,ChoiceGroup}.tsx, decisions.ts, types.ts; lib/api.ts (FormData, apiText); lib/format.ts (formatMinor); e2e/import.spec.ts; tests/web/import.test.tsx.
 
 ## Changes already made
-- E042-E048 implemented and contract-tested; invoice_state table with row security; import now writes states and IMPORT_FAILED.
+- SCR-05 import flow is live and reachable from the dashboard's Getting started list. Backend unchanged.
 
 ## Tests actually run
-- pytest 681 passed; vitest 132; make check 12/12; mutate.py 11/11 killed; k6 5 VUs 30 s at 5,000 invoices: list p95 931 ms, queue 1.07 s, dashboard 1.07 s, detail 426 ms, 0 failures.
+- vitest 151 passed; Playwright 4 passed; make check 12/12. One auth test flaked once under a cold full run and passed on every rerun (ledgered).
 
 ## Outstanding work
-- Frontend for E042-E048 arrives with T13/T14. Benchmark ran on the development server only (T39 re-measures). Port 8000 is held by an unrelated process; the benchmark used 8765.
+- SCR-05 not yet compared against the Stitch screen.png (T38/T39 visual check). No Add menu in the shell yet. FR-007 provenance shows on the detail screen in T14.
 
 ## Next exact action
-- Start Task 13 with task-start, tests first.
+- Start Task 14 with task-start, tests first.
 
 ## Unresolved decisions
 - `CollectIQ_Post_Implementation_Audit.md` (root, untracked) predates commit `a1448f4` and is stale on Task 2 and the frontend scaffold. Left untouched and uncommitted; the user decides whether to keep it.

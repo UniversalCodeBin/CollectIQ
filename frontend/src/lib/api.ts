@@ -21,7 +21,9 @@ type BodyField<T> = T extends { requestBody: { content: { "application/json": in
   ? { body: B }
   : T extends { requestBody?: { content: { "application/json": infer B } } }
     ? { body?: B }
-    : { body?: undefined };
+    : T extends { requestBody?: { content: { "multipart/form-data": unknown } } }
+      ? { body?: FormData }
+      : { body?: undefined };
 
 export type RequestOf<O extends ApiOp> = PathField<Operation<O>> & QueryField<Operation<O>> & BodyField<Operation<O>>;
 
@@ -127,14 +129,12 @@ async function problemFrom(response: Response): Promise<ApiProblem> {
 
 type Transport = { idempotencyKey?: string; ifMatch?: number; signal?: AbortSignal };
 
-export async function apiRequest<O extends ApiOp>(
-  op: O,
-  request: RequestOf<O>,
-  transport: Transport = {},
-): Promise<ResponseOf<O>> {
+async function send(op: ApiOp, request: object, transport: Transport, accept: string): Promise<Response> {
   const { path, query, body } = request as { path?: object; query?: object; body?: unknown };
-  const headers = new Headers({ Accept: "application/json, application/problem+json" });
-  if (body !== undefined) headers.set("Content-Type", "application/json");
+  const headers = new Headers({ Accept: accept });
+  // A file upload sets its own multipart boundary, so no content type is given for it.
+  const isForm = typeof FormData !== "undefined" && body instanceof FormData;
+  if (body !== undefined && !isForm) headers.set("Content-Type", "application/json");
   if (op.method !== "get") {
     const csrf = cookie("collectiq_csrf");
     if (csrf) headers.set("X-CSRFToken", csrf);
@@ -148,7 +148,7 @@ export async function apiRequest<O extends ApiOp>(
       method: op.method.toUpperCase(),
       headers,
       credentials: "same-origin",
-      body: body === undefined ? undefined : JSON.stringify(body),
+      body: body === undefined ? undefined : isForm ? (body as FormData) : JSON.stringify(body),
       signal: transport.signal,
     });
   } catch (cause) {
@@ -156,8 +156,23 @@ export async function apiRequest<O extends ApiOp>(
     throw new ApiProblem({ status: 0, code: "NETWORK", detail: "", correlationId: null });
   }
   if (!response.ok) throw await problemFrom(response);
+  return response;
+}
+
+export async function apiRequest<O extends ApiOp>(
+  op: O,
+  request: RequestOf<O>,
+  transport: Transport = {},
+): Promise<ResponseOf<O>> {
+  const response = await send(op, request, transport, "application/json, application/problem+json");
   const text = await response.text();
   return (text ? JSON.parse(text) : undefined) as ResponseOf<O>;
+}
+
+/** For an answer that is a file, such as a CSV report, rather than JSON. */
+export async function apiText<O extends ApiOp>(op: O, request: RequestOf<O>, transport: Transport = {}): Promise<string> {
+  const response = await send(op, request, transport, "text/csv, application/problem+json");
+  return response.text();
 }
 
 function fingerprint(text: string): string {

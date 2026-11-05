@@ -1,0 +1,138 @@
+.page,
+.stack {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--type-h2-size);
+  line-height: var(--type-h2-line);
+  font-weight: var(--type-h2-weight);
+}
+
+.card {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.heading,
+.subheading {
+  margin: 0;
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+  font-weight: var(--type-h3-weight);
+}
+
+.lead {
+  margin: 0;
+}
+
+.hint {
+  color: var(--color-text-muted);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.grid {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.more summary {
+  cursor: pointer;
+  margin-bottom: var(--space-3);
+}
+
+.counts,
+.list,
+.errors,
+.diffs,
+.blockers {
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.row {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+}
+
+.rowTitle {
+  margin: 0;
+}
+
+.errors {
+  color: var(--status-error-fg);
+}
+
+.choices {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.question {
+  font-weight: 500;
+}
+
+.choice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.commit {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.blockers {
+  color: var(--color-text-muted);
+  font-size: var(--type-body-sm-size);
+}
+
+.failure {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--status-error-icon);
+  border-radius: var(--radius-md);
+  background: var(--status-error-bg);
+  color: var(--status-error-fg);
+}
+
+.linkButton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-link);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

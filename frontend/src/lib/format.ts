@@ -16,3 +16,11 @@ export function formatMoney(amount: string, currency: string): string {
   const symbol = SYMBOLS[currency] ?? `${currency} `;
   return `${sign}${symbol}${group(whole, currency)}.${fraction.padEnd(2, "0")}`;
 }
+
+/** Integer minor units (two decimals) to a display amount. Money never passes through a float. */
+export function formatMinor(minor: number, currency: string): string {
+  const sign = minor < 0 ? "-" : "";
+  const absolute = Math.abs(minor);
+  const cents = String(absolute % 100).padStart(2, "0");
+  return formatMoney(`${sign}${Math.trunc(absolute / 100)}.${cents}`, currency);
+}

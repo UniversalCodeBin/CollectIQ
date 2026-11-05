@@ -5,8 +5,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 ## Resume point
 
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
-- **Done:** invoice list, queue, detail, dashboard, correction, cancel and archive (E042-E048), invoice state, sample data command.
-- **Next:** Task 13, invoice import UI.
+- **Done:** invoice import screen (SCR-05): upload, column mapping, review with per-row, client and total decisions, error report, discard, commit and recovery.
+- **Next:** Task 14, invoice list, queue, detail and dashboard screens.
 
 ## T1 spike outcome
 
@@ -32,7 +32,8 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 | T9 Auth screens, onboarding start, E2E harness | `make e2e` 3 passed, vitest 132 passed, build ok, `make check` 12 of 12, fault injection 0 survivors | `66e6e3e` |
 | T10 Clients, contacts, suppression | E021-E028 live; 23 client tests, 13 fault injections killed, make test 434 + 132 passed, make check 12/12 | `fc7d7f8` |
 | T11 Invoice CSV import | import tests green, 571 pytest + 132 vitest, make check 12 of 12, fault injection 9 of 9, 1,000-row preview and 10,000-row commit both well inside budget (10,000 rows 5.1 s) | `2335b50` |
-| T12 Queue and dashboard read models | 681 pytest + 132 vitest, make check 12 of 12, fault injection 11 of 11 killed, k6 at 5,000 invoices within NFR-01 (list p95 931 ms, queue 1.07 s, dashboard 1.07 s) | See `git log` |
+| T12 Queue and dashboard read models | 681 pytest + 132 vitest, make check 12 of 12, fault injection 11 of 11 killed, k6 at 5,000 invoices within NFR-01 (list p95 931 ms, queue 1.07 s, dashboard 1.07 s) | `dad3c16` |
+| T13 Invoice import and review UI | 19 new vitest (151 total), 1 new Playwright flow (4 of 4), make check 12 of 12; backend unchanged | See `git log` |
 
 ## Open items carried forward
 
