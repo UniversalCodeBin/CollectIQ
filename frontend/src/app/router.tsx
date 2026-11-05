@@ -6,9 +6,12 @@ import { ForgotPasswordPage, ResetPasswordPage } from "../features/auth/Password
 import { RootPage } from "../features/auth/RootPage";
 import { SignupPage } from "../features/auth/SignupPage";
 import { VerifyEmailPage } from "../features/auth/VerifyEmailPage";
+import { ClientPage } from "../features/client/ClientPage";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { ImportPage } from "../features/import/ImportPage";
+import { InvoicePage } from "../features/invoice/InvoicePage";
 import { OnboardingPage } from "../features/onboarding/OnboardingPage";
+import { ReceivablesPage } from "../features/receivables/ReceivablesPage";
 import { NotFoundPage } from "./NotFoundPage";
 import { WorkspaceLayout } from "./WorkspaceLayout";
 
@@ -54,6 +57,9 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   "/onboarding/:step": OnboardingPage,
   dashboard: DashboardPage,
   "import/invoices": ImportPage,
+  receivables: ReceivablesPage,
+  "invoices/:id/:tab": InvoicePage,
+  "clients/:id": ClientPage,
 };
 
 function screen(route: string): ComponentType {

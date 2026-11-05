@@ -1,4 +1,5 @@
 import {
+  Archive,
   Ban,
   Bell,
   CalendarCheck,
@@ -74,6 +75,10 @@ const STATUS_MAP: Record<StatusKind, Record<string, Entry>> = {
     OPEN: { label: "Open", icon: Circle, tone: "neutral" },
     CANCELLED: { label: "Cancelled", icon: Ban, tone: "neutral" },
     VOID: { label: "Void", icon: Ban, tone: "neutral" },
+    ACTIVE: { label: "Active", icon: Circle, tone: "neutral" },
+    PENDING_REVIEW: { label: "Waiting for your review", icon: UserCheck, tone: "review" },
+    WRITTEN_OFF: { label: "Written off", icon: X, tone: "neutral" },
+    ARCHIVED: { label: "Archived", icon: Archive, tone: "neutral" },
   },
   dispute: {
     OPEN: { label: "Dispute open", icon: Flag, tone: "disputed" },
@@ -94,6 +99,11 @@ const STATUS_MAP: Record<StatusKind, Record<string, Entry>> = {
     INVALIDATED: { label: "Invalidated", icon: Ban, tone: "neutral" },
     SUPPRESSED: { label: "Reminders paused", icon: CirclePause, tone: "paused" },
     SNOOZED: { label: "Reminders paused", icon: CirclePause, tone: "paused" },
+    NOT_CONTACTED: { label: "Not contacted yet", icon: Circle, tone: "neutral" },
+    DRAFT_READY: { label: "Draft ready for your review", icon: PenLine, tone: "review" },
+    WAITING_FOR_CUSTOMER: { label: "Waiting for the customer", icon: Clock, tone: "neutral" },
+    NEEDS_REVIEW: { label: "Needs your review", icon: UserCheck, tone: "review" },
+    RESOLVED: { label: "Resolved", icon: Check, tone: "neutral" },
   },
   commitment: {
     CONFIRMED: { label: "Stated date", icon: CalendarCheck, tone: "commitment" },
@@ -110,6 +120,8 @@ const STATUS_MAP: Record<StatusKind, Record<string, Entry>> = {
     CURRENT: { label: "Current", icon: Circle, tone: "verified" },
     NOT_CURRENT: { label: "Not current", icon: CircleDot, tone: "uncertain" },
     MISSING: { label: "Missing", icon: CircleDashed, tone: "neutral" },
+    SUPPORTED: { label: "Current", icon: Circle, tone: "verified" },
+    STALE: { label: "Not current", icon: CircleDot, tone: "uncertain" },
   },
   match: {
     PROPOSED: { label: "Suggested — not applied", icon: CircleHelp, tone: "awaiting" },

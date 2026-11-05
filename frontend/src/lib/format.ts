@@ -24,3 +24,12 @@ export function formatMinor(minor: number, currency: string): string {
   const cents = String(absolute % 100).padStart(2, "0");
   return formatMoney(`${sign}${Math.trunc(absolute / 100)}.${cents}`, currency);
 }
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** An ISO date (YYYY-MM-DD) as "1 Oct 2026". Read from the text, so the viewer's time zone cannot shift the day. */
+export function formatDate(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  const month = match ? MONTHS[Number(match[2]) - 1] : undefined;
+  return match && month ? `${Number(match[3])} ${month} ${match[1]}` : iso;
+}

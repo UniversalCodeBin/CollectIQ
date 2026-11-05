@@ -11,7 +11,7 @@ import pytest
 from rest_framework.test import APIClient
 
 from collectiq.invoices import read_models
-from tests.integration.test_import import HEADER, _import
+from tests.integration.test_import import HEADER, SHORT_MAPPING, _commit, _import, _map, _upload
 from tests.support import API, add_member, idem, owner_workspace
 
 pytestmark = pytest.mark.usefixtures("pg")
@@ -178,6 +178,19 @@ def test_dto_exposes_allowed_actions_and_no_internal_fields(pg: None, owner_db: 
         actions = {entry["action"]: entry for entry in dto["allowed_actions"]}
         assert set(actions) == {"CORRECT", "CANCEL", "ARCHIVE"}
         assert all(entry["allowed"] is True or entry["reason"] for entry in dto["allowed_actions"])
+
+
+def test_detail_of_an_invoice_imported_without_an_issue_date(pg: None, owner_db: Any) -> None:
+    client, ws = owner_workspace(owner_db, "owner@example.test")
+    csv = b"Invoice No,Client,Due,Currency,Total\nNO-ISSUE,Northwind,2026-07-01,INR,100.00\n"
+    upload = _upload(client, ws, csv)
+    import_id = upload.json()["id"]
+    assert _map(client, ws, import_id, mapping=SHORT_MAPPING).status_code == 200
+    assert _commit(client, ws, import_id).status_code == 200
+    invoice_id = _list(client, ws).json()["items"][0]["id"]
+    response = client.get(f"{API}/workspaces/{ws}/invoices/{invoice_id}")
+    assert response.status_code == 200, response.content
+    assert response.json()["facts"]["issue_date"] is None
 
 
 def _all_keys(value: Any) -> set[str]:

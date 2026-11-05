@@ -413,7 +413,7 @@ def detail_in_tx(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
             "client_name": row["client_name"],
             "status": row["status"],
             "currency": row["currency"],
-            "issue_date": row["issue_date"].isoformat(),
+            "issue_date": row["issue_date"].isoformat() if row["issue_date"] else None,
             "due_date": row["due_date"].isoformat(),
             "gross_minor": row["gross_minor"],
             "subtotal_minor": extra["subtotal_minor"],
