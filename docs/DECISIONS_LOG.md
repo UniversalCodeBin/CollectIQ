@@ -162,3 +162,9 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - The review inbox is derived on read from the source tables and writes nothing, so a lost notification never loses an item; resolving at the source removes it.
 - A project lead sees only cases assigned to them and no drafts, matches or approvals.
 - The 90-day notification retention is not enforced by a job yet (T37/T40). Notification preferences (FR-146) are not built.
+
+## Task 26 rulings
+- A customer reply is rendered as plain text only (no HTML path). The reply page has three separate layers: what the customer said, what a person recorded, what is verified. "Payment not verified" shows only when a PAYMENT_CLAIM label exists.
+- The invoice timeline renders by event type through `TIMELINE_RENDERERS`; an unknown type still shows its title and time, so a newer server never breaks the page.
+- Resolving a case requires an outcome on the client before any request is sent. An AI-derived case summary is labelled as AI-drafted.
+- Two older receivables tests that asserted "no timeline tab" were updated for the new Conversation tab; the not-found test now uses the still-unbuilt evidence section. No assertion was removed.

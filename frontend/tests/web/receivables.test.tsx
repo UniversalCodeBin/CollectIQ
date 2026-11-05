@@ -347,7 +347,7 @@ describe("Invoice details (SCR-04)", () => {
     open(`invoices/${INV}/overview`);
     await screen.findByRole("heading", { name: "Invoice INV-2041" });
     const tabs = screen.getByRole("navigation", { name: "Invoice sections" });
-    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history"]);
+    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history", "Conversation"]);
     for (const hidden of [/payment evidence/i, /timeline/i, /reconciliation/i, /tasks/i]) {
       expect(within(tabs).queryByText(hidden)).not.toBeInTheDocument();
     }
@@ -356,7 +356,7 @@ describe("Invoice details (SCR-04)", () => {
 
   it("answers not-found for a section that has not been built", async () => {
     stub({ [DETAIL]: { status: 200, body: detail() } });
-    open(`invoices/${INV}/timeline`);
+    open(`invoices/${INV}/evidence`);
     expect(await screen.findByRole("heading", { name: /can't find that page/i })).toBeInTheDocument();
   });
 

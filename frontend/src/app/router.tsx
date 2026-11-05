@@ -6,6 +6,9 @@ import { ForgotPasswordPage, ResetPasswordPage } from "../features/auth/Password
 import { RootPage } from "../features/auth/RootPage";
 import { SignupPage } from "../features/auth/SignupPage";
 import { VerifyEmailPage } from "../features/auth/VerifyEmailPage";
+import { CasesPage } from "../features/cases/CasesPage";
+import { ConversationsPage } from "../features/conversations/ConversationsPage";
+import { MessagePage } from "../features/conversations/MessagePage";
 import { ClientPage } from "../features/client/ClientPage";
 import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { ImportPage } from "../features/import/ImportPage";
@@ -65,6 +68,9 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   "clients/:id": ClientPage,
   "reconciliation/:tab": ReconciliationPage,
   accounts: AccountsPage,
+  conversations: ConversationsPage,
+  "messages/:id": MessagePage,
+  cases: CasesPage,
   "settings/:tab": AutomationPage,
 };
 

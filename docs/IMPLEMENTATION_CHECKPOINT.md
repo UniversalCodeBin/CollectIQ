@@ -6,10 +6,10 @@ Sources of record:
 - Ledger, with every ruling: `.superpowers/sdd/pasted-content-id-ab91-collectiq-abundant-cat/progress.md` (git-ignored)
 
 ## Last verified completed task
-- **Task 25** (notifications and review inbox; E106-E108) is complete; the commit follows this checkpoint. Evidence: test_inbox.py 15 passed; full suite and make check recorded below at commit.
+- **Task 26** (conversations and disputes UI) is complete; the commit follows this checkpoint. Evidence: vitest 215 passed, make check 12/12.
 
 ## Current task
-- **Task 26: Conversations and Disputes UI (SCR-07, SCR-08).** Owed: end snoozes when their date passes (job `end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id is NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; a path to close `verification_tasks` and decrement `open_task_count` (T25/T30); nightly evidence.integrity_check (T37/T40); E065 cursor paging (T37). Next free endpoint is E120.
+- **Task 27: Follow-ups and Automation UI (SCR-09, SCR-10)** with e2e/followups.spec.ts; no "Formal Notice", "Send Template" or "Extend Hold" labels; blocked drafts show a plain reason with no gate ID. Per-client and per-invoice pause. Owed: end snoozes when their date passes (job `end_due_snoozes`); E085 should expose `cases.service.request_resume`; MATCH_REVIEW case type migration (invoice_id is NOT NULL); AllocationConfirmed/Reversed FR-057 case opening; a path to close `verification_tasks` and decrement `open_task_count` (T25/T30); nightly evidence.integrity_check (T37/T40); E065 cursor paging (T37). Next free endpoint is E120.
 
 ## Relevant files
 - Frontend T14: frontend/src/features/{dashboard,receivables,invoice,client}/*, components/ui/QueryState.tsx, lib/format.ts (formatDate), lib/statusMap.ts; e2e/receivables.spec.ts; tests/web/receivables.test.tsx. Backend: invoices/read_models.py (null issue_date).
