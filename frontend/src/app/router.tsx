@@ -11,6 +11,8 @@ import { DashboardPage } from "../features/dashboard/DashboardPage";
 import { ImportPage } from "../features/import/ImportPage";
 import { InvoicePage } from "../features/invoice/InvoicePage";
 import { OnboardingPage } from "../features/onboarding/OnboardingPage";
+import { AccountsPage } from "../features/accounts/AccountsPage";
+import { ReconciliationPage } from "../features/reconciliation/ReconciliationPage";
 import { ReceivablesPage } from "../features/receivables/ReceivablesPage";
 import { NotFoundPage } from "./NotFoundPage";
 import { WorkspaceLayout } from "./WorkspaceLayout";
@@ -60,6 +62,8 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   receivables: ReceivablesPage,
   "invoices/:id/:tab": InvoicePage,
   "clients/:id": ClientPage,
+  "reconciliation/:tab": ReconciliationPage,
+  accounts: AccountsPage,
 };
 
 function screen(route: string): ComponentType {
