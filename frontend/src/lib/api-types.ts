@@ -741,6 +741,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/reminders/evaluate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E085"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/approve": {
         parameters: {
             query?: never;
@@ -1071,6 +1087,86 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["E058"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E083"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminders/{reminder_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E084"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch: operations["E086"];
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminders/{reminder_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E087"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminders/{reminder_id}/mark-sent": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E089"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminders/{reminder_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E088"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1691,6 +1787,16 @@ export interface components {
             passed: boolean;
             text: string;
         };
+        GateReadingOut: {
+            outcome: string;
+            reasons: string[];
+            gate_results: components["schemas"]["GateResultOut"][];
+        };
+        GateResultOut: {
+            gate: string;
+            passed: boolean;
+            reason: string | null;
+        };
         HealthOut: {
             status: string;
         };
@@ -1980,15 +2086,6 @@ export interface components {
             next_cursor: string | null;
         };
         /**
-         * @description * `BANK_TRANSFER` - BANK_TRANSFER
-         *     * `UPI` - UPI
-         *     * `CASH` - CASH
-         *     * `PAYPAL_MANUAL` - PAYPAL_MANUAL
-         *     * `OTHER` - OTHER
-         * @enum {string}
-         */
-        MethodEnum: "BANK_TRANSFER" | "UPI" | "CASH" | "PAYPAL_MANUAL" | "OTHER";
-        /**
          * @description * `MANUAL` - MANUAL
          *     * `ASSISTED` - ASSISTED
          * @enum {string}
@@ -2060,6 +2157,10 @@ export interface components {
         PatchedPaymentAccountUpdateInRequest: {
             label?: string;
             status?: components["schemas"]["PaymentAccountUpdateInStatusEnum"];
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        PatchedReminderEditInRequest: {
+            body?: string;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedWorkspaceUpdateInRequest: {
@@ -2180,9 +2281,18 @@ export interface components {
             allocations: components["schemas"]["PaymentAllocationOut"][];
             matches: components["schemas"]["PaymentMatchOut"][];
         };
+        /**
+         * @description * `BANK_TRANSFER` - BANK_TRANSFER
+         *     * `UPI` - UPI
+         *     * `CASH` - CASH
+         *     * `PAYPAL_MANUAL` - PAYPAL_MANUAL
+         *     * `OTHER` - OTHER
+         * @enum {string}
+         */
+        PaymentInMethodEnum: "BANK_TRANSFER" | "UPI" | "CASH" | "PAYPAL_MANUAL" | "OTHER";
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PaymentInRequest: {
-            method: components["schemas"]["MethodEnum"];
+            method: components["schemas"]["PaymentInMethodEnum"];
             amount: components["schemas"]["MoneyInRequest"];
             /** Format: date */
             value_date: string;
@@ -2385,6 +2495,97 @@ export interface components {
             can_act: boolean;
             performed_by: string[];
             reason: string | null;
+        };
+        ReminderDetailOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number: string;
+            /** Format: uuid */
+            contact_id: string;
+            recipient: string;
+            sequence: number;
+            /** Format: date */
+            intended_date: string;
+            status: string;
+            subject: string;
+            body: string;
+            fact_block: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            approved_by: string | null;
+            /** Format: date-time */
+            approved_at: string | null;
+            /** Format: date-time */
+            sent_at: string | null;
+            method: string | null;
+            reason: string | null;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+            gates: components["schemas"]["GateReadingOut"] | null;
+        };
+        ReminderEvaluationOut: {
+            outcome: string;
+            reasons: string[];
+            gate_results: components["schemas"]["GateResultOut"][];
+            /** Format: uuid */
+            invoice_id: string;
+            reminder: components["schemas"]["ReminderOut"] | null;
+        };
+        ReminderOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            invoice_number: string;
+            /** Format: uuid */
+            contact_id: string;
+            recipient: string;
+            sequence: number;
+            /** Format: date */
+            intended_date: string;
+            status: string;
+            subject: string;
+            body: string;
+            fact_block: {
+                [key: string]: unknown;
+            };
+            /** Format: uuid */
+            approved_by: string | null;
+            /** Format: date-time */
+            approved_at: string | null;
+            /** Format: date-time */
+            sent_at: string | null;
+            method: string | null;
+            reason: string | null;
+            version: number;
+            /** Format: date-time */
+            created_at: string;
+        };
+        ReminderPageOut: {
+            items: components["schemas"]["ReminderOut"][];
+            next_cursor: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ReminderRejectInRequest: {
+            reason?: string;
+        };
+        /**
+         * @description * `EMAIL` - EMAIL
+         *     * `WHATSAPP` - WHATSAPP
+         *     * `PHONE` - PHONE
+         *     * `OTHER` - OTHER
+         * @enum {string}
+         */
+        ReminderSentInMethodEnum: "EMAIL" | "WHATSAPP" | "PHONE" | "OTHER";
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ReminderSentInRequest: {
+            /** Format: date-time */
+            sent_at: string;
+            method: components["schemas"]["ReminderSentInMethodEnum"];
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ResumeInRequest: {
@@ -4034,6 +4235,30 @@ export interface operations {
             };
         };
     };
+    E085: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderEvaluationOut"];
+                };
+            };
+        };
+    };
     E074: {
         parameters: {
             query?: never;
@@ -4747,6 +4972,163 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProposalRejectedOut"];
+                };
+            };
+        };
+    };
+    E083: {
+        parameters: {
+            query?: {
+                cursor?: string;
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderPageOut"];
+                };
+            };
+        };
+    };
+    E084: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderDetailOut"];
+                };
+            };
+        };
+    };
+    E086: {
+        parameters: {
+            query?: never;
+            header: {
+                "If-Match": string;
+            };
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["PatchedReminderEditInRequest"];
+                "multipart/form-data": components["schemas"]["PatchedReminderEditInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderOut"];
+                };
+            };
+        };
+    };
+    E087: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderOut"];
+                };
+            };
+        };
+    };
+    E089: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReminderSentInRequest"];
+                "multipart/form-data": components["schemas"]["ReminderSentInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderOut"];
+                };
+            };
+        };
+    };
+    E088: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                reminder_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReminderRejectInRequest"];
+                "multipart/form-data": components["schemas"]["ReminderRejectInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderOut"];
                 };
             };
         };

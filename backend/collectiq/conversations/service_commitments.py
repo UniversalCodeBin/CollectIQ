@@ -353,6 +353,17 @@ def _end_snooze(ctx: RequestContext, invoice_id: UUID, reason: str) -> dict[str,
     return {"invoice_id": str(invoice_id), "reminder_status": restored}
 
 
+def end_active_snooze(ctx: RequestContext, invoice_id: UUID, reason: str) -> bool:
+    """Ends a running pause if there is one, in the caller's transaction. Used when a case makes it moot."""
+    active = fetch_one(
+        "SELECT 1 AS ok FROM snoozes WHERE invoice_id = %s AND status = 'ACTIVE'", [invoice_id]
+    )
+    if active is None:
+        return False
+    _end_snooze(ctx, invoice_id, reason)
+    return True
+
+
 def undo_snooze(ctx: RequestContext, invoice_id: UUID, reason: str | None = None) -> dict[str, Any]:
     authorize(ctx, MESSAGES_WRITE)
     if ctx.user_id is None:

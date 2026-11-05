@@ -1031,3 +1031,63 @@ class SnoozeStartedOut(serializers.Serializer):
 class SnoozeUndoneOut(serializers.Serializer):
     invoice_id = serializers.UUIDField()
     reminder_status = serializers.CharField()
+
+
+class GateResultOut(serializers.Serializer):
+    gate = serializers.CharField()
+    passed = serializers.BooleanField()
+    reason = serializers.CharField(allow_null=True)
+
+
+class GateReadingOut(serializers.Serializer):
+    outcome = serializers.CharField()
+    reasons = serializers.ListField(child=serializers.CharField())
+    gate_results = GateResultOut(many=True)
+
+
+class ReminderOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    invoice_number = serializers.CharField()
+    contact_id = serializers.UUIDField()
+    recipient = serializers.CharField()
+    sequence = serializers.IntegerField()
+    intended_date = serializers.DateField()
+    status = serializers.CharField()
+    subject = serializers.CharField()
+    body = serializers.CharField()
+    fact_block = serializers.DictField()
+    approved_by = serializers.UUIDField(allow_null=True)
+    approved_at = serializers.DateTimeField(allow_null=True)
+    sent_at = serializers.DateTimeField(allow_null=True)
+    method = serializers.CharField(allow_null=True)
+    reason = serializers.CharField(allow_null=True)
+    version = serializers.IntegerField()
+    created_at = serializers.DateTimeField()
+
+
+class ReminderDetailOut(ReminderOut):
+    gates = GateReadingOut(allow_null=True)
+
+
+class ReminderPageOut(serializers.Serializer):
+    items = ReminderOut(many=True)
+    next_cursor = serializers.CharField(allow_null=True)
+
+
+class ReminderEvaluationOut(GateReadingOut):
+    invoice_id = serializers.UUIDField()
+    reminder = ReminderOut(allow_null=True)
+
+
+class ReminderEditIn(StrictSerializer):
+    body = serializers.CharField(max_length=5000, trim_whitespace=False)
+
+
+class ReminderRejectIn(StrictSerializer):
+    reason = serializers.CharField(max_length=1000, required=False, allow_blank=False)
+
+
+class ReminderSentIn(StrictSerializer):
+    sent_at = serializers.DateTimeField()
+    method = serializers.ChoiceField(choices=["EMAIL", "WHATSAPP", "PHONE", "OTHER"])

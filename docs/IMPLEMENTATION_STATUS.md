@@ -14,7 +14,8 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 - **Done:** Task 23, messages, timeline, claims, commitments and snooze (E062-E066, E071-E075, API only): encrypted pasted/eml/txt replies, person-confirmed association, payment claims open a verification task without touching balance, opt-out suppression, dispute cases from replies, commitments and approval-gated snooze with undo.
 - **Done:** Task 22, disputes and blockers (E076-E082): dispute and blocker cases, reminders suppressed on open, human-only resolution, 24-hour cooling-off and approved resume.
 - **Done (earlier):** Task 21, policy engine (E016-E020, E092, E101): pure gates G1-G15, single-use authorization, immutable policy versions, pause and resume, approvals, header pause control and SCR-10 settings.
-- **Next:** Task 24, reminders and manual handoff (E083-E089).
+- **Done:** Task 24, reminders and manual handoff (E083-E089, API only): template drafts with a deterministic fact block, content linter, gates re-run at approval and mark-sent, approval never sends, mark-sent records a hand-off, payments and cases cancel pending drafts.
+- **Next:** Task 25, notifications and review inbox (E106-E108).
 
 ## T1 spike outcome
 

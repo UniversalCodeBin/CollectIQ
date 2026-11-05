@@ -10,6 +10,7 @@ from . import invoice_views as invoices
 from . import payment_views as payments
 from . import policy_views as policy
 from . import reconciliation_views as reconciliation
+from . import reminder_views as reminders
 from . import statement_views as statements
 from . import tenancy_views as tenancy
 
@@ -152,6 +153,24 @@ urlpatterns: list = [
     path(
         f"{_V1}workspaces/<uuid:ws>/transactions/<uuid:transaction_id>/mark-duplicate",
         payments.TransactionDuplicateView.as_view(),
+    ),
+    path(f"{_V1}workspaces/<uuid:ws>/reminders", reminders.ReminderCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>", reminders.ReminderDetailView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/reminders/evaluate",
+        reminders.ReminderEvaluateView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>/approve",
+        reminders.ReminderApproveView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>/reject",
+        reminders.ReminderRejectView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>/mark-sent",
+        reminders.ReminderMarkSentView.as_view(),
     ),
     path(f"{_V1}health/live", identity.HealthLiveView.as_view()),
     path(f"{_V1}health/ready", identity.HealthReadyView.as_view()),

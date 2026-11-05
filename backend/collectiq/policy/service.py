@@ -91,6 +91,11 @@ def active_policy(ctx: RequestContext) -> PolicyVersion:
     )
 
 
+def active_settings(ctx: RequestContext) -> dict[str, Any]:
+    """The stored settings of the active version, for callers that read cadence or business hours."""
+    return dict(_json(_active_row(ctx)["settings"]))
+
+
 def get_policy(ctx: RequestContext) -> dict[str, Any]:
     authorize(ctx, POLICY_READ)
     with tenant_tx(ctx):

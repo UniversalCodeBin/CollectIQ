@@ -1749,6 +1749,38 @@ paths:
                 $ref: '#/components/schemas/InvoicePaymentHistoryOut'
           description: ''
       x-endpoint-id: E119
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/reminders/evaluate:
+    post:
+      operationId: E085
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderEvaluationOut'
+          description: ''
+      x-endpoint-id: E085
   /api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/approve:
     post:
       operationId: E074
@@ -2688,6 +2720,211 @@ paths:
                 $ref: '#/components/schemas/ProposalRejectedOut'
           description: ''
       x-endpoint-id: E058
+  /api/v1/workspaces/{ws}/reminders:
+    get:
+      operationId: E083
+      parameters:
+      - in: query
+        name: cursor
+        schema:
+          type: string
+      - in: query
+        name: limit
+        schema:
+          type: integer
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderPageOut'
+          description: ''
+      x-endpoint-id: E083
+  /api/v1/workspaces/{ws}/reminders/{reminder_id}:
+    get:
+      operationId: E084
+      parameters:
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderDetailOut'
+          description: ''
+      x-endpoint-id: E084
+    patch:
+      operationId: E086
+      parameters:
+      - in: header
+        name: If-Match
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedReminderEditInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedReminderEditInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderOut'
+          description: ''
+      x-endpoint-id: E086
+  /api/v1/workspaces/{ws}/reminders/{reminder_id}/approve:
+    post:
+      operationId: E087
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderOut'
+          description: ''
+      x-endpoint-id: E087
+  /api/v1/workspaces/{ws}/reminders/{reminder_id}/mark-sent:
+    post:
+      operationId: E089
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderSentInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReminderSentInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderOut'
+          description: ''
+      x-endpoint-id: E089
+  /api/v1/workspaces/{ws}/reminders/{reminder_id}/reject:
+    post:
+      operationId: E088
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: reminder_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderRejectInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReminderRejectInRequest'
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderOut'
+          description: ''
+      x-endpoint-id: E088
   /api/v1/workspaces/{ws}/transactions/{transaction_id}/mark-duplicate:
     post:
       operationId: E061
@@ -4088,6 +4325,37 @@ components:
       - gate
       - passed
       - text
+    GateReadingOut:
+      type: object
+      properties:
+        outcome:
+          type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        gate_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateResultOut'
+      required:
+      - gate_results
+      - outcome
+      - reasons
+    GateResultOut:
+      type: object
+      properties:
+        gate:
+          type: string
+        passed:
+          type: boolean
+        reason:
+          type: string
+          nullable: true
+      required:
+      - gate
+      - passed
+      - reason
     HealthOut:
       type: object
       properties:
@@ -4790,20 +5058,6 @@ components:
       required:
       - items
       - next_cursor
-    MethodEnum:
-      enum:
-      - BANK_TRANSFER
-      - UPI
-      - CASH
-      - PAYPAL_MANUAL
-      - OTHER
-      type: string
-      description: |-
-        * `BANK_TRANSFER` - BANK_TRANSFER
-        * `UPI` - UPI
-        * `CASH` - CASH
-        * `PAYPAL_MANUAL` - PAYPAL_MANUAL
-        * `OTHER` - OTHER
     ModeEnum:
       enum:
       - MANUAL
@@ -4970,6 +5224,15 @@ components:
           maxLength: 100
         status:
           $ref: '#/components/schemas/PaymentAccountUpdateInStatusEnum'
+    PatchedReminderEditInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        body:
+          type: string
+          minLength: 1
+          maxLength: 5000
     PatchedWorkspaceUpdateInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -5268,13 +5531,27 @@ components:
       - unallocated_minor
       - value_date
       - void_reason
+    PaymentInMethodEnum:
+      enum:
+      - BANK_TRANSFER
+      - UPI
+      - CASH
+      - PAYPAL_MANUAL
+      - OTHER
+      type: string
+      description: |-
+        * `BANK_TRANSFER` - BANK_TRANSFER
+        * `UPI` - UPI
+        * `CASH` - CASH
+        * `PAYPAL_MANUAL` - PAYPAL_MANUAL
+        * `OTHER` - OTHER
     PaymentInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
         field left out.
       properties:
         method:
-          $ref: '#/components/schemas/MethodEnum'
+          $ref: '#/components/schemas/PaymentInMethodEnum'
         amount:
           $ref: '#/components/schemas/MoneyInRequest'
         value_date:
@@ -5797,6 +6074,228 @@ components:
       - label
       - performed_by
       - reason
+    ReminderDetailOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        contact_id:
+          type: string
+          format: uuid
+        recipient:
+          type: string
+        sequence:
+          type: integer
+        intended_date:
+          type: string
+          format: date
+        status:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        fact_block:
+          type: object
+          additionalProperties: {}
+        approved_by:
+          type: string
+          format: uuid
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        method:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        gates:
+          allOf:
+          - $ref: '#/components/schemas/GateReadingOut'
+          nullable: true
+      required:
+      - approved_at
+      - approved_by
+      - body
+      - contact_id
+      - created_at
+      - fact_block
+      - gates
+      - id
+      - intended_date
+      - invoice_id
+      - invoice_number
+      - method
+      - reason
+      - recipient
+      - sent_at
+      - sequence
+      - status
+      - subject
+      - version
+    ReminderEvaluationOut:
+      type: object
+      properties:
+        outcome:
+          type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        gate_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateResultOut'
+        invoice_id:
+          type: string
+          format: uuid
+        reminder:
+          allOf:
+          - $ref: '#/components/schemas/ReminderOut'
+          nullable: true
+      required:
+      - gate_results
+      - invoice_id
+      - outcome
+      - reasons
+      - reminder
+    ReminderOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        invoice_number:
+          type: string
+        contact_id:
+          type: string
+          format: uuid
+        recipient:
+          type: string
+        sequence:
+          type: integer
+        intended_date:
+          type: string
+          format: date
+        status:
+          type: string
+        subject:
+          type: string
+        body:
+          type: string
+        fact_block:
+          type: object
+          additionalProperties: {}
+        approved_by:
+          type: string
+          format: uuid
+          nullable: true
+        approved_at:
+          type: string
+          format: date-time
+          nullable: true
+        sent_at:
+          type: string
+          format: date-time
+          nullable: true
+        method:
+          type: string
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        version:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+      required:
+      - approved_at
+      - approved_by
+      - body
+      - contact_id
+      - created_at
+      - fact_block
+      - id
+      - intended_date
+      - invoice_id
+      - invoice_number
+      - method
+      - reason
+      - recipient
+      - sent_at
+      - sequence
+      - status
+      - subject
+      - version
+    ReminderPageOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReminderOut'
+        next_cursor:
+          type: string
+          nullable: true
+      required:
+      - items
+      - next_cursor
+    ReminderRejectInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 1000
+    ReminderSentInMethodEnum:
+      enum:
+      - EMAIL
+      - WHATSAPP
+      - PHONE
+      - OTHER
+      type: string
+      description: |-
+        * `EMAIL` - EMAIL
+        * `WHATSAPP` - WHATSAPP
+        * `PHONE` - PHONE
+        * `OTHER` - OTHER
+    ReminderSentInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        sent_at:
+          type: string
+          format: date-time
+        method:
+          $ref: '#/components/schemas/ReminderSentInMethodEnum'
+      required:
+      - method
+      - sent_at
     ResumeInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
