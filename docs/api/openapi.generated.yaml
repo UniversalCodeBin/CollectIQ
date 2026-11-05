@@ -816,6 +816,80 @@ paths:
                 $ref: '#/components/schemas/ImportBatchOut'
           description: ''
       x-endpoint-id: E033
+  /api/v1/workspaces/{ws}/imports/transactions:
+    post:
+      operationId: E053
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                source_type:
+                  type: string
+                  enum:
+                  - BANK_CSV
+                  - UPI_CSV
+                  - CASH_LOG
+                payment_account_id:
+                  type: string
+                  format: uuid
+                mapping:
+                  type: string
+                  description: 'JSON: date, description, amount or credit/debit, ...'
+                date_format:
+                  type: string
+                include_debits:
+                  type: boolean
+                coverage_from:
+                  type: string
+                  format: date
+                coverage_to:
+                  type: string
+                  format: date
+                skip_invalid:
+                  type: boolean
+                confirm_repeated:
+                  type: boolean
+                dry_run:
+                  type: boolean
+              required:
+              - file
+              - source_type
+              - payment_account_id
+              - mapping
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementImportOut'
+          description: ''
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatementImportOut'
+          description: ''
+      x-endpoint-id: E053
   /api/v1/workspaces/{ws}/invitations:
     post:
       operationId: E014
@@ -3018,6 +3092,96 @@ components:
       - csrf_token
       - user
       - workspaces
+    StatementCountsOut:
+      type: object
+      properties:
+        total_rows:
+          type: integer
+        added:
+          type: integer
+        skipped_duplicate:
+          type: integer
+        held_for_confirmation:
+          type: integer
+        discarded_debits:
+          type: integer
+        invalid:
+          type: integer
+      required:
+      - added
+      - discarded_debits
+      - held_for_confirmation
+      - invalid
+      - skipped_duplicate
+      - total_rows
+    StatementCoverageOut:
+      type: object
+      properties:
+        covers_from:
+          type: string
+          format: date
+        covers_to:
+          type: string
+          format: date
+      required:
+      - covers_from
+      - covers_to
+    StatementHeldRowOut:
+      type: object
+      properties:
+        row:
+          type: integer
+        reason:
+          type: string
+      required:
+      - reason
+      - row
+    StatementImportOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+        dry_run:
+          type: boolean
+        counts:
+          $ref: '#/components/schemas/StatementCountsOut'
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementRowErrorOut'
+        held_rows:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatementHeldRowOut'
+        coverage:
+          allOf:
+          - $ref: '#/components/schemas/StatementCoverageOut'
+          nullable: true
+      required:
+      - counts
+      - coverage
+      - dry_run
+      - errors
+      - held_rows
+      - id
+      - status
+    StatementRowErrorOut:
+      type: object
+      properties:
+        row:
+          type: integer
+        field:
+          type: string
+        message:
+          type: string
+      required:
+      - field
+      - message
+      - row
     StatusEnum:
       enum:
       - ACTIVE

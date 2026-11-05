@@ -497,3 +497,38 @@ class AttestationOut(serializers.Serializer):
     as_of = serializers.DateTimeField()
     coverage_date = serializers.DateField()
     attestation_ids = serializers.ListField(child=serializers.UUIDField())
+
+
+class StatementCountsOut(serializers.Serializer):
+    total_rows = serializers.IntegerField()
+    added = serializers.IntegerField()
+    skipped_duplicate = serializers.IntegerField()
+    held_for_confirmation = serializers.IntegerField()
+    discarded_debits = serializers.IntegerField()
+    invalid = serializers.IntegerField()
+
+
+class StatementRowErrorOut(serializers.Serializer):
+    row = serializers.IntegerField()
+    field = serializers.CharField()
+    message = serializers.CharField()
+
+
+class StatementHeldRowOut(serializers.Serializer):
+    row = serializers.IntegerField()
+    reason = serializers.CharField()
+
+
+class StatementCoverageOut(serializers.Serializer):
+    covers_from = serializers.DateField()
+    covers_to = serializers.DateField()
+
+
+class StatementImportOut(serializers.Serializer):
+    id = serializers.UUIDField(allow_null=True)
+    status = serializers.CharField()
+    dry_run = serializers.BooleanField()
+    counts = StatementCountsOut()
+    errors = StatementRowErrorOut(many=True)
+    held_rows = StatementHeldRowOut(many=True)
+    coverage = StatementCoverageOut(allow_null=True)

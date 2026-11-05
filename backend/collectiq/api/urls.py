@@ -5,6 +5,7 @@ from . import client_views as clients
 from . import identity_views as identity
 from . import import_views as imports
 from . import invoice_views as invoices
+from . import statement_views as statements
 from . import tenancy_views as tenancy
 
 _V1 = "api/v1/"
@@ -38,6 +39,7 @@ urlpatterns: list = [
         f"{_V1}workspaces/<uuid:ws>/contacts/<uuid:contact_id>/suppression",
         clients.ContactSuppressionView.as_view(),
     ),
+    path(f"{_V1}workspaces/<uuid:ws>/imports/transactions", statements.StatementImportView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/imports/invoices", imports.InvoiceImportCollectionView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/imports/<uuid:import_id>", imports.ImportDetailView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/imports/<uuid:import_id>/mapping", imports.ImportMappingView.as_view()),

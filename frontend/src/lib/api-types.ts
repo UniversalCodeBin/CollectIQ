@@ -405,6 +405,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/imports/transactions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E053"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invitations": {
         parameters: {
             query?: never;
@@ -1271,6 +1287,39 @@ export interface components {
             workspaces: components["schemas"]["WorkspaceSummaryOut"][];
             csrf_token: string;
         };
+        StatementCountsOut: {
+            total_rows: number;
+            added: number;
+            skipped_duplicate: number;
+            held_for_confirmation: number;
+            discarded_debits: number;
+            invalid: number;
+        };
+        StatementCoverageOut: {
+            /** Format: date */
+            covers_from: string;
+            /** Format: date */
+            covers_to: string;
+        };
+        StatementHeldRowOut: {
+            row: number;
+            reason: string;
+        };
+        StatementImportOut: {
+            /** Format: uuid */
+            id: string | null;
+            status: string;
+            dry_run: boolean;
+            counts: components["schemas"]["StatementCountsOut"];
+            errors: components["schemas"]["StatementRowErrorOut"][];
+            held_rows: components["schemas"]["StatementHeldRowOut"][];
+            coverage: components["schemas"]["StatementCoverageOut"] | null;
+        };
+        StatementRowErrorOut: {
+            row: number;
+            field: string;
+            message: string;
+        };
         /**
          * @description * `ACTIVE` - ACTIVE
          *     * `INACTIVE` - INACTIVE
@@ -2084,6 +2133,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ImportBatchOut"];
+                };
+            };
+        };
+    };
+    E053: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                    /** @enum {string} */
+                    source_type: "BANK_CSV" | "UPI_CSV" | "CASH_LOG";
+                    /** Format: uuid */
+                    payment_account_id: string;
+                    /** @description JSON: date, description, amount or credit/debit, ... */
+                    mapping: string;
+                    date_format?: string;
+                    include_debits?: boolean;
+                    /** Format: date */
+                    coverage_from?: string;
+                    /** Format: date */
+                    coverage_to?: string;
+                    skip_invalid?: boolean;
+                    confirm_repeated?: boolean;
+                    dry_run?: boolean;
+                };
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementImportOut"];
+                };
+            };
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StatementImportOut"];
                 };
             };
         };
