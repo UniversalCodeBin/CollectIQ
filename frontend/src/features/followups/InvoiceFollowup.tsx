@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/Button";
 import { MutationFeedback } from "../../components/ui/MutationFeedback";
 import { useApiMutation } from "../../lib/api";
 import styles from "./Followups.module.css";
+import { CommitmentsPanel } from "./CommitmentsPanel";
 import { PausePanel } from "./PausePanel";
 import { plainReasons } from "./reasons";
 import { ResumePanel } from "./ResumePanel";
@@ -33,6 +34,7 @@ export function InvoiceFollowup({ detail }: { detail: { facts: { id: string }; d
       )}
     </section>
     {detail.derived?.dispute_status === "RESOLVED" && <ResumePanel invoiceId={detail.facts.id} onChanged={() => undefined} />}
+    <CommitmentsPanel invoiceId={detail.facts.id} />
     <PausePanel scope="INVOICE" targetId={detail.facts.id} />
     </>
   );

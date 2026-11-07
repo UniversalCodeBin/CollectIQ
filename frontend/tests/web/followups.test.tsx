@@ -23,6 +23,7 @@ function stub(routes: Record<string, Reply | Reply[]>) {
   const replies: Record<string, Reply | Reply[]> = {
     "GET /api/v1/auth/session": { status: 200, body: SESSION },
     [`GET ${API}/policy`]: { status: 404, body: { code: "NOT_FOUND", detail: "x" } },
+    [`GET ${API}/invoices/${INV}/commitments`]: { status: 200, body: { items: [], snoozes: [], next_cursor: null } },
     ...routes,
   };
   calls = [];
@@ -352,5 +353,35 @@ describe("Preparing a reminder from an invoice", () => {
     open(`invoices/${INV}/followups`);
     await screen.findByRole("button", { name: "Prepare a reminder" });
     expect(screen.queryByRole("button", { name: "Check whether reminders can resume" })).not.toBeInTheDocument();
+  });
+
+  it("records a stated date, then pauses reminders only after a person approves and starts it", async () => {
+    const APPROVAL = "77777777-7777-4777-8777-777777777777";
+    stub({
+      [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [pauses]: none,
+      [`POST ${API}/commitments`]: {
+        status: 201,
+        body: { id: "c1", invoice_id: INV, strength: "EXPLICIT", promised_date: "2026-11-20", status: "ACTIVE", version: 1, snooze: { outcome: "REQUIRE_APPROVAL", reasons: [], approval_id: APPROVAL, until: "2026-11-21" }, snooze_note: null },
+      },
+      [`POST ${API}/approvals/${APPROVAL}/decide`]: { status: 200, body: {} },
+      [`POST ${API}/invoices/${INV}/snooze/approve`]: { status: 200, body: { id: "s1", status: "ACTIVE" } },
+    });
+    open(`invoices/${INV}/followups`);
+    await userEvent.type(await screen.findByLabelText("Stated date"), "2026-11-20");
+    await userEvent.click(screen.getByRole("button", { name: "Record what they said" }));
+    expect(called(`POST ${API}/snooze/approve`)).toHaveLength(0);
+    await userEvent.click(await screen.findByRole("button", { name: "Approve pausing reminders" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Start the pause" }));
+    expect(called(`POST ${API}/commitments`)[0]!.body).toMatchObject({ invoice_id: INV, strength: "EXPLICIT", date: "2026-11-20" });
+    expect(called(`POST ${API}/invoices/${INV}/snooze/approve`)[0]!.body).toEqual({ approval_id: APPROVAL });
+  });
+
+  it("will not record a firm commitment without a date", async () => {
+    stub({ [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice }, [pauses]: none });
+    open(`invoices/${INV}/followups`);
+    await userEvent.click(await screen.findByRole("button", { name: "Record what they said" }));
+    expect(await screen.findByText("Pick the date the customer stated.")).toBeInTheDocument();
+    expect(called(`POST ${API}/commitments`)).toHaveLength(0);
   });
 });
