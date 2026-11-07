@@ -9,7 +9,9 @@ import { ApiProblem, apiRequest, useApiMutation } from "../../lib/api";
 import { formatDate } from "../../lib/format";
 import { NotFoundPage } from "../../app/NotFoundPage";
 import { AiSettingsPanel } from "../ai/AiSettingsPanel";
+import { BusinessPanel } from "../settings/BusinessPanel";
 import { MembersPanel } from "../settings/MembersPanel";
+import { NotificationsPanel } from "../settings/NotificationsPanel";
 import { PayloadsPanel } from "../settings/PayloadsPanel";
 import { PrivacyPanel } from "../settings/PrivacyPanel";
 import styles from "./Automation.module.css";
@@ -26,7 +28,9 @@ const refuse = (field: string, message: string) =>
 const TABS = [
   ["automation", "Automation"],
   ["ai", "AI"],
+  ["business", "Your business"],
   ["members", "Members"],
+  ["notifications", "Notifications"],
   ["privacy", "Export and deletion"],
   ["payloads", "AI payloads"],
 ] as const;
@@ -36,7 +40,9 @@ export function AutomationPage() {
   const panels: Record<string, ReactElement> = {
     automation: <AutomationSettings />,
     ai: <AiSettingsPanel />,
+    business: <BusinessPanel />,
     members: <MembersPanel />,
+    notifications: <NotificationsPanel />,
     privacy: <PrivacyPanel />,
     payloads: <PayloadsPanel />,
   };

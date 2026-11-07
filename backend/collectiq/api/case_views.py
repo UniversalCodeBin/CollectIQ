@@ -21,6 +21,7 @@ from .serializers import (
     CaseUpdateIn,
     ResumeIn,
     ResumeOut,
+    ResumeRequestOut,
 )
 
 
@@ -108,3 +109,10 @@ class FollowupsResumeView(APIView):
     def post(self, request: Any, ws: UUID, invoice_id: UUID) -> Response:
         data = validated(ResumeIn, request)
         return Response(service.resume_followups(request.ctx, invoice_id, data["approval_id"]))
+
+
+class FollowupsResumeRequestView(APIView):
+    @endpoint("E127", responses={200: ResumeRequestOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID, invoice_id: UUID) -> Response:
+        return Response(service.request_resume(request.ctx, invoice_id))

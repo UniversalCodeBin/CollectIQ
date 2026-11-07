@@ -5,9 +5,10 @@ import { useApiMutation } from "../../lib/api";
 import styles from "./Followups.module.css";
 import { PausePanel } from "./PausePanel";
 import { plainReasons } from "./reasons";
+import { ResumePanel } from "./ResumePanel";
 
 /** A reminder is only ever prepared when a person asks. Nothing here sends anything. */
-export function InvoiceFollowup({ detail }: { detail: { facts: { id: string } } }) {
+export function InvoiceFollowup({ detail }: { detail: { facts: { id: string }; derived?: { dispute_status: string } } }) {
   const { ws = "" } = useParams();
   const evaluate = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/reminders/evaluate" }, { idempotent: true });
   const result = evaluate.status === "success" ? evaluate.data : undefined;
@@ -31,6 +32,7 @@ export function InvoiceFollowup({ detail }: { detail: { facts: { id: string } } 
         </div>
       )}
     </section>
+    {detail.derived?.dispute_status === "RESOLVED" && <ResumePanel invoiceId={detail.facts.id} onChanged={() => undefined} />}
     <PausePanel scope="INVOICE" targetId={detail.facts.id} />
     </>
   );

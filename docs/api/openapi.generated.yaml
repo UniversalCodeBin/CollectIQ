@@ -2295,6 +2295,38 @@ paths:
                 $ref: '#/components/schemas/ResumeOut'
           description: ''
       x-endpoint-id: E082
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume-request:
+    post:
+      operationId: E127
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumeRequestOut'
+          description: ''
+      x-endpoint-id: E127
   /api/v1/workspaces/{ws}/invoices/{invoice_id}/messages:
     get:
       operationId: E065
@@ -2768,6 +2800,60 @@ paths:
                 $ref: '#/components/schemas/InterpretationOut'
           description: ''
       x-endpoint-id: E067
+  /api/v1/workspaces/{ws}/notification-preferences:
+    get:
+      operationId: E125
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferencesOut'
+          description: ''
+      x-endpoint-id: E125
+    put:
+      operationId: E126
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NotificationPreferencesInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/NotificationPreferencesInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferencesOut'
+          description: ''
+      x-endpoint-id: E126
   /api/v1/workspaces/{ws}/notifications:
     get:
       operationId: E106
@@ -6707,6 +6793,24 @@ components:
       required:
       - items
       - next_cursor
+    NotificationPreferencesInRequest:
+      type: object
+      properties:
+        in_app:
+          type: object
+          additionalProperties:
+            type: boolean
+      required:
+      - in_app
+    NotificationPreferencesOut:
+      type: object
+      properties:
+        in_app:
+          type: object
+          additionalProperties:
+            type: boolean
+      required:
+      - in_app
     PasswordResetConfirmInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -6861,6 +6965,16 @@ components:
           type: string
           minLength: 1
           maxLength: 200
+        legal_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 200
+        sender_name:
+          type: string
+          nullable: true
+          minLength: 1
+          maxLength: 100
         timezone:
           type: string
           minLength: 1
@@ -8135,6 +8249,38 @@ components:
       - dispute_status
       - invoice_id
       - reminder_status
+    ResumeRequestOut:
+      type: object
+      description: The policy answer to "may follow-ups resume?". A person still approves,
+        then calls E082.
+      properties:
+        id:
+          type: string
+          format: uuid
+        outcome:
+          type: string
+        reasons:
+          type: array
+          items:
+            type: string
+        gate_results:
+          type: array
+          items:
+            $ref: '#/components/schemas/GateResultOut'
+        approval_id:
+          type: string
+          format: uuid
+          nullable: true
+        expires_at:
+          type: string
+          format: date-time
+      required:
+      - approval_id
+      - expires_at
+      - gate_results
+      - id
+      - outcome
+      - reasons
     RoleEnum:
       enum:
       - OWNER
@@ -8542,6 +8688,12 @@ components:
           format: uuid
         name:
           type: string
+        legal_name:
+          type: string
+          nullable: true
+        sender_name:
+          type: string
+          nullable: true
         country:
           type: string
         timezone:
@@ -8560,7 +8712,9 @@ components:
       - country
       - default_currency
       - id
+      - legal_name
       - name
+      - sender_name
       - status
       - timezone
       - version

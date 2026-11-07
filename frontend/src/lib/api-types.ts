@@ -1013,6 +1013,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume-request": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E127"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invoices/{invoice_id}/messages": {
         parameters: {
             query?: never;
@@ -1198,6 +1214,22 @@ export interface paths {
         };
         get: operations["E067"];
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/notification-preferences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E125"];
+        put: operations["E126"];
         post?: never;
         delete?: never;
         options?: never;
@@ -2854,6 +2886,16 @@ export interface components {
             items: components["schemas"]["NotificationOut"][];
             next_cursor: string | null;
         };
+        NotificationPreferencesInRequest: {
+            in_app: {
+                [key: string]: boolean;
+            };
+        };
+        NotificationPreferencesOut: {
+            in_app: {
+                [key: string]: boolean;
+            };
+        };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PasswordResetConfirmInRequest: {
             token: string;
@@ -2917,6 +2959,8 @@ export interface components {
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PatchedWorkspaceUpdateInRequest: {
             name?: string;
+            legal_name?: string | null;
+            sender_name?: string | null;
             timezone?: string;
             default_currency?: string;
             business_hours?: {
@@ -3424,6 +3468,18 @@ export interface components {
             dispute_status: string;
             reminder_status: string;
         };
+        /** @description The policy answer to "may follow-ups resume?". A person still approves, then calls E082. */
+        ResumeRequestOut: {
+            /** Format: uuid */
+            id: string;
+            outcome: string;
+            reasons: string[];
+            gate_results: components["schemas"]["GateResultOut"][];
+            /** Format: uuid */
+            approval_id: string | null;
+            /** Format: date-time */
+            expires_at: string;
+        };
         /**
          * @description * `OWNER` - OWNER
          *     * `FINANCE_ADMIN` - FINANCE_ADMIN
@@ -3599,6 +3655,8 @@ export interface components {
             /** Format: uuid */
             id: string;
             name: string;
+            legal_name: string | null;
+            sender_name: string | null;
             country: string;
             timezone: string;
             default_currency: string;
@@ -5513,6 +5571,30 @@ export interface operations {
             };
         };
     };
+    E127: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ResumeRequestOut"];
+                };
+            };
+        };
+    };
     E065: {
         parameters: {
             query?: {
@@ -5877,6 +5959,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InterpretationOut"];
+                };
+            };
+        };
+    };
+    E125: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPreferencesOut"];
+                };
+            };
+        };
+    };
+    E126: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["NotificationPreferencesInRequest"];
+                "multipart/form-data": components["schemas"]["NotificationPreferencesInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["NotificationPreferencesOut"];
                 };
             };
         };

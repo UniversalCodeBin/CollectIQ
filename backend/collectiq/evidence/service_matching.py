@@ -74,12 +74,12 @@ def _candidates(currency: str) -> tuple[list[dict[str, Any]], list[Candidate]]:
     return rows, candidates
 
 
-def _history(txn: dict[str, Any], client_id: Any) -> tuple[bool, bool]:
-    """(same payer confirmed for this client before, this account paid this client before).
+def _history_rows(client_id: Any) -> list[dict[str, Any]]:
+    """The payers and accounts behind this client's allocations that still stand (one query per client).
 
-    Learned from allocations that still stand, so a person's own E059 choice teaches and a reversal unteaches.
+    A person's own E059 choice teaches and a reversal unteaches, because only unreversed allocations count.
     """
-    rows = fetch_all(
+    return fetch_all(
         "SELECT t.payer_descriptor, t.payment_account_id FROM payment_allocations a"
         "  JOIN payment_transactions t ON t.id = a.transaction_id AND t.workspace_id = a.workspace_id"
         "  JOIN invoices i ON i.id = a.invoice_id AND i.workspace_id = a.workspace_id"
@@ -87,6 +87,19 @@ def _history(txn: dict[str, Any], client_id: Any) -> tuple[bool, bool]:
         "   AND NOT EXISTS (SELECT 1 FROM payment_allocations r WHERE r.reverses_allocation_id = a.id)",
         [client_id],
     )
+
+
+def _history(
+    txn: dict[str, Any], client_id: Any, known: dict[Any, list[dict[str, Any]]]
+) -> tuple[bool, bool]:
+    """(same payer confirmed for this client before, this account paid this client before).
+
+    `known` holds each client's rows for the length of one reconcile run, so a pool of candidates costs
+    one query per client, not one per candidate per payment.
+    """
+    if client_id not in known:
+        known[client_id] = _history_rows(client_id)
+    rows = known[client_id]
     payer = (txn["payer_descriptor"] or "").casefold()
     return (
         any(payer and (r["payer_descriptor"] or "").casefold() == payer for r in rows),
@@ -121,6 +134,7 @@ def reconcile(ctx: RequestContext, transaction_ids: Sequence[UUID | str]) -> int
     )
     pool: dict[str, tuple[list[dict[str, Any]], list[Candidate]]] = {}
     touched: set[str] = set()
+    learned: dict[Any, list[dict[str, Any]]] = {}
     made = 0
     for t in txns:
         rows, candidates = pool.setdefault(t["currency"], _candidates(t["currency"]))
@@ -128,7 +142,7 @@ def reconcile(ctx: RequestContext, transaction_ids: Sequence[UUID | str]) -> int
         enriched = []
         for c in candidates:
             row = by_id[c.id]
-            confirmed, history = _history(t, row["client_id"])
+            confirmed, history = _history(t, row["client_id"], learned)
             enriched.append(replace(c, alias_confirmed=confirmed, account_history=history))
         results = match(
             Txn(

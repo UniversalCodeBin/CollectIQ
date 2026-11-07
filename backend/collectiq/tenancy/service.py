@@ -21,8 +21,10 @@ from collectiq.platform.errors import ProblemError
 from collectiq.platform.jobs import enqueue
 
 _WORKSPACE_KEY_NAMESPACE = UUID("3f0b6f6e-6f0a-5c37-9b1a-1f6a2d6f4c11")
-_EDITABLE = ("name", "timezone", "default_currency", "business_hours")
-_WORKSPACE_COLUMNS = "id, name, country, timezone, default_currency, business_hours, status, version"
+_EDITABLE = ("name", "legal_name", "sender_name", "timezone", "default_currency", "business_hours")
+_WORKSPACE_COLUMNS = (
+    "id, name, legal_name, sender_name, country, timezone, default_currency, business_hours, status, version"
+)
 
 
 def _not_found() -> ProblemError:
@@ -137,10 +139,13 @@ def update_workspace(ctx: RequestContext, expected_version: int, changes: dict[s
             return current
         merged = {name: changed.get(name, current[name]) for name in _EDITABLE}
         execute(
-            "UPDATE workspaces SET name = %s, timezone = %s, default_currency = %s,"
-            " business_hours = %s::jsonb, version = version + 1, updated_at = now() WHERE id = %s",
+            "UPDATE workspaces SET name = %s, legal_name = %s, sender_name = %s, timezone = %s,"
+            " default_currency = %s, business_hours = %s::jsonb, version = version + 1, updated_at = now()"
+            " WHERE id = %s",
             [
                 merged["name"],
+                merged["legal_name"],
+                merged["sender_name"],
                 merged["timezone"],
                 merged["default_currency"],
                 json.dumps(merged["business_hours"]),

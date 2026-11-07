@@ -323,4 +323,34 @@ describe("Preparing a reminder from an invoice", () => {
       expect(called(`POST ${API}/reminders/${REM}/confirm-unknown`)[0]!.body).toEqual({ outcome: "WAS_SENT" });
     });
   });
+
+  it("brings reminders back after a resolved dispute only in three deliberate steps", async () => {
+    const APPROVAL = "66666666-6666-4666-8666-666666666666";
+    const resolved = { ...invoice, derived: { dispute_status: "RESOLVED" } };
+    stub({
+      [`GET ${API}/invoices/${INV}`]: { status: 200, body: resolved },
+      [pauses]: none,
+      [`POST ${API}/invoices/${INV}/followups/resume-request`]: {
+        status: 200,
+        body: { id: "d1", outcome: "REQUIRE_APPROVAL", reasons: [], gate_results: [], approval_id: APPROVAL, expires_at: "2026-11-08T00:00:00Z" },
+      },
+      [`POST ${API}/approvals/${APPROVAL}/decide`]: { status: 200, body: {} },
+      [`POST ${API}/invoices/${INV}/followups/resume`]: { status: 200, body: { invoice_id: INV, dispute_status: "NONE", reminder_status: "NOT_CONTACTED" } },
+    });
+    open(`invoices/${INV}/followups`);
+    await userEvent.click(await screen.findByRole("button", { name: "Check whether reminders can resume" }));
+    expect(called(`POST ${API}/invoices/${INV}/followups/resume`)).toHaveLength(0);
+    await userEvent.click(await screen.findByRole("button", { name: "Approve bringing reminders back" }));
+    await userEvent.click(await screen.findByRole("button", { name: "Resume after resolution" }));
+    expect(await screen.findByText(/Reminders are back on for this invoice/)).toBeInTheDocument();
+    expect(called(`POST ${API}/approvals/${APPROVAL}/decide`)[0]!.body).toEqual({ decision: "APPROVED" });
+    expect(called(`POST ${API}/invoices/${INV}/followups/resume`)[0]!.body).toEqual({ approval_id: APPROVAL });
+  });
+
+  it("offers no resume step unless the dispute is resolved", async () => {
+    stub({ [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice }, [pauses]: none });
+    open(`invoices/${INV}/followups`);
+    await screen.findByRole("button", { name: "Prepare a reminder" });
+    expect(screen.queryByRole("button", { name: "Check whether reminders can resume" })).not.toBeInTheDocument();
+  });
 });

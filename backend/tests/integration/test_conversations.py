@@ -8,7 +8,9 @@ from typing import Any
 import psycopg
 import pytest
 
+from collectiq.conversations import service_commitments
 from collectiq.platform import clock
+from collectiq.platform.context import RequestContext
 from tests.integration.test_accounts import _invoices
 from tests.support import API, add_member, idem, owner_workspace
 
@@ -101,6 +103,24 @@ def test_pasted_text_is_captured_and_shown_in_the_timeline(env: Env) -> None:
     timeline = env.client.get(env.url(f"invoices/{env.invoices['INV-1']}/messages")).json()
     assert any("We paid last week." in json.dumps(item) for item in timeline["items"])
     assert env.client.get(env.url(f"messages/{message['id']}")).json()["id"] == message["id"]
+
+
+def test_the_invoice_timeline_pages_with_a_cursor_and_loses_nothing(env: Env) -> None:
+    for n in range(5):
+        env.message(on="INV-1", text=f"Note number {n}", subject=f"S{n}")
+    url = env.url(f"invoices/{env.invoices['INV-1']}/messages")
+    first = env.client.get(url, {"limit": 2}).json()
+    assert len(first["items"]) == 2 and first["next_cursor"]
+    seen = [item["id"] for item in first["items"]]
+    cursor = first["next_cursor"]
+    while cursor:
+        page = env.client.get(url, {"limit": 2, "cursor": cursor}).json()
+        seen += [item["id"] for item in page["items"]]
+        cursor = page["next_cursor"]
+    everything = [item["id"] for item in env.client.get(url, {"limit": 100}).json()["items"]]
+    assert seen == everything and len(set(seen)) == len(seen) == 5
+    # A cursor that is not on this invoice is refused, not silently treated as the first page.
+    assert env.client.get(url, {"cursor": str(uuid.uuid4())}).status_code == 422
 
 
 def test_message_body_is_encrypted_at_rest(env: Env) -> None:
@@ -296,3 +316,49 @@ def test_other_workspace_cannot_read_a_message(env: Env, owner_db: psycopg.Conne
     message = env.message()
     other = Env(owner_db, f"conv-{uuid.uuid4().hex[:8]}@example.test")
     assert other.client.get(other.url(f"messages/{message['id']}")).status_code == 404
+
+
+# --- a pause ends by itself when its date has passed ---
+
+
+def _system(env: Env) -> RequestContext:
+    return RequestContext(
+        workspace_id=uuid.UUID(env.ws), user_id=None, role=None, correlation_id="expiry", actor_type="SYSTEM"
+    )
+
+
+def _expire(env: Env, days_ago: int = 1) -> None:
+    env.db.execute(
+        "UPDATE snoozes SET until = %s WHERE invoice_id = %s AND status = 'ACTIVE'",
+        [clock.now().date() - timedelta(days=days_ago), env.invoices["INV-1"]],
+    )
+
+
+def test_a_pause_ends_after_its_date_and_the_reminder_status_returns(env: Env) -> None:
+    prior = env.state()["reminder_status"]
+    env.approve_snooze(env.start_snooze())
+    _expire(env)
+    assert service_commitments.end_expired_snoozes(_system(env)) == 1
+    assert env.state()["reminder_status"] == prior
+    invoice = env.invoices["INV-1"]
+    row = env.db.execute("SELECT status FROM snoozes WHERE invoice_id = %s", [invoice]).fetchone()
+    assert row[0] == "ENDED"
+    audited = env.db.execute("SELECT count(*) FROM audit_events WHERE action = 'snooze.expired'").fetchone()
+    assert audited[0] == 1
+
+
+def test_a_pause_still_running_on_its_last_day_is_left_alone(env: Env) -> None:
+    env.approve_snooze(env.start_snooze())
+    _expire(env, days_ago=0)  # until == today: still in force
+    assert service_commitments.end_expired_snoozes(_system(env)) == 0
+    assert env.state()["reminder_status"] == "SNOOZED"
+
+
+def test_the_expiry_job_is_part_of_the_nightly_set(env: Env) -> None:
+    from django.core.management import call_command
+
+    env.approve_snooze(env.start_snooze())
+    _expire(env)
+    call_command("schedule_nightly")
+    call_command("run_worker", "--drain")
+    assert env.state()["reminder_status"] != "SNOOZED"

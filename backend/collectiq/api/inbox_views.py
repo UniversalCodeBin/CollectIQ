@@ -8,10 +8,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from collectiq.notifications import review_inbox, service
+from collectiq.platform.idempotency import idempotent
 
-from .common import page_params
+from .common import page_params, validated
 from .registry import endpoint
-from .serializers import InboxOut, NotificationPageOut
+from .serializers import InboxOut, NotificationPageOut, NotificationPreferencesIn, NotificationPreferencesOut
 
 
 class NotificationCollectionView(APIView):
@@ -30,6 +31,18 @@ class NotificationReadView(APIView):
     def post(self, request: Any, ws: UUID, notification_id: UUID) -> Response:
         service.mark_read(request.ctx, notification_id)
         return Response(status=204)
+
+
+class NotificationPreferencesView(APIView):
+    @endpoint("E125", responses={200: NotificationPreferencesOut})
+    def get(self, request: Any, ws: UUID) -> Response:
+        return Response(service.get_preferences(request.ctx))
+
+    @endpoint("E126", request=NotificationPreferencesIn, responses={200: NotificationPreferencesOut})
+    @idempotent
+    def put(self, request: Any, ws: UUID) -> Response:
+        data = validated(NotificationPreferencesIn, request)
+        return Response(service.put_preferences(request.ctx, data["in_app"]))
 
 
 class ReviewInboxView(APIView):

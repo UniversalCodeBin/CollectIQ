@@ -524,6 +524,14 @@ paths:
               properties:
                 name:
                   type: string
+                legal_name:
+                  type: string
+                  nullable: true
+                  maxLength: 200
+                sender_name:
+                  type: string
+                  nullable: true
+                  maxLength: 100
                 timezone:
                   type: string
                 default_currency:
@@ -6321,6 +6329,120 @@ paths:
         '403':
           $ref: '#/components/responses/Problem4xx'
         '404':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/notification-preferences:
+    get:
+      operationId: get_ws_notification_preferences
+      tags:
+      - Notifications
+      summary: Which in-app notifications I receive
+      description: 'Endpoint E125. Status: PROPOSED-NEW (pilot preparation; FR-146). Module M17. Roles: Self. Priority P1. Absent means on. A preference never hides work from the review inbox.'
+      x-endpoint-id: E125
+      x-origin: proposed-new
+      x-priority: P1
+      x-module: M17
+      x-audited: false
+      x-roles:
+      - Self
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: Per-kind in-app switches.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+    put:
+      operationId: put_ws_notification_preferences
+      tags:
+      - Notifications
+      summary: Change which in-app notifications I receive
+      description: 'Endpoint E126. Status: PROPOSED-NEW (pilot preparation; FR-146). Module M17. Roles: Self. Priority P1. Only the kinds sent change. Idempotent.'
+      x-endpoint-id: E126
+      x-origin: proposed-new
+      x-priority: P1
+      x-module: M17
+      x-audited: false
+      x-roles:
+      - Self
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '200':
+          description: The saved switches.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '422':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/invoices/{invoice_id}/followups/resume-request:
+    post:
+      operationId: post_ws_invoices_invoice_id_followups_resume_request
+      tags:
+      - Cases
+      summary: Ask whether reminders may resume after resolution
+      description: 'Endpoint E127. Status: PROPOSED-NEW (pilot preparation; closes the E085/E082 gap). Module M13. Roles: O, F. Priority P0. Asks the policy engine; when it answers REQUIRE_APPROVAL a person approves, then E082 resumes. Changes nothing itself. Idempotent, audited.'
+      x-endpoint-id: E127
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M13
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: The policy answer, with an approval id when a person must approve.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '409':
           $ref: '#/components/responses/Problem4xx'
         '429':
           $ref: '#/components/responses/Problem4xx'

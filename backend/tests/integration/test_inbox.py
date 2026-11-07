@@ -191,3 +191,59 @@ def test_inbox_adds_no_source_of_truth(env: ReminderEnv) -> None:
     assert env.db.execute("SELECT count(*) FROM notifications").fetchone()[0] == before
     source = inspect.getsource(review_inbox).upper()
     assert "INSERT " not in source and "UPDATE " not in source and "DELETE " not in source
+
+
+# ---- preferences (E125, E126) and retention ----------------------------------------------------------
+
+
+def prefs_url(env: ReminderEnv) -> str:
+    return env.url("notification-preferences")
+
+
+def test_preferences_default_to_everything_on(env: ReminderEnv) -> None:
+    body = env.client.get(prefs_url(env)).json()
+    assert body["in_app"] == {"CASE_OPENED": True, "REMINDER_DRAFT_READY": True}
+
+
+def test_turning_a_kind_off_stops_only_my_notifications_not_the_inbox(
+    env: ReminderEnv, owner_db: psycopg.Connection
+) -> None:
+    finance, _ = add_member(owner_db, env.ws, f"fin-{uuid.uuid4().hex[:6]}@example.test", "FINANCE_ADMIN")
+    saved = env.client.put(prefs_url(env), {"in_app": {"CASE_OPENED": False}}, format="json", **idem())
+    assert saved.status_code == 200 and saved.json()["in_app"]["CASE_OPENED"] is False
+    assert env.client.get(prefs_url(env)).json()["in_app"]["REMINDER_DRAFT_READY"] is True
+    open_case(env)
+    drain_jobs()
+    assert env.client.get(env.url("notifications")).json()["items"] == []
+    assert len(finance.get(env.url("notifications")).json()["items"]) == 1  # preferences are personal
+    assert "CASE" in kinds(inbox(env.client, env))  # work is never hidden by a preference
+
+
+def test_unknown_preference_kind_is_refused(env: ReminderEnv) -> None:
+    response = env.client.put(prefs_url(env), {"in_app": {"NOPE": False}}, format="json", **idem())
+    assert response.status_code == 422
+
+
+def test_preferences_need_login(env: ReminderEnv) -> None:
+    from rest_framework.test import APIClient
+
+    assert APIClient().get(prefs_url(env)).status_code in (401, 403)
+
+
+def test_notifications_older_than_ninety_days_are_removed_by_the_nightly_job(
+    env: ReminderEnv, owner_db: psycopg.Connection
+) -> None:
+    from django.core.management import call_command
+
+    open_case(env, invoice="INV-1")
+    open_case(env, invoice="INV-2")
+    drain_jobs()
+    ids = [r[0] for r in owner_db.execute("SELECT id FROM notifications ORDER BY id").fetchall()]
+    assert len(ids) == 2
+    owner_db.execute(
+        "UPDATE notifications SET created_at = now() - interval '91 days' WHERE id = %s", [ids[0]]
+    )
+    call_command("schedule_nightly")
+    drain_jobs()
+    left = [r[0] for r in owner_db.execute("SELECT id FROM notifications").fetchall()]
+    assert left == [ids[1]]

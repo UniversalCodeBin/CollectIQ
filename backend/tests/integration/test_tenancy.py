@@ -175,6 +175,30 @@ def test_update_uses_the_version(pg, owner_db) -> None:
     assert "workspace.updated" in _audit_actions(owner_db, workspace_id)
 
 
+def test_legal_and_sender_name_are_set_cleared_and_audited(pg, owner_db) -> None:
+    client, workspace_id = owner_workspace(owner_db, OWNER)
+    url = _ws(workspace_id)
+    assert client.get(url).json()["sender_name"] is None
+    body = {"legal_name": "Acme Trading Pvt Ltd", "sender_name": "Priya at Acme"}
+    set_ = client.patch(url, body, format="json", HTTP_IF_MATCH='"1"')
+    assert set_.status_code == 200
+    saved = set_.json()
+    assert (saved["legal_name"], saved["sender_name"]) == ("Acme Trading Pvt Ltd", "Priya at Acme")
+    cleared = client.patch(url, {"sender_name": None}, format="json", HTTP_IF_MATCH='"2"')
+    assert cleared.json()["sender_name"] is None
+    assert cleared.json()["legal_name"] == "Acme Trading Pvt Ltd"
+    too_long = client.patch(url, {"sender_name": "x" * 101}, format="json", HTTP_IF_MATCH='"3"')
+    assert too_long.status_code == 422
+
+
+def test_a_reminder_is_signed_with_the_sender_and_legal_name() -> None:
+    from collectiq.comms.service_reminders import _template
+
+    facts = {"invoice_number": "INV-1", "amount_text": "USD 10.00", "due_date": "2026-01-01"}
+    _, body = _template(facts, "Sam", 5, "Thank you,\nPriya at Acme\nAcme Trading Pvt Ltd")
+    assert body.rstrip().endswith("Thank you,\nPriya at Acme\nAcme Trading Pvt Ltd")
+
+
 def test_update_needs_if_match(pg, owner_db) -> None:
     client, workspace_id = owner_workspace(owner_db, OWNER)
     assert client.patch(_ws(workspace_id), {"name": "x"}, format="json").status_code == 422

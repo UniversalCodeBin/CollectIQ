@@ -319,6 +319,9 @@ def _confirm(
             "transaction_id": str(txn["id"]),
             "allocation_ids": [str(row["id"]) for row in created],
             "invoice_ids": sorted(str(i) for i in invoice_ids),
+            "overpaid_invoice_ids": sorted(
+                {str(row["invoice_id"]) for row in created if row["overpayment_confirmed"]}
+            ),
         },
     )
     return created

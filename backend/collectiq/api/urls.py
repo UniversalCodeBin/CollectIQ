@@ -143,6 +143,10 @@ urlpatterns: list = [
         f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/followups/resume",
         cases.FollowupsResumeView.as_view(),
     ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/followups/resume-request",
+        cases.FollowupsResumeRequestView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/policy", policy.PolicyView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/policy/versions", policy.PolicyVersionsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/automation/pause", policy.AutomationPauseView.as_view()),
@@ -206,6 +210,7 @@ urlpatterns: list = [
         f"{_V1}workspaces/<uuid:ws>/notifications/<uuid:notification_id>/read",
         inbox.NotificationReadView.as_view(),
     ),
+    path(f"{_V1}workspaces/<uuid:ws>/notification-preferences", inbox.NotificationPreferencesView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/ai/brief", ai.InvoiceBriefView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/audit-events", audit_history.AuditEventsView.as_view()),

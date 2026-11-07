@@ -306,6 +306,16 @@ _SPECS = (
     _spec("E122", "POST", "/workspaces/{ws}/reminder-pauses", AUTOMATION_PAUSE, "IA", "P0"),
     _spec("E123", "POST", "/workspaces/{ws}/reminder-pauses/{pause_id}/resume", AUTOMATION_PAUSE, "IA", "P0"),
     _spec("E124", "GET", "/workspaces/{ws}/interpretations", MESSAGES_READ, "", "P1"),
+    _spec("E125", "GET", "/workspaces/{ws}/notification-preferences", "self", "", "P1"),
+    _spec("E126", "PUT", "/workspaces/{ws}/notification-preferences", "self", "IA", "P1"),
+    _spec(
+        "E127",
+        "POST",
+        "/workspaces/{ws}/invoices/{invoice_id}/followups/resume-request",
+        CASE_RESOLVE,
+        "IA",
+        "P0",
+    ),
 )
 
 ENDPOINTS: dict[str, EndpointSpec] = {spec.id: spec for spec in _SPECS}

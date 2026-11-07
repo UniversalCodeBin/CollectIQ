@@ -13,6 +13,7 @@ from uuid import UUID
 from django.conf import settings
 
 from collectiq.audit import record
+from collectiq.notifications import service as notifications
 from collectiq.platform import clock
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_all, fetch_one, tenant_tx
@@ -226,15 +227,24 @@ def apply_retention(ctx: RequestContext) -> dict[str, int]:
         if row["storage_key"]:
             storage.delete(ctx, row["storage_key"])
         execute("DELETE FROM export_requests WHERE id = %s", [row["id"]])
-    if cleared or expired:
+    stale_notifications = notifications.delete_expired(ctx)
+    if cleared or expired or stale_notifications:
         record(
             ctx,
             "privacy.retention_applied",
             "workspace",
             str(ctx.workspace_id),
-            after={"payloads_cleared": cleared, "exports_removed": len(expired)},
+            after={
+                "payloads_cleared": cleared,
+                "exports_removed": len(expired),
+                "notifications_removed": stale_notifications,
+            },
         )
-    return {"payloads_cleared": cleared, "exports_removed": len(expired)}
+    return {
+        "payloads_cleared": cleared,
+        "exports_removed": len(expired),
+        "notifications_removed": stale_notifications,
+    }
 
 
 @job_handler("privacy.retention")

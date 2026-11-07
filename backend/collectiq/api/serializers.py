@@ -71,6 +71,9 @@ class WorkspaceCreateIn(StrictSerializer):
 
 class WorkspaceUpdateIn(StrictSerializer):
     name = serializers.CharField(max_length=200, required=False)
+    # Who reminders are from. Null clears it, and the workspace name is used instead.
+    legal_name = serializers.CharField(max_length=200, required=False, allow_null=True)
+    sender_name = serializers.CharField(max_length=100, required=False, allow_null=True)
     timezone = serializers.CharField(max_length=64, required=False, validators=[_validate_timezone])
     default_currency = serializers.CharField(max_length=3, required=False, validators=[_validate_currency])
     business_hours = serializers.DictField(required=False)
@@ -114,6 +117,8 @@ class SessionOut(LoginOut):
 class WorkspaceOut(serializers.Serializer):
     id = serializers.UUIDField()
     name = serializers.CharField()
+    legal_name = serializers.CharField(allow_null=True)
+    sender_name = serializers.CharField(allow_null=True)
     country = serializers.CharField()
     timezone = serializers.CharField()
     default_currency = serializers.CharField()
@@ -886,6 +891,23 @@ class ResumeIn(StrictSerializer):
     approval_id = serializers.UUIDField()
 
 
+class GateResultOut(serializers.Serializer):
+    gate = serializers.CharField()
+    passed = serializers.BooleanField()
+    reason = serializers.CharField(allow_null=True)
+
+
+class ResumeRequestOut(serializers.Serializer):
+    """The policy answer to "may follow-ups resume?". A person still approves, then calls E082."""
+
+    id = serializers.UUIDField()
+    outcome = serializers.CharField()
+    reasons = serializers.ListField(child=serializers.CharField())
+    gate_results = GateResultOut(many=True)
+    approval_id = serializers.UUIDField(allow_null=True)
+    expires_at = serializers.DateTimeField()
+
+
 class ResumeOut(serializers.Serializer):
     invoice_id = serializers.UUIDField()
     dispute_status = serializers.CharField()
@@ -1076,12 +1098,6 @@ class SnoozeUndoneOut(serializers.Serializer):
     reminder_status = serializers.CharField()
 
 
-class GateResultOut(serializers.Serializer):
-    gate = serializers.CharField()
-    passed = serializers.BooleanField()
-    reason = serializers.CharField(allow_null=True)
-
-
 class GateReadingOut(serializers.Serializer):
     outcome = serializers.CharField()
     reasons = serializers.ListField(child=serializers.CharField())
@@ -1158,6 +1174,14 @@ class NotificationOut(serializers.Serializer):
 class NotificationPageOut(serializers.Serializer):
     items = NotificationOut(many=True)
     next_cursor = serializers.CharField(allow_null=True)
+
+
+class NotificationPreferencesIn(serializers.Serializer):
+    in_app = serializers.DictField(child=serializers.BooleanField())
+
+
+class NotificationPreferencesOut(serializers.Serializer):
+    in_app = serializers.DictField(child=serializers.BooleanField())
 
 
 class InboxItemOut(serializers.Serializer):

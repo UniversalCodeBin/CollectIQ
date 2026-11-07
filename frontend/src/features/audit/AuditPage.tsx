@@ -1,9 +1,16 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { QueryState } from "../../components/ui/QueryState";
 import { apiRequest } from "../../lib/api";
 import styles from "../automation/Automation.module.css";
+
+/** Where the record's object can be read in full. The invoice page explains why it is in its state. */
+function objectPath(ws: string, type: string, id: string): string | null {
+  if (type === "invoice") return `/w/${ws}/invoices/${id}/overview`;
+  if (type === "reminder") return `/w/${ws}/reminders/${id}`;
+  return null;
+}
 
 /** Audit History (E099, E100, SCR-12). Read-only: there is no way here to edit or remove a record. */
 export function AuditPage() {
@@ -122,6 +129,14 @@ export function AuditPage() {
                     <td>{item.action}</td>
                     <td>
                       {item.object_type} {item.object_id}
+                      {objectPath(ws, item.object_type, item.object_id) && (
+                        <>
+                          {" "}
+                          <Link to={objectPath(ws, item.object_type, item.object_id) ?? ""}>
+                            {item.object_type === "invoice" ? "See why" : "Open"}
+                          </Link>
+                        </>
+                      )}
                     </td>
                     <td>{item.reason_codes.join(", ")}</td>
                   </tr>

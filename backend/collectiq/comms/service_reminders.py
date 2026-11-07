@@ -126,7 +126,20 @@ def _fact_hash(facts: dict[str, Any]) -> str:
     return hashlib.sha256(json.dumps(facts, sort_keys=True).encode()).hexdigest()
 
 
-def _template(facts: dict[str, Any], contact_name: str | None, overdue_days: int) -> tuple[str, str]:
+def _sign_off(ctx: RequestContext) -> str:
+    """Who the note is from: the sender name, else the workspace name, with the legal name beneath."""
+    row = fetch_one("SELECT name, legal_name, sender_name FROM workspaces WHERE id = %s", [ctx.workspace_id])
+    if row is None:
+        return "Thank you."
+    lines = [row["sender_name"] or row["name"]]
+    if row["legal_name"] and row["legal_name"] != lines[0]:
+        lines.append(row["legal_name"])
+    return "Thank you,\n" + "\n".join(lines)
+
+
+def _template(
+    facts: dict[str, Any], contact_name: str | None, overdue_days: int, sign_off: str = "Thank you."
+) -> tuple[str, str]:
     subject = f"Payment reminder: invoice {facts['invoice_number']}"
     late = f"{overdue_days} days past" if overdue_days > 0 else "at"
     body = (
@@ -135,7 +148,7 @@ def _template(facts: dict[str, Any], contact_name: str | None, overdue_days: int
         f"was due on {facts['due_date']} and is now {late} its due date.\n\n"
         "If you have already arranged payment, please ignore this note, or reply with the details so we can "
         "check our records. If anything about the invoice is unclear, tell us and we will help.\n\n"
-        "Thank you."
+        f"{sign_off}"
     )
     return subject, body
 
@@ -389,7 +402,7 @@ def evaluate_invoice(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
             _record_evaluated(ctx, invoice_id, decision, "NO_DRAFT")
             return result
         overdue = max((clock.today() - invoice["due_date"]).days, 0)
-        subject, body = _template(facts, contact["name"], overdue)
+        subject, body = _template(facts, contact["name"], overdue, _sign_off(ctx))
         row = fetch_one(
             "INSERT INTO reminders (workspace_id, invoice_id, contact_id, sequence, intended_date, subject,"
             " body,"

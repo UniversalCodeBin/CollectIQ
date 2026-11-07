@@ -776,10 +776,10 @@ def test_new_money_follows_allocations_not_only_proposals(owner_db: Any) -> None
         client_id = scalar(w, "SELECT client_id FROM invoices WHERE id = %s", w.invoices["INV-1"])
         account = scalar(w, "SELECT payment_account_id FROM payment_transactions WHERE id = %s", w.txns[0])
         txn["payment_account_id"] = account
-        assert service_matching._history(txn, client_id)[1] is True
+        assert service_matching._history(txn, client_id, {})[1] is True
     assert reverse(w, allocation).status_code == 200
     with tenant_tx(w.ctx()):
-        assert service_matching._history(txn, client_id)[1] is False
+        assert service_matching._history(txn, client_id, {})[1] is False
 
 
 # ---- manual payments --------------------------------------------------------------------------------
@@ -1018,3 +1018,61 @@ def test_stored_state_equals_derive_over_random_ledger_operations(
     with tenant_tx(ctx):
         drifted = service_state.check_integrity(ctx, repair=False)
     assert invoice not in drifted
+
+
+# --- a confirmed allocation (FR-057): claim tasks close, an overpayment opens a review ---
+
+
+def _claim_task(w: World, invoice: str) -> str:
+    """A customer's payment claim, as a person's label leaves it: an open task counted on the invoice."""
+    w.owner_db.execute("SELECT set_config('app.workspace_id', %s, false)", [w.ws])
+    message = w.owner_db.execute(
+        "INSERT INTO messages (workspace_id, source, received_at, body_enc, body_sha256, uploaded_by)"
+        " VALUES (%s, 'PASTE', now(), %s, 'x', %s) RETURNING id",
+        [w.ws, b"x", w.user],
+    ).fetchone()[0]
+    task = w.owner_db.execute(
+        "INSERT INTO verification_tasks (workspace_id, invoice_id, message_id, kind)"
+        " VALUES (%s, %s, %s, 'PAYMENT_CLAIM') RETURNING id",
+        [w.ws, invoice, message],
+    ).fetchone()[0]
+    w.owner_db.execute("UPDATE invoice_state SET open_task_count = 1 WHERE invoice_id = %s", [invoice])
+    return str(task)
+
+
+def test_recording_a_payment_closes_the_open_payment_claim_task(owner_db: Any) -> None:
+    w = world(owner_db, "t60@example.test")
+    invoice = w.invoices["INV-1"]
+    task = _claim_task(w, invoice)
+    assert allocate(w, w.txns[0], line(invoice, 4_000)).status_code == 200
+    drain_jobs()
+    assert scalar(w, "SELECT status FROM verification_tasks WHERE id = %s", task) == "CLOSED"
+    assert scalar(w, "SELECT open_task_count FROM invoice_state WHERE invoice_id = %s", invoice) == 0
+    # The payment, not the customer's word, is what moved the status; the task only stops blocking.
+    assert state(w, invoice) == ("PARTIALLY_PAID", 4_000, 6_000)
+    assert scalar(w, "SELECT count(*) FROM audit_events WHERE action = 'verification_task.closed'") == 1
+
+
+def test_a_confirmed_overpayment_opens_one_match_review_case(owner_db: Any) -> None:
+    w = world(owner_db, "t61@example.test", payments=("100.00", "5.00", "2.00"))
+    invoice = w.invoices["INV-1"]
+    allocated_ok(w, w.txns[0], invoice, 10_000)
+    assert allocate(w, w.txns[1], line(invoice, 500, overpayment_confirmed=True)).status_code == 200
+    drain_jobs()
+    cases = w.owner_db.execute(
+        "SELECT type, status, opened_by_kind FROM cases WHERE invoice_id = %s", [invoice]
+    ).fetchall()
+    assert cases == [("MATCH_REVIEW", "OPEN", "SYSTEM")]
+    # A second overpayment while the review is open adds nothing.
+    assert allocate(w, w.txns[2], line(invoice, 200, overpayment_confirmed=True)).status_code == 200
+    drain_jobs()
+    assert scalar(w, "SELECT count(*) FROM cases WHERE invoice_id = %s", invoice) == 1
+    # It does not mark a dispute: only reminders are held.
+    assert scalar(w, "SELECT dispute_status FROM invoice_state WHERE invoice_id = %s", invoice) == "NONE"
+
+
+def test_a_payment_that_does_not_overpay_opens_no_review(owner_db: Any) -> None:
+    w = world(owner_db, "t62@example.test")
+    allocated_ok(w, w.txns[0], w.invoices["INV-1"], 4_000)
+    drain_jobs()
+    assert scalar(w, "SELECT count(*) FROM cases") == 0

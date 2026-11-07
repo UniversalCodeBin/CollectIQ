@@ -7,7 +7,7 @@ from tests.support import owner_workspace
 
 pytestmark = pytest.mark.usefixtures("pg")
 
-KINDS = {"audit.verify_chain", "evidence.integrity_check", "privacy.retention"}
+KINDS = {"audit.verify_chain", "evidence.integrity_check", "privacy.retention", "conversations.snooze_expiry"}
 
 
 def _jobs(owner_db, ws: str) -> list[tuple]:
@@ -17,7 +17,7 @@ def _jobs(owner_db, ws: str) -> list[tuple]:
     ).fetchall()
 
 
-def test_schedules_the_three_nightly_jobs_for_every_workspace(owner_db) -> None:
+def test_schedules_the_nightly_jobs_for_every_workspace(owner_db) -> None:
     _, a = owner_workspace(owner_db, "sched-a@example.test")
     _, b = owner_workspace(owner_db, "sched-b@example.test")
     call_command("schedule_nightly")
@@ -31,7 +31,7 @@ def test_running_twice_on_one_day_adds_nothing(owner_db) -> None:
     _, ws = owner_workspace(owner_db, "sched-c@example.test")
     call_command("schedule_nightly")
     call_command("schedule_nightly")
-    assert len(_jobs(owner_db, ws)) == 3
+    assert len(_jobs(owner_db, ws)) == 4
 
 
 def test_the_jobs_run_and_finish(owner_db) -> None:

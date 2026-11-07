@@ -325,7 +325,9 @@ def approve_snooze(ctx: RequestContext, invoice_id: UUID, approval_id: UUID) -> 
         return {"invoice_id": str(invoice_id), "reminder_status": "SNOOZED", "until": until}
 
 
-def _end_snooze(ctx: RequestContext, invoice_id: UUID, reason: str) -> dict[str, Any]:
+def _end_snooze(
+    ctx: RequestContext, invoice_id: UUID, reason: str, *, expired: bool = False
+) -> dict[str, Any]:
     snooze = fetch_one(
         "SELECT id, prior_reminder_status FROM snoozes"
         " WHERE invoice_id = %s AND status = 'ACTIVE' FOR UPDATE",
@@ -335,19 +337,22 @@ def _end_snooze(ctx: RequestContext, invoice_id: UUID, reason: str) -> dict[str,
         raise _refused("There is no pause to undo on this invoice.")
     state = fetch_one("SELECT reminder_status FROM invoice_state WHERE invoice_id = %s", [invoice_id])
     assert state
-    execute("UPDATE snoozes SET status = 'UNDONE', ended_at = now() WHERE id = %s", [snooze["id"]])
+    execute(
+        "UPDATE snoozes SET status = %s, ended_at = now() WHERE id = %s",
+        ["ENDED" if expired else "UNDONE", snooze["id"]],
+    )
     restored = state["reminder_status"]
     if restored == "SNOOZED":  # a dispute or a payment claim may have suppressed it since; that stays
         restored = snooze["prior_reminder_status"]
         invoice_state.set_follow_up(invoice_id, reminder_status=restored)
     record(
         ctx,
-        "snooze.undone",
+        "snooze.expired" if expired else "snooze.undone",
         "invoice",
         str(invoice_id),
         before={"reminder_status": state["reminder_status"]},
         after={"reminder_status": restored, "reason": reason},
-        reason_codes=["UNDONE_BY_PERSON"],
+        reason_codes=["PAUSE_DATE_PASSED" if expired else "UNDONE_BY_PERSON"],
     )
     outbox.publish(ctx, "SnoozeEnded", {"invoice_id": str(invoice_id), "snooze_id": str(snooze["id"])})
     return {"invoice_id": str(invoice_id), "reminder_status": restored}
@@ -362,6 +367,21 @@ def end_active_snooze(ctx: RequestContext, invoice_id: UUID, reason: str) -> boo
         return False
     _end_snooze(ctx, invoice_id, reason)
     return True
+
+
+def end_expired_snoozes(ctx: RequestContext) -> int:
+    """Nightly: a pause is in force through its last day, then reminders resume. Returns how many ended."""
+    with tenant_tx(ctx):
+        due = fetch_all(
+            "SELECT invoice_id FROM snoozes WHERE status = 'ACTIVE' AND until < %s ORDER BY until, id",
+            [clock.today()],
+        )
+        for row in due:
+            fetch_one(
+                "SELECT 1 AS ok FROM invoice_state WHERE invoice_id = %s FOR UPDATE", [row["invoice_id"]]
+            )
+            _end_snooze(ctx, row["invoice_id"], "The pause date passed.", expired=True)
+        return len(due)
 
 
 def undo_snooze(ctx: RequestContext, invoice_id: UUID, reason: str | None = None) -> dict[str, Any]:

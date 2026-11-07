@@ -19,6 +19,7 @@ from collectiq.policy.domain import ActionRequest, ActionType, Actor, ActorKind,
 from collectiq.tenancy.permissions import CASE_NOTE, CASE_OPEN, CASE_RESOLVE, CASES_READ, authorize
 
 BLOCKER_TYPES = ("MISSING_DOCUMENT", "QUESTION", "PROPOSAL")
+# MATCH_REVIEW is opened only by the system, when a confirmed payment overpays an invoice (FR-057).
 CASE_TYPES = ("DISPUTE", *BLOCKER_TYPES)
 OPEN_STATUSES = ("OPEN", "IN_REVIEW", "AWAITING_CUSTOMER")
 OUTCOMES = ("NO_CHANGE", "INVOICE_CORRECTED", "ADJUSTMENT_AGREED", "WITHDRAWN_BY_CUSTOMER", "OTHER")
@@ -109,6 +110,17 @@ def _open_count(invoice_id: UUID, kind: str) -> int:
     return int(row["n"])
 
 
+def _has_open_match_review(invoice_id: UUID) -> bool:
+    return (
+        fetch_one(
+            "SELECT 1 AS found FROM cases"
+            " WHERE invoice_id = %s AND type = 'MATCH_REVIEW' AND status <> 'RESOLVED'",
+            [invoice_id],
+        )
+        is not None
+    )
+
+
 def _opener_kind(ctx: RequestContext) -> str:
     return ctx.actor_type if ctx.actor_type in ("USER", "SYSTEM", "AI") else "SYSTEM"
 
@@ -172,44 +184,73 @@ def open_case(
     if case_type not in CASE_TYPES:
         raise ProblemError("VALIDATION_FAILED", 422, "This kind of case is not recognised.")
     with tenant_tx(ctx):
-        state = _lock_state(invoice_id)
-        if state["lifecycle"] != "ACTIVE":
-            raise _refused("A cancelled or archived invoice cannot have a case opened on it.")
-        if case_type == "DISPUTE":
-            dispute_type = dispute_type or "OTHER"
-            if _open_count(invoice_id, "DISPUTE"):
-                raise ProblemError("DUPLICATE_RESOURCE", 409, "This invoice already has an open dispute.")
-        elif dispute_type is not None:
-            raise ProblemError("VALIDATION_FAILED", 422, "Only a dispute has a dispute type.")
-        row = fetch_one(
-            "INSERT INTO cases (workspace_id, invoice_id, type, dispute_type, summary, source_message_id,"
-            " opened_by_kind, opened_by) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
-            [
-                ctx.workspace_id,
-                invoice_id,
-                case_type,
-                dispute_type,
-                summary,
-                source_message_id,
-                _opener_kind(ctx),
-                ctx.user_id,
-            ],
-        )
-        assert row
-        case_id = row["id"]
-        _suppress(invoice_id, state, case_type)
-        record(
+        return _open_locked(ctx, invoice_id, case_type, summary, dispute_type, source_message_id)
+
+
+def _open_locked(
+    ctx: RequestContext,
+    invoice_id: UUID,
+    case_type: str,
+    summary: str,
+    dispute_type: str | None,
+    source_message_id: UUID | None,
+) -> dict[str, Any]:
+    """Opens the case inside the caller's tenant transaction. Callers authorize first (or are the system)."""
+    state = _lock_state(invoice_id)
+    if state["lifecycle"] != "ACTIVE":
+        raise _refused("A cancelled or archived invoice cannot have a case opened on it.")
+    if case_type == "DISPUTE":
+        dispute_type = dispute_type or "OTHER"
+        if _open_count(invoice_id, "DISPUTE"):
+            raise ProblemError("DUPLICATE_RESOURCE", 409, "This invoice already has an open dispute.")
+    elif dispute_type is not None:
+        raise ProblemError("VALIDATION_FAILED", 422, "Only a dispute has a dispute type.")
+    row = fetch_one(
+        "INSERT INTO cases (workspace_id, invoice_id, type, dispute_type, summary, source_message_id,"
+        " opened_by_kind, opened_by) VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING id",
+        [
+            ctx.workspace_id,
+            invoice_id,
+            case_type,
+            dispute_type,
+            summary,
+            source_message_id,
+            _opener_kind(ctx),
+            ctx.user_id,
+        ],
+    )
+    assert row
+    case_id = row["id"]
+    _suppress(invoice_id, state, case_type)
+    record(
+        ctx,
+        "case.opened",
+        "case",
+        str(case_id),
+        after={"type": case_type, "status": "OPEN", "invoice_id": str(invoice_id)},
+        reason_codes=["DISPUTE_OPENED" if case_type == "DISPUTE" else "BLOCKER_OPENED"],
+    )
+    outbox.publish(
+        ctx, "CaseOpened", {"case_id": str(case_id), "invoice_id": str(invoice_id), "type": case_type}
+    )
+    return {**_dto(_get_row(case_id)), "notes": _notes(case_id)}
+
+
+@outbox.subscriber("AllocationConfirmed")
+def _on_allocation_confirmed(ctx: RequestContext, payload: dict[str, Any]) -> None:
+    """An overpayment is for a person to look at (FR-057): hold reminders and open one review per invoice."""
+    for raw in payload.get("overpaid_invoice_ids", []):
+        invoice_id = UUID(raw)
+        if _has_open_match_review(invoice_id):
+            continue
+        _open_locked(
             ctx,
-            "case.opened",
-            "case",
-            str(case_id),
-            after={"type": case_type, "status": "OPEN", "invoice_id": str(invoice_id)},
-            reason_codes=["DISPUTE_OPENED" if case_type == "DISPUTE" else "BLOCKER_OPENED"],
+            invoice_id,
+            "MATCH_REVIEW",
+            "More has been recorded against this invoice than it is for. Check the payments.",
+            None,
+            None,
         )
-        outbox.publish(
-            ctx, "CaseOpened", {"case_id": str(case_id), "invoice_id": str(invoice_id), "type": case_type}
-        )
-        return {**_dto(_get_row(case_id)), "notes": _notes(case_id)}
 
 
 def _suppress(invoice_id: UUID, state: dict[str, Any], case_type: str) -> None:
@@ -417,7 +458,15 @@ def request_resume(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
         snap = invoice_snapshot(invoice_id)
         if snap.dispute_status != "RESOLVED":
             raise _refused("Follow-ups can resume once the dispute has been resolved.")
-        return policy_service.decide(ctx, _resume_request(ctx, invoice_id), snap)
+        decision = policy_service.decide(ctx, _resume_request(ctx, invoice_id), snap)
+        record(
+            ctx,
+            "followups.resume_requested",
+            "invoice",
+            str(invoice_id),
+            after={"outcome": str(decision["outcome"]), "decision_id": str(decision["id"])},
+        )
+        return decision
 
 
 def resume_followups(ctx: RequestContext, invoice_id: UUID, approval_id: UUID) -> dict[str, Any]:

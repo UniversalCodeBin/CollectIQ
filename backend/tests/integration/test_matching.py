@@ -155,3 +155,28 @@ def test_unmatched_lists_credits_without_confirmed_match(owner_db: Any) -> None:
 def test_proposals_require_login(owner_db: Any) -> None:
     _, ws = owner_workspace(owner_db, "m8@example.test")
     assert APIClient().get(f"{API}/workspaces/{ws}/reconciliation/proposals").status_code == 401
+
+
+def test_what_the_matcher_has_learned_is_read_once_per_client_not_once_per_candidate(
+    owner_db: Any, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A pool of five invoices for one client and two payments must not cost ten history queries."""
+    client, ws = owner_workspace(owner_db, "m9@example.test")
+    _load(client, ws, *((f"INV-{n}", "Northwind", f"{n}00.00") for n in range(1, 6)))
+    reads: list[Any] = []
+    real = matching._history_rows
+
+    def counted(client_id: Any) -> list[dict[str, Any]]:
+        reads.append(client_id)
+        return real(client_id)
+
+    monkeypatch.setattr(matching, "_history_rows", counted)
+    _pay(
+        client,
+        ws,
+        _account(client, ws),
+        ("2026-10-20", "NEFT Northwind INV-1", "100.00"),
+        ("2026-10-21", "NEFT Northwind INV-2", "200.00"),
+    )
+    assert _proposals(client, ws), "the run should still propose"
+    assert len(reads) == 1

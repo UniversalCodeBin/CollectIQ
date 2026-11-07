@@ -227,7 +227,7 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - The redacted payload lives in `ai_payloads`, apart from `ai_processing_records`, so the processing record keeps hashes and no text. The inspector shows tokens only; opening it is audited. `privacy.retention` clears payloads after 30 days by default; it is not yet scheduled (owed to T40).
 - Export is Owner-only, returns the content inline (no signed URL), excludes credentials, sealed values and keys, and is audited.
 - Deletion is Owner-only with typed confirmation. A SECURITY DEFINER procedure clears the workspace tables, tombstones the workspace and records a `deletion_records` row that requires zero rows remaining. Stored files are removed after the commit. Audit history is retained: append-only by database permissions, with a hash chain that detects casual edits; not tamper-resistant against a database superuser. The backup purge window stays open (OPEN-09).
-- Assignable roles remain OWNER and FINANCE_ADMIN. Legal name and sender display name are not built.
+- Assignable roles remain OWNER and FINANCE_ADMIN. Legal name and sender display name are built (workspace columns, E012, Settings > Your business); reminders are signed with the sender name, else the workspace name, and the legal name beneath.
 
 ## Task 37 rulings
 - Audit completeness (TS-023) is checked by a passive probe that runs across the whole suite: it patches the DB cursor and middleware, records each audit insert by correlation ID, and fails the session if a successful audited mutation wrote no audit event. Endpoints never driven to success are listed in `NOT_DRIVEN_TO_SUCCESS` (currently empty). Idempotent replays write nothing and are not violations.

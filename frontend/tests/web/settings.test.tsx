@@ -176,4 +176,39 @@ describe("Settings", () => {
     expect(await screen.findByText(/\[PERSON_1\]/)).toBeInTheDocument();
     expect(screen.getByText(/Fields not sent: phone/)).toBeInTheDocument();
   });
+
+  it("saves a notification choice", async () => {
+    stub({
+      [`GET ${API}/notification-preferences`]: {
+        status: 200,
+        body: { in_app: { CASE_OPENED: true, REMINDER_DRAFT_READY: true } },
+      },
+      [`PUT ${API}/notification-preferences`]: {
+        status: 200,
+        body: { in_app: { CASE_OPENED: false, REMINDER_DRAFT_READY: true } },
+      },
+    });
+    open("settings/notifications");
+    fireEvent.click(await screen.findByLabelText(/a case is opened/i));
+    await vi.waitFor(() =>
+      expect(called(`PUT ${API}/notification-preferences`)[0]?.body).toEqual({
+        in_app: { CASE_OPENED: false },
+      }),
+    );
+  });
+
+  it("saves the legal and sender name with the workspace version", async () => {
+    stub({
+      [`GET ${API}`]: { status: 200, body: { id: WS, name: "Acme Studio", legal_name: null, sender_name: null, version: 3 } },
+      [`PATCH ${API}`]: { status: 200, body: { id: WS, name: "Acme Studio", legal_name: "Acme Ltd", sender_name: "Priya", version: 4 } },
+    });
+    open("settings/business");
+    fireEvent.change(await screen.findByLabelText("Legal name"), { target: { value: "Acme Ltd" } });
+    fireEvent.change(screen.getByLabelText("Sender name"), { target: { value: "Priya" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save" }));
+    await vi.waitFor(() => expect(called(`PATCH ${API}`)).toHaveLength(1));
+    const sent = called(`PATCH ${API}`)[0];
+    expect(sent?.body).toEqual({ legal_name: "Acme Ltd", sender_name: "Priya" });
+    expect(sent?.headers.get("If-Match")).toBe('"3"');
+  });
 });

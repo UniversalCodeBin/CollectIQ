@@ -17,7 +17,12 @@ from collectiq.platform.db import tenant_tx
 
 logger = logging.getLogger(__name__)
 
-NIGHTLY_KINDS = ("audit.verify_chain", "evidence.integrity_check", "privacy.retention")
+NIGHTLY_KINDS = (
+    "audit.verify_chain",
+    "evidence.integrity_check",
+    "privacy.retention",
+    "conversations.snooze_expiry",
+)
 
 
 def _workspace_ids() -> list[UUID]:

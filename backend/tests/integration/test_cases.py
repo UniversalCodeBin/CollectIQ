@@ -268,6 +268,38 @@ def test_resume_waits_for_the_cooling_off_then_needs_a_person(
     assert _resume(env, ready["approval_id"]).status_code in (409,)
 
 
+def _ask_to_resume(env: Env) -> Any:
+    return env.client.post(
+        env.url(f"invoices/{env.invoices['INV-1']}/followups/resume-request"), {}, format="json", **idem()
+    )
+
+
+def test_a_person_can_ask_to_resume_over_the_api_and_the_ask_is_audited(
+    env: Env, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    case = env.case()
+    env.resolve(case["id"])
+    early = _ask_to_resume(env)  # inside the cooling-off: answered, but no approval is created
+    assert early.status_code == 200, early.content
+    assert early.json()["approval_id"] is None and early.json()["outcome"] != Outcome.REQUIRE_APPROVAL
+
+    real = clock.now
+    monkeypatch.setattr(clock, "now", lambda: real() + timedelta(hours=25))
+    ready = _ask_to_resume(env)
+    assert ready.status_code == 200, ready.content
+    assert ready.json()["outcome"] == Outcome.REQUIRE_APPROVAL and ready.json()["approval_id"]
+    # Asking changes nothing: the dispute stays resolved and reminders stay suppressed
+    # until a person approves and resumes.
+    state = env.state()
+    assert (state["dispute_status"], state["reminder_status"]) == ("RESOLVED", "SUPPRESSED")
+    assert len(env.audit("followups.resume_requested")) == 2
+
+
+def test_asking_to_resume_is_refused_while_the_dispute_is_open_over_the_api(env: Env) -> None:
+    env.case()
+    assert _ask_to_resume(env).status_code == 409
+
+
 def test_resume_is_refused_while_the_dispute_is_open(env: Env) -> None:
     env.case()
     with pytest.raises(ProblemError) as raised:

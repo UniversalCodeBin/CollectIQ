@@ -96,6 +96,7 @@ describe("Audit History", () => {
     URL.revokeObjectURL = vi.fn();
     open("audit");
     expect(await screen.findByText("reminder.approved")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Open" })).toHaveAttribute("href", `/w/${WS}/reminders/r1`);
     expect(screen.getByText(/not tamper-resistant against a database superuser/)).toBeInTheDocument();
     screen.getByRole("button", { name: "Export CSV" }).click();
     await waitFor(() => expect(called(`POST ${API}/audit-events/exports`)).toHaveLength(1));

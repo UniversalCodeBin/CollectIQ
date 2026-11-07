@@ -203,8 +203,14 @@ def list_messages(ctx: RequestContext, limit: int, cursor: UUID | None) -> dict[
     return {"items": items, "next_cursor": str(page[-1]["id"]) if len(rows) > limit else None}
 
 
-def invoice_timeline(ctx: RequestContext, invoice_id: UUID, limit: int) -> dict[str, Any]:
-    """Everything said or decided on one invoice, newest first, one entry per event."""
+def invoice_timeline(
+    ctx: RequestContext, invoice_id: UUID, limit: int, cursor: UUID | None = None
+) -> dict[str, Any]:
+    """Everything said or decided on one invoice, newest first, one entry per event.
+
+    The cursor is the id of the last entry already seen. An invoice's events are few, so the merged list is
+    ordered in memory and the page starts after that entry.
+    """
     authorize(ctx, MESSAGES_READ)
     with tenant_tx(ctx):
         if fetch_one("SELECT 1 AS ok FROM invoices WHERE id = %s", [invoice_id]) is None or not _lead_may_see(
@@ -288,7 +294,15 @@ def invoice_timeline(ctx: RequestContext, invoice_id: UUID, limit: int) -> dict[
                 }
             )
     events.sort(key=lambda e: (e["at"], e["id"]), reverse=True)
-    return {"items": events[:limit], "next_cursor": None}
+    if cursor is not None:
+        seen = next((n for n, e in enumerate(events) if e["id"] == str(cursor)), None)
+        if seen is None:
+            raise ProblemError(
+                "VALIDATION_FAILED", 422, "This cursor is not valid. Start again from the first page."
+            )
+        events = events[seen + 1 :]
+    page = events[:limit]
+    return {"items": page, "next_cursor": page[-1]["id"] if len(events) > limit else None}
 
 
 # --- association and what a label sets in motion (E066) ---
@@ -334,28 +348,45 @@ def close_ai_verification_tasks(ctx: RequestContext, message_id: UUID) -> int:
         " AND mi.invoice_id = t.invoice_id AND 'PAYMENT_CLAIM' = ANY (mi.labels)) FOR UPDATE",
         [message_id],
     ):
-        execute(
-            "UPDATE verification_tasks SET status = 'CLOSED', closed_by = %s, closed_at = now()"
-            " WHERE id = %s",
-            [ctx.user_id, task["id"]],
-        )
-        execute(
-            "UPDATE invoice_state SET open_task_count = GREATEST(open_task_count - 1, 0),"
-            " version = version + 1,"
-            " updated_at = now() WHERE invoice_id = %s",
-            [task["invoice_id"]],
-        )
-        service_state.recompute(ctx, task["invoice_id"])
-        record(
-            ctx,
-            "verification_task.closed",
-            "invoice",
-            str(task["invoice_id"]),
-            after={"kind": "PAYMENT_CLAIM", "message_id": str(message_id)},
-            reason_codes=["READING_REJECTED_BY_PERSON"],
-        )
+        _close_task(ctx, task["id"], task["invoice_id"], message_id, "READING_REJECTED_BY_PERSON")
         closed += 1
     return closed
+
+
+@outbox.subscriber("AllocationConfirmed")
+def _on_allocation_confirmed(ctx: RequestContext, payload: dict[str, Any]) -> None:
+    """A payment a person recorded answers a customer's claim of payment: the task has done its job.
+
+    The money, not the claim, is what moves the invoice status. Closing only stops the task blocking it.
+    """
+    for invoice_id in payload["invoice_ids"]:
+        for task in fetch_all(
+            "SELECT id, message_id FROM verification_tasks"
+            " WHERE invoice_id = %s AND status = 'OPEN' FOR UPDATE",
+            [invoice_id],
+        ):
+            _close_task(ctx, task["id"], UUID(invoice_id), task["message_id"], "PAYMENT_RECORDED_BY_PERSON")
+
+
+def _close_task(ctx: RequestContext, task_id: UUID, invoice_id: UUID, message_id: UUID, reason: str) -> None:
+    execute(
+        "UPDATE verification_tasks SET status = 'CLOSED', closed_by = %s, closed_at = now() WHERE id = %s",
+        [ctx.user_id, task_id],
+    )
+    execute(
+        "UPDATE invoice_state SET open_task_count = GREATEST(open_task_count - 1, 0), version = version + 1,"
+        " updated_at = now() WHERE invoice_id = %s",
+        [invoice_id],
+    )
+    service_state.recompute(ctx, invoice_id)
+    record(
+        ctx,
+        "verification_task.closed",
+        "invoice",
+        str(invoice_id),
+        after={"kind": "PAYMENT_CLAIM", "message_id": str(message_id)},
+        reason_codes=[reason],
+    )
 
 
 def _opt_out(ctx: RequestContext, message_id: UUID, invoice_id: UUID, state: dict[str, Any]) -> str:

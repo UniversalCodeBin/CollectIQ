@@ -131,8 +131,8 @@ class InvoiceTimelineView(APIView):
         parameters=[OpenApiParameter("limit", int), OpenApiParameter("cursor", str)],
     )
     def get(self, request: Any, ws: UUID, invoice_id: UUID) -> Response:
-        limit, _ = page_params(request)
-        return Response(service.invoice_timeline(request.ctx, invoice_id, limit))
+        limit, cursor = page_params(request)
+        return Response(service.invoice_timeline(request.ctx, invoice_id, limit, cursor))
 
 
 class MessageAssociationView(APIView):

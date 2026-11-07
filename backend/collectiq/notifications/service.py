@@ -5,6 +5,7 @@ import json
 from typing import Any
 from uuid import UUID
 
+from collectiq.audit import record
 from collectiq.platform import outbox
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_all, fetch_one, tenant_tx
@@ -63,11 +64,60 @@ def mark_read(ctx: RequestContext, notification_id: UUID) -> None:
         )
 
 
+KINDS = ("CASE_OPENED", "REMINDER_DRAFT_READY")
+RETENTION_DAYS = 90  # FR-146 / retention: notifications only point at work, so old ones are safe to drop
+
+
+def get_preferences(ctx: RequestContext) -> dict[str, Any]:
+    with tenant_tx(ctx):
+        rows = fetch_all(
+            "SELECT type, in_app FROM notification_preferences WHERE user_id = %s", [ctx.user_id]
+        )
+    chosen = {r["type"]: r["in_app"] for r in rows}
+    return {"in_app": {kind: chosen.get(kind, True) for kind in KINDS}}
+
+
+def put_preferences(ctx: RequestContext, in_app: dict[str, bool]) -> dict[str, Any]:
+    """Personal and partial: only the kinds named change. Never hides work; the review inbox ignores this."""
+    unknown = sorted(set(in_app) - set(KINDS))
+    if unknown:
+        raise ProblemError("VALIDATION_FAILED", 422, "That kind of notification is not recognised.")
+    with tenant_tx(ctx):
+        for kind, on in in_app.items():
+            execute(
+                "INSERT INTO notification_preferences (workspace_id, user_id, type, in_app)"
+                " VALUES (%s, %s, %s, %s) ON CONFLICT (workspace_id, user_id, type)"
+                " DO UPDATE SET in_app = EXCLUDED.in_app, updated_at = now()",
+                [ctx.workspace_id, ctx.user_id, kind, on],
+            )
+        record(
+            ctx,
+            "notification_preferences.changed",
+            "user",
+            str(ctx.user_id),
+            after={"in_app": dict(sorted(in_app.items()))},
+        )
+    return get_preferences(ctx)
+
+
+def delete_expired(ctx: RequestContext) -> int:
+    """Inside a tenant transaction. Removes notifications older than the retention window."""
+    return execute(
+        "DELETE FROM notifications"
+        " WHERE workspace_id = %s AND created_at < now() - make_interval(days => %s)",
+        [ctx.workspace_id, RETENTION_DAYS],
+    )
+
+
 def notify_approvers(ctx: RequestContext, type_: str, subject_ref: dict[str, str]) -> int:
-    """One notification per owner and finance admin, once per subject. Safe to run again."""
+    """One notification per owner and finance admin, once per subject. Safe to run again.
+
+    People who turned this kind off are skipped; the work still shows in the review inbox."""
     recipients = fetch_all(
-        "SELECT user_id FROM workspace_memberships WHERE status = 'ACTIVE' AND role = ANY(%s)",
-        [list(_APPROVERS)],
+        "SELECT m.user_id FROM workspace_memberships m WHERE m.status = 'ACTIVE' AND m.role = ANY(%s)"
+        " AND NOT EXISTS (SELECT 1 FROM notification_preferences p WHERE p.user_id = m.user_id"
+        "                 AND p.type = %s AND NOT p.in_app)",
+        [list(_APPROVERS), type_],
     )
     for member in recipients:
         execute(
