@@ -101,6 +101,7 @@ urlpatterns: list = [
         f"{_V1}workspaces/<uuid:ws>/messages/<uuid:message_id>/interpretation",
         conversations.MessageInterpretationView.as_view(),
     ),
+    path(f"{_V1}workspaces/<uuid:ws>/interpretations", conversations.PendingInterpretationsView.as_view()),
     path(
         f"{_V1}workspaces/<uuid:ws>/interpretations/<uuid:interpretation_id>/accept",
         conversations.InterpretationAcceptView.as_view(),

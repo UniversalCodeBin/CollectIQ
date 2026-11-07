@@ -53,6 +53,9 @@ export function ConversationsPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Conversations</h1>
+      <p>
+        <Link to={`/w/${ws}/interpretations`}>Replies the AI has read, waiting for your review</Link>
+      </p>
       <Capture workspace={ws} />
       <QueryState query={list} label="conversations">
         {list.data &&

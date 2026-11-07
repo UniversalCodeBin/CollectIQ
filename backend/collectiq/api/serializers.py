@@ -980,6 +980,14 @@ class InterpretationOut(serializers.Serializer):
     created_at = serializers.DateTimeField()
 
 
+class PendingInterpretationOut(InterpretationOut):
+    invoice_ids = serializers.ListField(child=serializers.UUIDField())
+
+
+class PendingInterpretationListOut(serializers.Serializer):
+    items = PendingInterpretationOut(many=True)
+
+
 class MessagePageOut(serializers.Serializer):
     items = MessageOut(many=True)
     next_cursor = serializers.CharField(allow_null=True)

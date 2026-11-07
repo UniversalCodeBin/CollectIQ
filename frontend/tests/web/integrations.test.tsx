@@ -103,3 +103,23 @@ describe("Audit History", () => {
     expect(called(`POST ${API}/audit-events/exports`)[0]?.headers.get("Idempotency-Key")).toBeTruthy();
   });
 });
+
+describe("Gmail connection controls", () => {
+  const gmail = (state: string) => ({
+    status: 200,
+    body: { items: [{ key: "GMAIL", label: "Gmail", kind: "PROVIDER", state, note: "", verified_at: null, last_error: null }] },
+  });
+
+  it("offers Connect when Gmail is not connected and Disconnect when it is", async () => {
+    stub({ [`GET ${API}/integrations`]: gmail("NEEDS_CONFIGURATION") });
+    open("integrations");
+    expect(await screen.findByRole("button", { name: "Connect Gmail" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Disconnect Gmail" })).not.toBeInTheDocument();
+  });
+
+  it("shows Disconnect for a verified connection", async () => {
+    stub({ [`GET ${API}/integrations`]: gmail("CONNECTED_VERIFIED") });
+    open("integrations");
+    expect(await screen.findByRole("button", { name: "Disconnect Gmail" })).toBeInTheDocument();
+  });
+});

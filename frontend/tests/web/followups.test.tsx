@@ -281,4 +281,46 @@ describe("Preparing a reminder from an invoice", () => {
     expect(await screen.findByRole("button", { name: "Pause reminders" })).toBeInTheDocument();
     expect(called(`POST ${API}/reminder-pauses/${PAUSE}/resume`)).toHaveLength(1);
   });
+  describe("sending with Gmail", () => {
+    const gmail = (state: string) => ({
+      status: 200,
+      body: { items: [{ key: "GMAIL", label: "Gmail", kind: "PROVIDER", state, note: "", verified_at: null, last_error: null }] },
+    });
+
+    it("sends only through the Send button, and only when Gmail is connected", async () => {
+      stub({
+        [`GET ${API}/integrations`]: gmail("CONNECTED_VERIFIED"),
+        [`GET ${API}/reminders/${REM}`]: [detail({ status: "APPROVED", version: 2 }), detail({ status: "SUBMITTED", version: 4 })],
+        [`POST ${API}/reminders/${REM}/send`]: { status: 202, body: reminder({ status: "SUBMITTED", version: 4 }) },
+      });
+      open(`reminders/${REM}`);
+      await userEvent.click(await screen.findByRole("button", { name: "Send with Gmail" }));
+      expect(await screen.findByText("Handed to Gmail. Delivery is not confirmed.")).toBeInTheDocument();
+      expect(called(`POST ${API}/reminders/${REM}/send`)[0]!.headers.get("Idempotency-Key")).toBeTruthy();
+    });
+
+    it("explains how to enable sending when Gmail is not connected", async () => {
+      stub({
+        [`GET ${API}/integrations`]: gmail("NEEDS_CONFIGURATION"),
+        [`GET ${API}/reminders/${REM}`]: detail({ status: "APPROVED", version: 2 }),
+      });
+      open(`reminders/${REM}`);
+      expect(await screen.findByText(/connect Gmail under Integrations/)).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Send with Gmail" })).not.toBeInTheDocument();
+    });
+
+    it("lets a person settle an unknown send and never offers a retry", async () => {
+      stub({
+        [`GET ${API}/integrations`]: gmail("CONNECTED_VERIFIED"),
+        [`GET ${API}/reminders/${REM}`]: [detail({ status: "SUBMISSION_UNKNOWN", version: 4 }), detail({ status: "SUBMITTED", version: 5 })],
+        [`POST ${API}/reminders/${REM}/confirm-unknown`]: { status: 200, body: reminder({ status: "SUBMITTED", version: 5 }) },
+      });
+      open(`reminders/${REM}`);
+      expect(await screen.findByText("We could not tell whether Gmail took it")).toBeInTheDocument();
+      expect(screen.queryByRole("button", { name: "Send with Gmail" })).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole("button", { name: "It was sent" }));
+      await vi.waitFor(() => expect(called(`POST ${API}/reminders/${REM}/confirm-unknown`)).toHaveLength(1));
+      expect(called(`POST ${API}/reminders/${REM}/confirm-unknown`)[0]!.body).toEqual({ outcome: "WAS_SENT" });
+    });
+  });
 });

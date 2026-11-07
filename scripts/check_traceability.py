@@ -14,7 +14,11 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 MATRIX = REPO / "CollectIQ_Requirements_Traceability.csv"
-EXPECTED_ROWS = 223  # 221 PRD rows plus FR-AI-BRIEF and FR-PAUSE, added after the plan
+PRD_ROWS = 221
+EXTENSION_IDS = {"FR-AI-BRIEF", "FR-PAUSE"}  # added after the plan; each must stand on its own evidence
+EXPECTED_ROWS = PRD_ROWS + len(EXTENSION_IDS)
+CONTRACT = REPO / "CollectIQ_API_Contracts.yaml"
+STATUS_WORDS = ("Implemented", "Partial", "Done", "Not implemented", "Deferred")
 LAST_TASK = 40
 
 VALID_PRIORITIES = {
@@ -118,10 +122,47 @@ def _scenario_problems(scenarios: dict) -> list[str]:
     return problems
 
 
-def find_problems(rows: list[dict], scenarios: dict, expected_rows: int) -> list[str]:
+def _identity_problems(rows: list[dict]) -> list[str]:
+    """Row identity, not just row count: no duplicates, 221 PRD rows, and only the named extensions."""
+    ids = [row.get("Requirement ID", "?") for row in rows]
+    problems = [f"{name}: appears more than once" for name in sorted({i for i in ids if ids.count(i) > 1})]
+    for missing in sorted(EXTENSION_IDS - set(ids)):
+        problems.append(f"{missing}: extension row is missing")
+    prd = set(ids) - EXTENSION_IDS
+    if len(prd) != PRD_ROWS:
+        problems.append(f"{len(prd)} PRD rows, expected {PRD_ROWS}")
+    return problems
+
+
+def _mapping_problems(rows: list[dict], contract: str, repo: Path) -> list[str]:
+    """Every endpoint a row names exists in the contract; every test file it cites exists on disk."""
+    known = set(re.findall(r"x-endpoint-id: (E\d{3})", contract))
+    problems = []
+    for row in rows:
+        name = row.get("Requirement ID", "?")
+        for endpoint in re.findall(r"E\d{3}", row.get("API endpoint IDs") or ""):
+            if endpoint not in known:
+                problems.append(f"{name}: endpoint {endpoint} is not in the API contract")
+        status = (row.get("Implementation status") or "").strip()
+        if not status.startswith(STATUS_WORDS):
+            problems.append(f"{name}: status {status[:30]!r} is not a known status")
+        if status.startswith("Implemented"):
+            cited = re.findall(r"\b((?:backend|frontend)/[\w./-]+\.(?:py|tsx?))", row.get("Notes") or "")
+            missing = [c for c in cited if not (repo / c).exists()]
+            problems.extend(f"{name}: cited file {c} does not exist" for c in missing)
+    return problems
+
+
+def find_problems(
+    rows: list[dict], scenarios: dict, expected_rows: int, contract: str | None = None, repo: Path = REPO
+) -> list[str]:
     problems = []
     if len(rows) != expected_rows:
         problems.append(f"matrix has {len(rows)} rows, expected {expected_rows}")
+    if expected_rows == EXPECTED_ROWS:
+        problems.extend(_identity_problems(rows))
+    if contract is not None:
+        problems.extend(_mapping_problems(rows, contract, repo))
     for row in rows:
         problems.extend(_row_problems(row))
     problems.extend(_scenario_problems(scenarios))
@@ -130,7 +171,9 @@ def find_problems(rows: list[dict], scenarios: dict, expected_rows: int) -> list
 
 def main() -> int:
     text = MATRIX.read_text(encoding="utf-8-sig")
-    problems = find_problems(read_rows(text), SCENARIOS, EXPECTED_ROWS)
+    problems = find_problems(
+        read_rows(text), SCENARIOS, EXPECTED_ROWS, CONTRACT.read_text(encoding="utf-8")
+    )
     for problem in problems:
         print(problem)
     if problems:

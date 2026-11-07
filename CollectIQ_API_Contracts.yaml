@@ -6290,6 +6290,40 @@ paths:
           $ref: '#/components/responses/Problem4xx'
         '429':
           $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/interpretations:
+    get:
+      operationId: get_ws_interpretations
+      tags:
+      - Conversations
+      summary: List AI readings of customer replies that wait for a person
+      description: 'Endpoint E124. Status: PROPOSED-NEW (pilot preparation). Module M12. Roles: O, F, L. Priority P1. Only readings still PENDING_REVIEW or NEEDS_MANUAL_REVIEW, oldest first, at most 100. Every item is AI-derived and unverified. A project lead sees only readings on invoices assigned to them.'
+      x-endpoint-id: E124
+      x-origin: proposed-new
+      x-priority: P1
+      x-module: M12
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      responses:
+        '200':
+          description: The pending readings.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
 components:
   securitySchemes:
     sessionCookie:

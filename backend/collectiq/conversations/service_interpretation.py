@@ -108,6 +108,29 @@ def get_for_message(ctx: RequestContext, message_id: UUID) -> dict[str, Any]:
         return _dto(row)
 
 
+# --- E124 ---
+
+
+def list_pending(ctx: RequestContext, limit: int = 100) -> dict[str, Any]:
+    """Readings awaiting a person, oldest first. A project lead sees only their own invoices."""
+    authorize(ctx, MESSAGES_READ)
+    with tenant_tx(ctx):
+        rows = fetch_all(
+            f"SELECT {_COLUMNS} FROM message_interpretations"  # noqa: S608
+            " WHERE status IN ('PENDING_REVIEW', 'NEEDS_MANUAL_REVIEW') ORDER BY created_at, id LIMIT %s",
+            [limit],
+        )
+        items = []
+        for row in rows:
+            invoices = _associated(row["message_id"])
+            if not all(service._lead_may_see(ctx, i["invoice_id"]) for i in invoices):  # noqa: SLF001
+                continue
+            item = _dto(row)
+            item["invoice_ids"] = [str(i["invoice_id"]) for i in invoices]
+            items.append(item)
+        return {"items": items}
+
+
 # --- reading a reply ---
 
 

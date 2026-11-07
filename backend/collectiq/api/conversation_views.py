@@ -27,6 +27,7 @@ from .serializers import (
     InterpretationOut,
     MessageOut,
     MessagePageOut,
+    PendingInterpretationListOut,
     SnoozeApproveIn,
     SnoozeStartedOut,
     SnoozeUndoIn,
@@ -148,6 +149,12 @@ class MessageInterpretationView(APIView):
     @endpoint("E067", responses={200: InterpretationOut})
     def get(self, request: Any, ws: UUID, message_id: UUID) -> Response:
         return Response(service_interpretation.get_for_message(request.ctx, message_id))
+
+
+class PendingInterpretationsView(APIView):
+    @endpoint("E124", responses={200: PendingInterpretationListOut})
+    def get(self, request: Any, ws: UUID) -> Response:
+        return Response(service_interpretation.list_pending(request.ctx))
 
 
 class InterpretationAcceptView(APIView):

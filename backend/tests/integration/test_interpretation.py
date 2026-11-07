@@ -340,3 +340,32 @@ def test_a_message_with_no_interpretation_is_not_found(env: Env, script: Any) ->
     message = env.message(text="hello")  # not associated with an invoice: nothing to interpret
     response = env.client.get(env.url(f"messages/{message['id']}/interpretation"))
     assert response.status_code == 404
+
+
+# --- the pending list (E124) ---
+
+
+def test_pending_list_shows_unreviewed_readings_as_unverified(env: Env, script: Any) -> None:
+    script(reading())
+    message = env.message(text=CLAIM_TEXT, on="INV-1")
+    found = interpretation(env, message["id"])
+    response = env.client.get(env.url("interpretations"))
+    assert response.status_code == 200, response.content
+    items = response.json()["items"]
+    assert [i["id"] for i in items] == [found["id"]]
+    assert items[0]["message_id"] == message["id"] and items[0]["verified"] is False
+    assert items[0]["ai_derived"] is True and items[0]["invoice_ids"]
+    decide(env, found["id"], "accept")
+    assert env.client.get(env.url("interpretations")).json()["items"] == []
+
+
+def test_pending_list_hides_other_workspaces_and_unassigned_leads(
+    env: Env, owner_db: psycopg.Connection, script: Any
+) -> None:
+    script(reading())
+    env.message(text=CLAIM_TEXT, on="INV-1")
+    other = Env(owner_db, f"other-{uuid.uuid4().hex[:8]}@example.test")
+    assert other.client.get(other.url("interpretations")).json()["items"] == []
+    lead, _ = add_member(owner_db, env.ws, f"l-{uuid.uuid4().hex[:6]}@example.test", "PROJECT_LEAD")
+    response = lead.get(env.url("interpretations"))
+    assert response.status_code == 200 and response.json()["items"] == []

@@ -105,3 +105,54 @@ def test_csv_reader_keeps_a_row_per_requirement():
     writer.writeheader()
     writer.writerow(_row())
     assert len(_load().read_rows(text.getvalue())) == 1
+
+
+# ---- identity and mapping, not just the row count ---------------------------------------------------
+
+
+def _full(count=221):
+    return [_row(**{"Requirement ID": f"FR-{n:03d}"}) for n in range(1, count + 1)]
+
+
+def _with_extensions(rows):
+    return rows + [_row(**{"Requirement ID": name}) for name in sorted(_load().EXTENSION_IDS)]
+
+
+def test_a_complete_matrix_has_no_identity_problems():
+    mod = _load()
+    rows = _with_extensions(_full())
+    assert not mod._identity_problems(rows)
+
+
+def test_right_count_but_a_duplicated_requirement_is_rejected():
+    mod = _load()
+    rows = _with_extensions(_full())
+    rows[5] = dict(rows[4])  # same count, one requirement now appears twice and one is gone
+    problems = mod._identity_problems(rows)
+    assert any("more than once" in p for p in problems) and any("PRD rows" in p for p in problems)
+
+
+def test_a_missing_extension_row_is_rejected_even_when_the_count_is_made_up():
+    mod = _load()
+    rows = _full(223)
+    assert any("extension row is missing" in p for p in mod._identity_problems(rows))
+
+
+def test_an_endpoint_that_is_not_in_the_contract_is_rejected():
+    mod = _load()
+    contract = "x-endpoint-id: E001\n"
+    rows = [_row(**{"API endpoint IDs": "E001,E999", "Implementation status": "Partial"})]
+    problems = mod._mapping_problems(rows, contract, REPO)
+    assert problems == ["FR-001: endpoint E999 is not in the API contract"]
+
+
+def test_an_implemented_row_citing_a_missing_test_file_is_rejected():
+    mod = _load()
+    rows = [_row(**{"Implementation status": "Implemented", "Notes": "backend/tests/nope/test_gone.py"})]
+    assert any("does not exist" in p for p in mod._mapping_problems(rows, "", REPO))
+
+
+def test_an_unknown_status_is_rejected():
+    mod = _load()
+    problems = mod._mapping_problems([_row(**{"Implementation status": "Mostly"})], "", REPO)
+    assert any("not a known status" in p for p in problems)

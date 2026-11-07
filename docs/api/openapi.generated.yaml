@@ -1793,6 +1793,26 @@ paths:
                 $ref: '#/components/schemas/AuthorizationOut'
           description: ''
       x-endpoint-id: E094
+  /api/v1/workspaces/{ws}/interpretations:
+    get:
+      operationId: E124
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PendingInterpretationListOut'
+          description: ''
+      x-endpoint-id: E124
   /api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept:
     post:
       operationId: E068
@@ -7297,6 +7317,112 @@ components:
       required:
       - items
       - next_cursor
+    PendingInterpretationListOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PendingInterpretationOut'
+      required:
+      - items
+    PendingInterpretationOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        message_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        derived_by:
+          type: string
+        ai_derived:
+          type: boolean
+        verified:
+          type: boolean
+        labels:
+          type: array
+          items:
+            type: string
+        primary_label:
+          type: string
+          nullable: true
+        confidence:
+          type: string
+          nullable: true
+        evidence_span:
+          type: string
+          nullable: true
+        date_hint:
+          type: string
+          nullable: true
+        date_status:
+          type: string
+        resolved_date:
+          type: string
+          format: date
+          nullable: true
+        date_note:
+          type: string
+          nullable: true
+        failure_code:
+          type: string
+          nullable: true
+        applied:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        decided_by:
+          type: string
+          format: uuid
+          nullable: true
+        decided_at:
+          type: string
+          format: date-time
+          nullable: true
+        decision_note:
+          type: string
+          nullable: true
+        corrected_labels:
+          type: array
+          items:
+            type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        invoice_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+      required:
+      - ai_derived
+      - applied
+      - confidence
+      - corrected_labels
+      - created_at
+      - date_hint
+      - date_note
+      - date_status
+      - decided_at
+      - decided_by
+      - decision_note
+      - derived_by
+      - evidence_span
+      - failure_code
+      - id
+      - invoice_ids
+      - labels
+      - message_id
+      - primary_label
+      - resolved_date
+      - status
+      - verified
     PolicyDecisionOut:
       type: object
       properties:

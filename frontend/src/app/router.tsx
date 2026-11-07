@@ -9,6 +9,7 @@ import { VerifyEmailPage } from "../features/auth/VerifyEmailPage";
 import { CasesPage } from "../features/cases/CasesPage";
 import { ConversationsPage } from "../features/conversations/ConversationsPage";
 import { MessagePage } from "../features/conversations/MessagePage";
+import { PendingInterpretationsPage } from "../features/conversations/PendingInterpretationsPage";
 import { FollowupsPage } from "../features/followups/FollowupsPage";
 import { ReminderPage } from "../features/followups/ReminderPage";
 import { InboxPage } from "../features/inbox/InboxPage";
@@ -49,6 +50,7 @@ const WORKSPACE_ROUTES = [
   "accounts",
   "conversations",
   "messages/:id",
+  "interpretations",
   "cases",
   "followups",
   "reminders/:id",
@@ -78,6 +80,7 @@ export const BUILT_SCREENS: Record<string, ComponentType> = {
   accounts: AccountsPage,
   conversations: ConversationsPage,
   "messages/:id": MessagePage,
+  interpretations: PendingInterpretationsPage,
   cases: CasesPage,
   followups: FollowupsPage,
   "reminders/:id": ReminderPage,

@@ -224,3 +224,54 @@ describe("Disputes and questions", () => {
     expect(screen.queryByRole("button", { name: "Resolve" })).not.toBeInTheDocument();
   });
 });
+
+describe("replies waiting for review", () => {
+  const READING = "99999999-9999-4999-8999-999999999999";
+  const reading = (over: Record<string, unknown> = {}) => ({
+    id: READING,
+    message_id: MSG,
+    status: "PENDING_REVIEW",
+    primary_label: "PAYMENT_CLAIM",
+    confidence: "HIGH",
+    evidence_span: "We paid last week.",
+    date_note: null,
+    ai_derived: true,
+    verified: false,
+    invoice_ids: [INV_A],
+    ...over,
+  });
+
+  it("shows a reading as an unverified AI suggestion, never as a fact", async () => {
+    stub({ [`GET ${API}/interpretations`]: { status: 200, body: { items: [reading()] } } });
+    open("interpretations");
+    expect(await screen.findByText("Customer says they paid")).toBeInTheDocument();
+    expect(screen.getByText("AI suggestion, not verified")).toBeInTheDocument();
+    expect(screen.getByText(/We paid last week/)).toBeInTheDocument();
+  });
+
+  it("accepting sends the decision and reloads the list", async () => {
+    stub({
+      [`GET ${API}/interpretations`]: [{ status: 200, body: { items: [reading()] } }, { status: 200, body: { items: [] } }],
+      [`POST ${API}/interpretations/${READING}/accept`]: { status: 200, body: reading({ status: "ACCEPTED" }) },
+    });
+    open("interpretations");
+    await userEvent.click(await screen.findByRole("button", { name: "Accept this reading" }));
+    expect(await screen.findByText("Nothing to review")).toBeInTheDocument();
+    expect(called(`POST ${API}/interpretations/${READING}/accept`)).toHaveLength(1);
+  });
+
+  it("a correction needs a reason before it can be saved", async () => {
+    stub({
+      [`GET ${API}/interpretations`]: { status: 200, body: { items: [reading()] } },
+      [`POST ${API}/interpretations/${READING}/correct`]: { status: 200, body: reading({ status: "CORRECTED" }) },
+    });
+    open("interpretations");
+    await userEvent.click(await screen.findByRole("button", { name: "Correct it" }));
+    await userEvent.click(screen.getByRole("button", { name: "Save correction" }));
+    expect(called(`POST ${API}/interpretations/${READING}/correct`)).toHaveLength(0);
+    await userEvent.type(screen.getByLabelText(/Why you are changing it/), "It is a dispute.");
+    await userEvent.click(screen.getByRole("button", { name: "Save correction" }));
+    await waitFor(() => expect(called(`POST ${API}/interpretations/${READING}/correct`)).toHaveLength(1));
+    expect(called(`POST ${API}/interpretations/${READING}/correct`)[0]?.body).toMatchObject({ note: "It is a dispute." });
+  });
+});

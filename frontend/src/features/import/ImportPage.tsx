@@ -71,6 +71,9 @@ export function ImportPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Import invoices</h1>
+      <p>
+        <Link to={`/w/${ws}/import/pdf`}>Have a PDF instead? Read an invoice from a PDF</Link>
+      </p>
       {body}
     </div>
   );

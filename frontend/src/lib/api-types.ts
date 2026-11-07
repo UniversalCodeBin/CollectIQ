@@ -821,6 +821,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/interpretations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E124"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/interpretations/{interpretation_id}/accept": {
         parameters: {
             query?: never;
@@ -3080,6 +3096,41 @@ export interface components {
             items: components["schemas"]["PaymentOut"][];
             next_cursor: string | null;
         };
+        PendingInterpretationListOut: {
+            items: components["schemas"]["PendingInterpretationOut"][];
+        };
+        PendingInterpretationOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            message_id: string;
+            status: string;
+            derived_by: string;
+            ai_derived: boolean;
+            verified: boolean;
+            labels: string[];
+            primary_label: string | null;
+            confidence: string | null;
+            evidence_span: string | null;
+            date_hint: string | null;
+            date_status: string;
+            /** Format: date */
+            resolved_date: string | null;
+            date_note: string | null;
+            failure_code: string | null;
+            applied: {
+                [key: string]: unknown;
+            }[];
+            /** Format: uuid */
+            decided_by: string | null;
+            /** Format: date-time */
+            decided_at: string | null;
+            decision_note: string | null;
+            corrected_labels: string[] | null;
+            /** Format: date-time */
+            created_at: string;
+            invoice_ids: string[];
+        };
         PolicyDecisionOut: {
             /** Format: uuid */
             id: string;
@@ -5101,6 +5152,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuthorizationOut"];
+                };
+            };
+        };
+    };
+    E124: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PendingInterpretationListOut"];
                 };
             };
         };

@@ -21,7 +21,7 @@ This reconciles the acceptance report: its test counts hold (1,277 then, 1,278 n
 | 4 | Data-protection review not done (SEC-22, OD-08) | Critical for real people's data | Owner and counsel |
 | 5 | Per-client and per-invoice pause missing | High | I build |
 | 6 | Snoozes do not end on their date; notification retention not enforced | High | I build |
-| 7 | UI gaps: send/connect/confirm-unknown buttons, SUBMITTED labels, pending interpretations | High | I build |
+| 7 | UI gaps: send/connect/confirm-unknown buttons, SUBMITTED labels, pending interpretations | High | Built (E124 and screens); real-Gmail send unverified |
 | 8 | AI provider not chosen (OD-05); Task 32, summaries, wording drafts | Medium (AI is off by default) | Owner |
 | 9 | No independent pen test, screen-reader audit, image scan | Medium | External |
 | 10 | Backup encryption, off-database audit anchor, break-glass, restore timing at scale | Medium | Partly me, partly hosting |

@@ -39,13 +39,16 @@ hardware. Several features listed under "Not built" below are still owed.
 
 ## Not built or not verified
 
-Owed features: per-client and per-invoice pause; ending snoozes when their date passes; MATCH_REVIEW case type and
-allocation-driven case opening; closing verification tasks; N+1 history loading and cursor paging on E065; 90-day
-notification retention and notification preferences; navigation link to PDF import and a screen for pending
-interpretations; PDF size/page limit and OCR; AI summaries and wording drafts; legal name and sender display name;
-UI buttons for connecting, sending and confirming an unknown send; PayPal connect endpoint; token refresh; Gmail
-monitoring; webhook events as match candidates; frontend labels for SUBMITTED and SUBMISSION_UNKNOWN; a link from
-audit rows to the why-view; UI for FL-03, 08, 09, 10, 12, 13, 14, 16.
+Owed features: ending snoozes when their date passes; MATCH_REVIEW case type and allocation-driven case opening;
+closing verification tasks; N+1 history loading and cursor paging on E065; 90-day notification retention and
+notification preferences; PDF size/page limit and OCR; AI summaries and wording drafts; legal name and sender display
+name; E085 resume request; PayPal connect endpoint; token refresh; Gmail monitoring; webhook events as match
+candidates; a link from audit rows to the why-view; UI for FL-03, 08, 09, 10, 12, 13, 14, 16.
+
+Built since: pause (E121-E123), invoice brief (E120), pending-interpretations list (E124) with its review screen,
+Gmail Connect/Disconnect, Send and Confirm-unknown buttons, SUBMITTING/SUBMITTED/SUBMISSION_UNKNOWN labels and the PDF
+import link. The send UI has Vitest coverage against stubbed responses; sending through a real Gmail account is not
+yet exercised (needs OD-05 and an authorised test mailbox).
 
 Not done: real email delivery (file and memory backends only), independent penetration test, screen-reader audit,
 live-AI evaluation, image scanning, break-glass process, off-database audit anchor, backup encryption and key

@@ -97,17 +97,24 @@ export function ReminderPage() {
   const [copied, setCopied] = useState(false);
   const edit = useApiMutation({ method: "patch", path: "/api/v1/workspaces/{ws}/reminders/{reminder_id}" }, { ifMatch: true });
   const approve = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reminders/{reminder_id}/approve" }, { idempotent: true });
+  const send = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reminders/{reminder_id}/send" }, { idempotent: true });
+  const resolve = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reminders/{reminder_id}/confirm-unknown" }, { idempotent: true });
+  const integrations = useQuery({
+    queryKey: ["integrations", ws],
+    queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/integrations" }, { path: { ws } }),
+  });
+  const gmailReady = integrations.data?.items.some((i) => i.key === "GMAIL" && i.state === "CONNECTED_VERIFIED") ?? false;
   const refresh = () => {
     void client.invalidateQueries({ queryKey: ["reminder", ws, id] });
     void client.invalidateQueries({ queryKey: ["reminders", ws] });
   };
   useEffect(() => {
-    if (edit.status === "success" || approve.status === "success") {
+    if (edit.status === "success" || approve.status === "success" || send.status === "success" || resolve.status === "success") {
       setText(null);
       refresh();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [edit.status, approve.status]);
+  }, [edit.status, approve.status, send.status, resolve.status]);
 
   const r = found.data;
   const live = r?.status === "DRAFT" || r?.status === "APPROVED";
@@ -133,7 +140,24 @@ export function ReminderPage() {
             <p role="status" className={styles.statusLine}>
               {STATUS_TEXT[r.status] ?? r.status}
             </p>
-            {r.status === "APPROVED" && <p className={styles.muted}>CollectIQ has not sent this. Copy the text, send it yourself, then record it.</p>}
+            {r.status === "APPROVED" && <p className={styles.muted}>CollectIQ has not sent this. Send it with Gmail, or copy the text, send it yourself and record it.</p>}
+            {r.status === "SUBMISSION_UNKNOWN" && (
+              <section aria-labelledby="unknown-title" className={styles.card}>
+                <h2 id="unknown-title" className={styles.heading}>
+                  Check whether it went out
+                </h2>
+                <p>
+                  CollectIQ will not send this again by itself. Look in your Gmail Sent folder, then tell us what you found.
+                </p>
+                <MutationFeedback mutation={resolve} />
+                <div className={styles.actions}>
+                  <Button onClick={() => resolve.submit({ path: { ws, reminder_id: id }, body: { outcome: "WAS_SENT" } })}>It was sent</Button>
+                  <Button variant="secondary" onClick={() => resolve.submit({ path: { ws, reminder_id: id }, body: { outcome: "NOT_SENT" } })}>
+                    It was not sent
+                  </Button>
+                </div>
+              </section>
+            )}
             {r.status === "MARKED_SENT" && (
               <p>
                 Marked sent {r.marked_by && r.marked_by === me ? "by you" : "by a team member"}
@@ -160,6 +184,7 @@ export function ReminderPage() {
               />
               <MutationFeedback mutation={edit} />
               <MutationFeedback mutation={approve} />
+              <MutationFeedback mutation={send} />
               <div className={styles.actions}>
                 {r.status === "DRAFT" && (
                   <>
@@ -187,7 +212,16 @@ export function ReminderPage() {
                         Open in email client
                       </a>
                     )}
-                    <Button onClick={() => setDialog("sent")}>I sent it</Button>
+                    {gmailReady ? (
+                      <Button aria-disabled={send.status === "pending" || undefined} onClick={() => send.submit({ path: { ws, reminder_id: id } })}>
+                        Send with Gmail
+                      </Button>
+                    ) : (
+                      <span className={styles.muted}>To send from here, connect Gmail under Integrations.</span>
+                    )}
+                    <Button variant={gmailReady ? "secondary" : "primary"} onClick={() => setDialog("sent")}>
+                      I sent it
+                    </Button>
                     <Button variant="danger" onClick={() => setDialog("reject")}>
                       Reject draft
                     </Button>

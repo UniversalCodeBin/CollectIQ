@@ -37,6 +37,9 @@ export const STATUS_TEXT: Record<string, string> = {
   DRAFT: "Draft awaiting approval",
   APPROVED: "Ready to send",
   MARKED_SENT: "Marked sent",
+  SUBMITTING: "Sending to Gmail",
+  SUBMITTED: "Handed to Gmail. Delivery is not confirmed.",
+  SUBMISSION_UNKNOWN: "We could not tell whether Gmail took it",
   REJECTED: "Rejected",
   CANCELLED: "Cancelled",
 };
