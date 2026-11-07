@@ -4,6 +4,7 @@ The running record of what is built. The [audit](implementation-audit.md) explai
 
 ## Resume point
 
+- **Pilot prep (in progress):** SMTP delivery backend and ClamAV scanner adapter added (`EMAIL_BACKEND_KIND=smtp`, `SCANNER_KIND=clamav`), tested against local fakes only; no real server exercised. See `docs/pilot/`.
 - **Branch:** `build/m0-m8`. Local commits only, with no remote.
 - **Done:** dashboard (SCR-02), receivables queue and all-invoices list (SCR-03), invoice details with correct, cancel and archive (SCR-04), read-only client profile (SCR-14).
 - **Done:** payment accounts, statement coverage and attestations (API only).

@@ -82,6 +82,15 @@ services:
     <<: *backend
     command: ["sh", "-c", "while true; do python manage.py schedule_nightly; sleep 3600; done"]
 
+  # Optional malware scanner. Enable with SCANNER_KIND=clamav, CLAMAV_HOST=clamav in the env file.
+  # No published port. The first start downloads signatures, which takes a few minutes.
+  clamav:
+    image: docker.io/clamav/clamav:stable
+    restart: unless-stopped
+    volumes:
+      - collectiq_clamav:/var/lib/clamav
+
 volumes:
+  collectiq_clamav:
   collectiq_pgdata:
   collectiq_data:

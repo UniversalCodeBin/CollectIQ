@@ -1,5 +1,5 @@
 from .base import *  # noqa: F403
-from .base import AI_PROVIDER, COLLECTIQ_MASTER_KEY, SECRET_KEY
+from .base import AI_PROVIDER, COLLECTIQ_MASTER_KEY, EMAIL_BACKEND_KIND, SECRET_KEY, SMTP_FROM, SMTP_HOST
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -14,3 +14,5 @@ if AI_PROVIDER == "fake":
     raise RuntimeError("AI_PROVIDER=fake is a test adapter and is refused in production.")
 if "change-me" in (SECRET_KEY, COLLECTIQ_MASTER_KEY):
     raise RuntimeError("Replace the placeholder secrets before running in production.")
+if EMAIL_BACKEND_KIND == "smtp" and not (SMTP_HOST and SMTP_FROM):
+    raise RuntimeError("EMAIL_BACKEND_KIND=smtp needs SMTP_HOST and SMTP_FROM.")

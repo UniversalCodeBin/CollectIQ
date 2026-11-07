@@ -253,3 +253,8 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - The image has no HEALTHCHECK: the API redirects plain http in production, so the check lives in the compose file with an `X-Forwarded-Proto: https` header.
 - Email stays file or memory only; real delivery remains unbuilt and is stated in the README and acceptance report.
 - The recovery drill and the k6 run are local evidence only. No uptime, RPO or RTO figure is claimed.
+
+## Pilot preparation rulings (Phase B/C)
+
+- OD-14: ClamAV (free, self-hosted clamd) is the implemented scan mechanism. `SCANNER_KIND=clamav` streams each upload over INSTREAM and fails closed (503 `SCAN_UNAVAILABLE`) when the scanner gives no clear answer. The default stays `none`, which records files as not scanned. Whether ClamAV is acceptable for the pilot is the owner's call; it has only been tested against a local fake server, not a real clamd.
+- Email: `EMAIL_BACKEND_KIND=smtp` delivers through any SMTP server configured by `SMTP_*` variables (STARTTLS, login, header-injection refused). Production refuses it without host and sender. No provider is chosen and no credentials exist; delivery has not been exercised against a real server. Every customer-facing message still needs human approval before it reaches the outbox.
