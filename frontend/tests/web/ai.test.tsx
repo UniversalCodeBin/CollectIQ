@@ -114,3 +114,56 @@ describe("PDF extraction", () => {
     expect(await screen.findByText(/turned off/)).toBeTruthy();
   });
 });
+
+describe("AI invoice brief", () => {
+  const INV = "33333333-3333-4333-8333-333333333333";
+  const invoice = {
+    facts: { id: INV, invoice_number: "INV-1", client_id: "c1", client_name: "Acme", status: "ISSUED", currency: "INR", gross_minor: 1000, subtotal_minor: null, tax_minor: null, issue_date: null, due_date: "2026-01-01", payment_terms: null, po_number: null, project_ref: null, description: null },
+    derived: {},
+    allowed_actions: [],
+    recommended_action: null,
+  };
+  const brief = `POST ${API}/invoices/${INV}/ai/brief`;
+  const reply = (over: Record<string, unknown>) => ({ status: 200, body: { status: "COMPLETED", facts: {}, derived: {}, brief: null, wording_rejected: [], suggestions: [], ai_derived: true, ...over } });
+
+  it("asks only on click, labels the reading as unverified and never sends", async () => {
+    stub({
+      [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [brief]: reply({ brief: { summary: "Overdue and quiet.", next_step: "SEND_REMINDER", draft_wording: "Hello, INV-1 is open." }, suggestions: [{ action: "PAUSE_REMINDERS", reason: "x" }] }),
+    });
+    open(`invoices/${INV}/brief`);
+    expect(await screen.findByRole("button", { name: "Generate AI brief" })).toBeTruthy();
+    expect(called(brief)).toHaveLength(0);
+    await userEvent.click(screen.getByRole("button", { name: "Generate AI brief" }));
+    expect(await screen.findByText("AI-generated, unverified")).toBeTruthy();
+    expect(screen.getByText("Overdue and quiet.")).toBeTruthy();
+    expect(screen.getByText(/Suggested next step: Prepare a reminder/)).toBeTruthy();
+    expect(screen.getByText(/only a suggestion; nothing has been paused/)).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /send|pause now/i })).toBeNull();
+  });
+
+  it("explains when the workspace has not switched briefs on", async () => {
+    stub({ [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice }, [brief]: reply({ status: "NOT_ENABLED", suggestions: [] }) });
+    open(`invoices/${INV}/brief`);
+    await userEvent.click(await screen.findByRole("button", { name: "Generate AI brief" }));
+    expect(await screen.findByText(/switched off for this workspace/)).toBeTruthy();
+    expect(screen.queryByText("AI-generated, unverified")).toBeNull();
+  });
+
+  it("drops refused wording and says so", async () => {
+    stub({
+      [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [brief]: reply({ brief: { summary: "s", next_step: "WAIT", draft_wording: null }, wording_rejected: ["NO_LEGAL_THREATS"] }),
+    });
+    open(`invoices/${INV}/brief`);
+    await userEvent.click(await screen.findByRole("button", { name: "Generate AI brief" }));
+    expect(await screen.findByText(/broke a rule for customer messages/)).toBeTruthy();
+    expect(screen.queryByText(/Draft wording/)).toBeNull();
+  });
+
+  it("shows the brief toggle in AI settings", async () => {
+    stub({ [`GET ${API}/ai/settings`]: { status: 200, body: { ...SETTINGS, invoice_brief_enabled: true } } });
+    open("settings/ai");
+    expect(await screen.findByLabelText(/Allow AI invoice briefs/)).toBeChecked();
+  });
+});

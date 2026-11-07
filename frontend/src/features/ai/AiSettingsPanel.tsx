@@ -7,7 +7,13 @@ import { QueryState } from "../../components/ui/QueryState";
 import { apiRequest, useApiMutation } from "../../lib/api";
 import styles from "../automation/Automation.module.css";
 
-type Flags = { pdf_extraction_enabled: boolean; reply_interpretation_enabled: boolean; kill_switch: boolean };
+type Flags = {
+  pdf_extraction_enabled: boolean;
+  reply_interpretation_enabled: boolean;
+  invoice_brief_enabled: boolean;
+  kill_switch: boolean;
+};
+const OFF: Flags = { pdf_extraction_enabled: false, reply_interpretation_enabled: false, invoice_brief_enabled: false, kill_switch: false };
 
 /** AI opt-ins (E109, E110). Everything is off until an Owner turns it on; the kill switch overrides all. */
 export function AiSettingsPanel() {
@@ -18,11 +24,17 @@ export function AiSettingsPanel() {
     queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/ai/settings" }, { path: { ws } }),
   });
   const save = useApiMutation({ method: "put", path: "/api/v1/workspaces/{ws}/ai/settings" }, { idempotent: true });
-  const [flags, setFlags] = useState<Flags>({ pdf_extraction_enabled: false, reply_interpretation_enabled: false, kill_switch: false });
+  const [flags, setFlags] = useState<Flags>(OFF);
   const loaded = settings.data;
 
   useEffect(() => {
-    if (loaded) setFlags({ pdf_extraction_enabled: loaded.pdf_extraction_enabled, reply_interpretation_enabled: loaded.reply_interpretation_enabled, kill_switch: loaded.kill_switch });
+    if (loaded)
+      setFlags({
+        pdf_extraction_enabled: loaded.pdf_extraction_enabled,
+        reply_interpretation_enabled: loaded.reply_interpretation_enabled,
+        invoice_brief_enabled: loaded.invoice_brief_enabled,
+        kill_switch: loaded.kill_switch,
+      });
   }, [loaded]);
   useEffect(() => {
     if (save.status === "success") void client.invalidateQueries({ queryKey: ["ai-settings", ws] });
@@ -59,6 +71,7 @@ export function AiSettingsPanel() {
             </p>
             {toggle("pdf_extraction_enabled", "Allow AI to read uploaded invoice PDFs", "You review and confirm every field before an invoice is created.")}
             {toggle("reply_interpretation_enabled", "Allow AI to interpret customer replies", "A person can accept, correct or dismiss each reading.")}
+            {toggle("invoice_brief_enabled", "Allow AI invoice briefs", "A short summary and draft wording for one invoice. Nothing is sent; you review any wording first.")}
             {toggle("kill_switch", "Stop all AI processing now", "Overrides the options above until you turn it off.")}
             <MutationFeedback mutation={save} />
             <div className={styles.actions}>

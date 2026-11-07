@@ -7,6 +7,7 @@ import { DisabledWithReason } from "../../components/ui/DisabledWithReason";
 import { QueryState } from "../../components/ui/QueryState";
 import { apiRequest } from "../../lib/api";
 import { formatDate, formatMinor } from "../../lib/format";
+import { InvoiceBrief } from "../ai/InvoiceBrief";
 import { InvoiceTimeline } from "../conversations/Timeline";
 import { InvoiceFollowup } from "../followups/InvoiceFollowup";
 import { ActionDialog, CorrectDialog } from "./Dialogs";
@@ -153,6 +154,7 @@ const SECTIONS: Record<string, Section> = {
   history: { label: "Payment history", Screen: History },
   timeline: { label: "Conversation", Screen: InvoiceTimeline },
   followups: { label: "Follow-up", Screen: InvoiceFollowup },
+  brief: { label: "AI brief", Screen: InvoiceBrief },
 };
 
 export function InvoicePage() {

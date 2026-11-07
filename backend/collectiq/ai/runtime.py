@@ -2,6 +2,7 @@
 
 from django.conf import settings
 
+from .agents import AgentRunner
 from .gateway import AIConfig, Gateway, build_provider
 
 _gateway: Gateway | None = None
@@ -13,6 +14,12 @@ def get_gateway() -> Gateway:
         provider = build_provider(settings.AI_PROVIDER, production=_is_production())
         _gateway = Gateway(provider, AIConfig(kill_switch=bool(getattr(settings, "AI_KILL_SWITCH", False))))
     return _gateway
+
+
+def get_agent_runner() -> AgentRunner:
+    """Agents share the gateway's provider and kill switch, so one setting governs every AI call."""
+    gateway = get_gateway()
+    return AgentRunner(gateway.provider, gateway.config)
 
 
 def use_gateway(gateway: Gateway | None) -> None:

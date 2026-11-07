@@ -71,6 +71,14 @@ class Gateway:
     def configured(self) -> bool:
         return self._provider is not None
 
+    @property
+    def provider(self) -> Provider | None:
+        return self._provider
+
+    @property
+    def config(self) -> AIConfig:
+        return self._config
+
     def _limited(self, scope: str) -> bool:
         now = self._clock()
         window = self._calls[scope]

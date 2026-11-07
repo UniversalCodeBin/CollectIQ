@@ -1,4 +1,4 @@
-"""AI opt-ins and flagged PDF extraction (E038-E041, E109, E110). The rules are in the services."""
+"""AI opt-ins, PDF extraction and the invoice brief (E038-E041, E109, E110, E120). Rules live in services."""
 
 from typing import Any
 from uuid import UUID
@@ -6,6 +6,7 @@ from uuid import UUID
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from collectiq.comms import service_brief
 from collectiq.invoices import service_extraction as extraction
 from collectiq.platform.idempotency import idempotent
 from collectiq.tenancy import service_ai_settings as ai_settings
@@ -18,6 +19,7 @@ from .serializers import (
     ExtractionConfirmIn,
     ExtractionEditIn,
     ExtractionOut,
+    InvoiceBriefOut,
 )
 
 _UPLOAD_BODY = {
@@ -42,6 +44,12 @@ class AiSettingsView(APIView):
     @idempotent
     def put(self, request: Any, ws: UUID) -> Response:
         return Response(ai_settings.put_settings(request.ctx, dict(validated(AiSettingsIn, request))))
+
+
+class InvoiceBriefView(APIView):
+    @endpoint("E120", responses={200: InvoiceBriefOut})
+    def post(self, request: Any, ws: UUID, invoice_id: UUID) -> Response:
+        return Response(service_brief.generate(request.ctx, invoice_id))
 
 
 class InvoicePdfView(APIView):
