@@ -659,6 +659,23 @@ Balances, payment verification, permissions, reminder eligibility, contact-limit
 
 ---
 
+### 7.9 Agent layer (amends ADR-05; implemented in `collectiq/ai/agents.py`)
+**Basis.** The design below follows general, public agent patterns (a bounded tool-use loop, schema-checked tool calls, least-privilege tools, human approval for consequential actions, untrusted-input isolation; see the OWASP LLM Top 10 and Anthropic's public "Building effective agents" guidance). These were not re-fetched or re-verified for this document, and nothing here relies on knowledge of any vendor's internal architecture. The design is CollectIQ's own.
+
+**What exists now (implemented and unit-tested, 13 tests):**
+- `AgentRunner` runs a bounded loop over the existing `Provider` interface. The model replies with JSON: a tool request or a final answer. No provider-native function-calling is used, so any provider that returns text works.
+- A tool is registered with an argument shape, a required permission, the result fields it may return, and an effect (`READ` or `PROPOSE`). `READ` tools run. `PROPOSE` tools and `requires_approval` tools are validated and recorded as proposals; they are never executed by the loop.
+- Budgets: steps, tool calls (a hard cap checked before a call runs), context characters (oldest observations dropped first) and wall-clock time. Provider faults, bad replies and over-budget runs return a status; nothing raises.
+- Tool results are cut to declared fields, redacted, truncated and wrapped as `untrusted_data`.
+- `FailoverProvider` tries providers in order.
+- The package imports no domain module and has no database handle (import-linter `ai-isolated`). Tools are closures supplied by the domain layer inside the caller's tenant context.
+
+**Boundaries.** Agent platform (`collectiq.ai`): loop, provider interface, redaction, schemas. Domain (invoices, evidence, policy, ...): owns every tool function and every rule. Governance: permissions are checked per tool against the caller's granted set; proposals go to the existing human-approval and policy paths; audit and the AI processing record are written by the calling service. An agent cannot reach a payment write: only `evidence` writes payments (import-linter `evidence-owns-money`).
+
+**Agents the product may need** (Invoice Intelligence, Reconciliation, Reply Analysis, Receivables Operations, Disputes, Evidence): none is built beyond what the existing single-shot tasks already do. Add one only when a product requirement needs a multi-step read; each is an `AgentSpec` plus tools, with no change to the loop.
+
+**Not implemented:** token and cost metering (the `Provider` interface returns text only, so runs record characters and call counts); provider routing by task or cost; persistent agent memory (the design is none: context is rebuilt from tenant data on each run); sandboxed code execution (no tool runs code); parallel multi-agent coordination; a review-queue screen for agent proposals; a live-model evaluation (only a scripted fake provider has been used).
+
 ## 8. Deterministic Policy Engine and Bounded Autonomy
 
 ### 8.1 Mandatory pipeline
@@ -1251,7 +1268,7 @@ Status key: **Accepted** (consistent with Foundation/PRD) or **Provisional** (de
 | | |
 |---|---|
 | Context | Provider/terms undecided; strict privacy and safety requirements |
-| Decision | `AIProvider` interface + task registry + privacy gateway + validators; no framework with autonomous tool use; worker-only invocation |
+| Decision | `AIProvider` interface + task registry + privacy gateway + validators; no framework with autonomous tool use; worker-only invocation. Amended (§7.9): a small in-house bounded tool loop is allowed, with read-only tools and proposal-only effects; still no third-party agent framework |
 | Alternatives | Direct SDK calls in modules; agent frameworks; self-hosted model from day one |
 | Rationale | Single egress point, testability, replaceability, enforced schema validation |
 | Consequences | We maintain prompts/schemas/adapters; limited use of provider-specific conveniences |
