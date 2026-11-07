@@ -135,6 +135,10 @@ urlpatterns: list = [
         f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/snooze/undo",
         conversations.SnoozeUndoView.as_view(),
     ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/verification-tasks/<uuid:task_id>/close",
+        conversations.VerificationTaskCloseView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/cases", cases.CaseCollectionView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>", cases.CaseDetailView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/cases/<uuid:case_id>/resolve", cases.CaseResolveView.as_view()),

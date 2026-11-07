@@ -33,6 +33,8 @@ from .serializers import (
     SnoozeUndoIn,
     SnoozeUndoneOut,
     TimelinePageOut,
+    VerificationTaskClosedOut,
+    VerificationTaskCloseIn,
 )
 
 MAX_UPLOAD = 1_000_000
@@ -248,3 +250,11 @@ class SnoozeUndoView(APIView):
     def post(self, request: Any, ws: UUID, invoice_id: UUID) -> Response:
         data = validated(SnoozeUndoIn, request)
         return Response(service_commitments.undo_snooze(request.ctx, invoice_id, data.get("reason")))
+
+
+class VerificationTaskCloseView(APIView):
+    @endpoint("E128", request=VerificationTaskCloseIn, responses={200: VerificationTaskClosedOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID, invoice_id: UUID, task_id: UUID) -> Response:
+        data = validated(VerificationTaskCloseIn, request)
+        return Response(service.close_verification_task(request.ctx, invoice_id, task_id, data["note"]))

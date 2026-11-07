@@ -2500,6 +2500,53 @@ paths:
                 $ref: '#/components/schemas/SnoozeUndoneOut'
           description: ''
       x-endpoint-id: E075
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/verification-tasks/{task_id}/close:
+    post:
+      operationId: E128
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: task_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerificationTaskCloseInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/VerificationTaskCloseInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VerificationTaskClosedOut'
+          description: ''
+      x-endpoint-id: E128
   /api/v1/workspaces/{ws}/invoices/pdf:
     post:
       operationId: E038
@@ -8641,6 +8688,38 @@ components:
       - email
       - email_verified
       - id
+    VerificationTaskCloseInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        note:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+      - note
+    VerificationTaskClosedOut:
+      type: object
+      properties:
+        task_id:
+          type: string
+          format: uuid
+        invoice_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+        payment_status:
+          type: string
+        open_task_count:
+          type: integer
+      required:
+      - invoice_id
+      - open_task_count
+      - payment_status
+      - status
+      - task_id
     WhyNotOut:
       type: object
       properties:

@@ -77,3 +77,19 @@ test("a paused workspace holds a new draft with a plain reason, and resuming nee
   await page.getByRole("button", { name: "Resume automation" }).click();
   await expect(page.getByText(/Automation is on/)).toBeVisible();
 });
+
+test("a customer's stated date is recorded as their statement, not as a payment", async ({ page }) => {
+  await signUpThroughToDashboard(page, uniqueEmail("promise"), "Promise Ltd");
+  await importInvoice(page, "C-001");
+  await openFollowup(page, "C-001");
+
+  await expect(page.getByText("Nothing recorded yet.")).toBeVisible();
+  await page.getByLabel("Stated date").fill("2026-12-20");
+  await page.getByRole("button", { name: "Record what they said" }).click();
+  await expect(page.getByText(/Stated date: .*\(active\)/)).toBeVisible();
+
+  // The statement does not touch the balance: the invoice is still outstanding.
+  await page.getByRole("link", { name: "Overview" }).click();
+  await expect(page.getByText("Amount still owed")).toBeVisible();
+  await expect(page.getByText("Recorded as paid").locator("xpath=following-sibling::dd[1]")).toContainText("0.00");
+});

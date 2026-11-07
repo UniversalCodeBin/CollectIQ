@@ -1109,6 +1109,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/verification-tasks/{task_id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E128"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invoices/pdf": {
         parameters: {
             query?: never;
@@ -3637,6 +3653,19 @@ export interface components {
             email: string;
             email_verified: boolean;
         };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        VerificationTaskCloseInRequest: {
+            note: string;
+        };
+        VerificationTaskClosedOut: {
+            /** Format: uuid */
+            task_id: string;
+            /** Format: uuid */
+            invoice_id: string;
+            status: string;
+            payment_status: string;
+            open_task_count: number;
+        };
         WhyNotOut: {
             code: string;
             label: string;
@@ -5720,6 +5749,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SnoozeUndoneOut"];
+                };
+            };
+        };
+    };
+    E128: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                invoice_id: string;
+                task_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerificationTaskCloseInRequest"];
+                "multipart/form-data": components["schemas"]["VerificationTaskCloseInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VerificationTaskClosedOut"];
                 };
             };
         };

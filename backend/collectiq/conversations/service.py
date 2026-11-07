@@ -368,7 +368,50 @@ def _on_allocation_confirmed(ctx: RequestContext, payload: dict[str, Any]) -> No
             _close_task(ctx, task["id"], UUID(invoice_id), task["message_id"], "PAYMENT_RECORDED_BY_PERSON")
 
 
-def _close_task(ctx: RequestContext, task_id: UUID, invoice_id: UUID, message_id: UUID, reason: str) -> None:
+def close_verification_task(
+    ctx: RequestContext, invoice_id: UUID, task_id: UUID, note: str
+) -> dict[str, Any]:
+    """A person closes a payment-claim task after checking outside CollectIQ (E128).
+
+    This never records a payment: the balance and payment status come only from confirmed evidence.
+    The note is required so the audit trail says what the person found.
+    """
+    authorize(ctx, MESSAGES_WRITE)
+    if ctx.user_id is None:
+        raise ProblemError("FORBIDDEN", 403, "Only a person can close a verification task.")
+    with tenant_tx(ctx):
+        task = fetch_one(
+            "SELECT id, message_id, status FROM verification_tasks"
+            " WHERE id = %s AND invoice_id = %s FOR UPDATE",
+            [task_id, invoice_id],
+        )
+        if task is None:
+            raise ProblemError("NOT_FOUND", 404, "That verification task was not found.")
+        if task["status"] != "OPEN":
+            raise ProblemError("CONFLICT", 409, "That verification task is already closed.")
+        fetch_one("SELECT 1 AS ok FROM invoice_state WHERE invoice_id = %s FOR UPDATE", [invoice_id])
+        _close_task(ctx, task_id, invoice_id, task["message_id"], "CLOSED_BY_PERSON_AFTER_CHECK", note)
+        state = fetch_one(
+            "SELECT payment_status, open_task_count FROM invoice_state WHERE invoice_id = %s", [invoice_id]
+        )
+    assert state
+    return {
+        "task_id": task_id,
+        "invoice_id": invoice_id,
+        "status": "CLOSED",
+        "payment_status": state["payment_status"],
+        "open_task_count": state["open_task_count"],
+    }
+
+
+def _close_task(
+    ctx: RequestContext,
+    task_id: UUID,
+    invoice_id: UUID,
+    message_id: UUID,
+    reason: str,
+    note: str | None = None,
+) -> None:
     execute(
         "UPDATE verification_tasks SET status = 'CLOSED', closed_by = %s, closed_at = now() WHERE id = %s",
         [ctx.user_id, task_id],
@@ -384,7 +427,7 @@ def _close_task(ctx: RequestContext, task_id: UUID, invoice_id: UUID, message_id
         "verification_task.closed",
         "invoice",
         str(invoice_id),
-        after={"kind": "PAYMENT_CLAIM", "message_id": str(message_id)},
+        after={"kind": "PAYMENT_CLAIM", "message_id": str(message_id), **({"note": note} if note else {})},
         reason_codes=[reason],
     )
 

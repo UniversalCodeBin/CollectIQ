@@ -235,7 +235,7 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 - Four runbooks (auth outage, wrong send, token compromise, bad allocation fix) state: pause first, nothing is edited by hand, and the audit wording with its superuser limit. Disconnecting Gmail deletes the stored credential and revokes at Google on a best-effort basis; PayPal disconnect only changes state, so both runbooks tell the operator to confirm at the provider.
 
 ## Task 38 rulings
-- Journeys are covered by the existing specs (onboarding, import, reconciliation, follow-up, pause) plus `fl-viewports.spec.ts` and `fl-recovery.spec.ts`. FL-03, 08, 09, 10, 12, 13, 14 and 16 depend on UI that is not built (PDF review is flagged, no snooze/commitment controls, connect/send controls and AI correction UI are owed) and are not claimed as covered.
+- Journeys are covered by the existing specs (onboarding, import, reconciliation, follow-up, pause) plus `fl-viewports.spec.ts` and `fl-recovery.spec.ts`. FL-08 and FL-09 now have UI (commitments panel, snooze approve/undo, E128 close-a-check) covered by Vitest; Playwright specs for them are listed in the acceptance report. FL-03, 10, 12, 13, 14 and 16 are re-verified against the screens that exist in the final pass; any not covered by a spec is named there rather than claimed.
 - Pausing automation is not an idempotent mutation: a dropped request shows the problem and the person may press Pause again, which is safe because pausing twice is the same state.
 - Worker-killed-mid-job recovery is proven at the backend level by the job-lease tests, not in the browser.
 

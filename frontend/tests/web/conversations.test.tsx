@@ -184,6 +184,25 @@ describe("Invoice timeline", () => {
   });
 });
 
+describe("Closing a verification task", () => {
+  it("needs a note, closes through E128, and never claims the invoice is paid", async () => {
+    const invoice = { facts: { id: INV_A, invoice_number: "INV-2041", client_id: "c1", client_name: "Northwind Traders", status: "ISSUED", currency: "INR", gross_minor: 100000, subtotal_minor: null, tax_minor: null, issue_date: null, due_date: "2026-10-01", payment_terms: null, po_number: null, project_ref: null, description: null }, derived: {}, allowed_actions: [], recommended_action: null };
+    stub({
+      [`GET ${API}/invoices/${INV_A}`]: { status: 200, body: invoice },
+      [`GET ${API}/invoices/${INV_A}/messages`]: page([{ type: "VERIFICATION_TASK", id: "v1", at: "2026-11-03T09:00:00Z", title: "Payment not verified", status: "OPEN" }]),
+      [`POST ${API}/invoices/${INV_A}/verification-tasks/v1/close`]: { status: 200, body: { task_id: "v1", invoice_id: INV_A, status: "CLOSED", payment_status: "AWAITING_VERIFICATION", open_task_count: 0 } },
+    });
+    open(`invoices/${INV_A}/timeline`);
+    const button = await screen.findByRole("button", { name: "Close this check" });
+    expect(button).toBeDisabled();
+    await userEvent.type(screen.getByLabelText("What did you find?"), "Nothing in the bank.");
+    await userEvent.click(button);
+    await waitFor(() => expect(called(`POST ${API}/invoices/${INV_A}/verification-tasks/v1/close`)).toHaveLength(1));
+    expect(called(`POST ${API}/invoices/${INV_A}/verification-tasks/v1/close`)[0]?.body).toEqual({ note: "Nothing in the bank." });
+    expect(called(`POST ${API}/invoices/${INV_A}/verification-tasks/v1/close`)[0]?.headers.get("Idempotency-Key")).toBeTruthy();
+  });
+});
+
 describe("Disputes and questions", () => {
   it("lists cases and shows an AI-drafted summary as unverified", async () => {
     stub({ [`GET ${API}/cases`]: page([theCase({ summary_is_ai_derived: true })]) });

@@ -7,6 +7,7 @@ import { apiRequest } from "../../lib/api";
 import { formatDate } from "../../lib/format";
 import styles from "./Conversations.module.css";
 import { labelText } from "./labels";
+import { VerificationTask } from "./VerificationTask";
 
 export type TimelineEvent = { type: string; id: string; at: string; title: string; [key: string]: unknown };
 type Renderer = (event: TimelineEvent) => ReactNode;
@@ -43,7 +44,7 @@ export const TIMELINE_RENDERERS: Record<string, Renderer> = {
       Until {text(e.until) ? formatDate(text(e.until)) : "a set date"} · {text(e.status).toLowerCase()}
     </p>
   ),
-  VERIFICATION_TASK: (e) => <p className={styles.muted}>{e.status === "OPEN" ? "Waiting for a person to check" : "Checked by a person"}</p>,
+  VERIFICATION_TASK: (e) => <VerificationTask taskId={e.id} open={e.status === "OPEN"} />,
 };
 
 export function InvoiceTimeline({ detail }: { detail: { facts: { id: string } } }) {

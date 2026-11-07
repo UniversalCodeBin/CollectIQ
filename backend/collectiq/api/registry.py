@@ -316,6 +316,14 @@ _SPECS = (
         "IA",
         "P0",
     ),
+    _spec(
+        "E128",
+        "POST",
+        "/workspaces/{ws}/invoices/{invoice_id}/verification-tasks/{task_id}/close",
+        MESSAGES_WRITE,
+        "IA",
+        "P0",
+    ),
 )
 
 ENDPOINTS: dict[str, EndpointSpec] = {spec.id: spec for spec in _SPECS}

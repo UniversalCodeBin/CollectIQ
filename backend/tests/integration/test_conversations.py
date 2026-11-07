@@ -174,6 +174,26 @@ def test_claim_never_changes_balance_or_marks_paid(env: Env) -> None:
     assert env.db.execute("SELECT count(*) FROM verification_tasks WHERE status = 'OPEN'").fetchone()[0] == 1
 
 
+def test_a_person_closes_a_claim_task_without_changing_the_balance(env: Env) -> None:
+    message = env.message(on="INV-1")
+    assert env.label(message["id"], "INV-1", "PAYMENT_CLAIM").status_code == 200
+    task = env.db.execute("SELECT id FROM verification_tasks WHERE status = 'OPEN'").fetchone()[0]
+    before = env.state()
+    url = env.url(f"invoices/{env.invoices['INV-1']}/verification-tasks/{task}/close")
+    assert env.client.post(url, {}, format="json", **idem()).status_code == 422  # the note is required
+    done = env.client.post(url, {"note": "Checked the bank: nothing received."}, format="json", **idem())
+    assert done.status_code == 200, done.content
+    after = env.state()
+    assert after["open_task_count"] == 0 and after["outstanding_minor"] == before["outstanding_minor"]
+    assert after["payment_status"] != "PAID_VERIFIED"
+    row = env.db.execute(
+        "SELECT after_masked FROM audit_events WHERE action = 'verification_task.closed'"
+    ).fetchone()
+    assert row[0]["note"] == "Checked the bank: nothing received."
+    again = env.client.post(url, {"note": "Again"}, format="json", **idem())
+    assert again.status_code == 409
+
+
 def test_claim_on_a_verified_paid_invoice_is_a_note_only(env: Env) -> None:
     env.db.execute(
         "UPDATE invoice_state SET payment_status = 'PAID_VERIFIED' WHERE invoice_id = %s",

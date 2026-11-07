@@ -6446,6 +6446,70 @@ paths:
           $ref: '#/components/responses/Problem4xx'
         '429':
           $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/invoices/{invoice_id}/verification-tasks/{task_id}/close:
+    post:
+      operationId: post_ws_invoices_invoice_id_verification_tasks_task_id_close
+      tags:
+      - Conversations
+      summary: Close a payment-claim verification task after checking outside CollectIQ
+      description: 'Endpoint E128. Status: PROPOSED-NEW (pilot preparation; person-driven closure of a verification task). Module M15. Roles: O, F. Priority P0. A person records what they found in a required note. It never records a payment: the balance and payment status come only from confirmed evidence. Idempotent, audited.'
+      x-endpoint-id: E128
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M15
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - note
+              properties:
+                note:
+                  type: string
+                  minLength: 1
+                  maxLength: 500
+      responses:
+        '200':
+          description: The task is closed. Payment status is unchanged by this call.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '409':
+          $ref: '#/components/responses/Problem4xx'
+        '422':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
 components:
   securitySchemes:
     sessionCookie:

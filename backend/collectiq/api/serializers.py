@@ -1087,6 +1087,18 @@ class SnoozeUndoIn(StrictSerializer):
     reason = serializers.CharField(max_length=500, required=False)
 
 
+class VerificationTaskCloseIn(StrictSerializer):
+    note = serializers.CharField(min_length=1, max_length=500)
+
+
+class VerificationTaskClosedOut(serializers.Serializer):
+    task_id = serializers.UUIDField()
+    invoice_id = serializers.UUIDField()
+    status = serializers.CharField()
+    payment_status = serializers.CharField()
+    open_task_count = serializers.IntegerField()
+
+
 class SnoozeStartedOut(serializers.Serializer):
     invoice_id = serializers.UUIDField()
     reminder_status = serializers.CharField()
