@@ -14,7 +14,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 MATRIX = REPO / "CollectIQ_Requirements_Traceability.csv"
-EXPECTED_ROWS = 221
+EXPECTED_ROWS = 223  # 221 PRD rows plus FR-AI-BRIEF and FR-PAUSE, added after the plan
 LAST_TASK = 40
 
 VALID_PRIORITIES = {

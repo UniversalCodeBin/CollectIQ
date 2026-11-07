@@ -12,7 +12,7 @@ const BY_GATE: Record<string, string> = {
   G10: "The limit on how often this customer is contacted has been reached.",
   G11: "It is outside business hours, so sending is held until they start.",
   G12: "The facts in the draft no longer match the invoice. Refresh the draft.",
-  G13: "Automation is paused, switched off, or this case needs a person.",
+  G13: "Reminders are paused (workspace, client or invoice), or this case needs a person.",
   G14: "This exact reminder was already handled.",
   G15: "The connected mailbox is not healthy.",
 };

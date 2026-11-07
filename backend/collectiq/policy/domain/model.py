@@ -69,6 +69,7 @@ class StateSnapshot:
     open_blocker: bool = False
     coverage: str = "SUPPORTED"
     snooze_active: bool = False
+    hold_scope: str | None = None  # "CLIENT" or "INVOICE" when a person paused reminders for it
     recipient_approved: bool = True
     recipient_suppressed: bool = False
     contacts_in_window: int = 0

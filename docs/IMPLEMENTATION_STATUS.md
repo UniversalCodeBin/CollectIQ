@@ -78,3 +78,4 @@ The toolchain runs on this host: Python 3.12 with uv, Node with npm, and Postgre
 - T13: COMMIT allowed_actions reflects no decisions; the UI works out readiness from local decisions
 - Next free endpoint id is E117
 FR-025 filter controls and FR-026 sort and Reset to exception order have no UI yet; FR-023 supporting-evidence links wait for T15+.
+- Post-plan: invoice brief agent (E120) and per-client/per-invoice pause (E121-E123) built and tested; next free endpoint id is E124.

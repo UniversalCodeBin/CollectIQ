@@ -22,7 +22,11 @@ type Call = { key: string; body: unknown; headers: Headers; query: string };
 let calls: Call[];
 
 function stub(routes: Record<string, Reply | Reply[]>) {
-  const replies: Record<string, Reply | Reply[]> = { "GET /api/v1/auth/session": { status: 200, body: SESSION }, ...routes };
+  const replies: Record<string, Reply | Reply[]> = {
+    "GET /api/v1/auth/session": { status: 200, body: SESSION },
+    [`GET ${API}/reminder-pauses`]: { status: 200, body: { items: [] } },
+    ...routes,
+  };
   calls = [];
   vi.stubGlobal("fetch", (url: string, init: RequestInit = {}) => {
     const [path = "", query = ""] = String(url).split("?");
@@ -347,7 +351,7 @@ describe("Invoice details (SCR-04)", () => {
     open(`invoices/${INV}/overview`);
     await screen.findByRole("heading", { name: "Invoice INV-2041" });
     const tabs = screen.getByRole("navigation", { name: "Invoice sections" });
-    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history", "Conversation", "Follow-up"]);
+    expect(within(tabs).getAllByRole("link").map((link) => link.textContent)).toEqual(["Overview", "Payment history", "Conversation", "Follow-up", "AI brief"]);
     for (const hidden of [/payment evidence/i, /timeline/i, /reconciliation/i, /tasks/i]) {
       expect(within(tabs).queryByText(hidden)).not.toBeInTheDocument();
     }
@@ -487,6 +491,21 @@ describe("Client profile (SCR-14)", () => {
     open(`clients/${CLIENT}`);
     expect(await screen.findByText("No invoices for this client yet")).toBeInTheDocument();
     expect(screen.getByText("No contacts yet")).toBeInTheDocument();
+  });
+
+  it("shows an active client pause with its reason and lets a person resume it", async () => {
+    const pause = { id: "77777777-7777-4777-8777-777777777777", scope: "CLIENT", client_id: CLIENT, invoice_id: null, reason: "Waiting on their finance team", status: "ACTIVE", paused_by: "u1", paused_at: "2026-10-01T10:00:00Z", resumed_by: null, resumed_at: null };
+    stub({
+      [CLIENT_GET]: { status: 200, body: profile() },
+      [`GET ${API}/invoices`]: { status: 200, body: { items: [], next_cursor: null } },
+      [`GET ${API}/reminder-pauses`]: { status: 200, body: { items: [pause] } },
+      [`POST ${API}/reminder-pauses/${pause.id}/resume`]: { status: 200, body: { ...pause, status: "RESUMED" } },
+    });
+    open(`clients/${CLIENT}`);
+    expect(await screen.findByText(/Waiting on their finance team/)).toBeInTheDocument();
+    expect(new URLSearchParams(called(`GET ${API}/reminder-pauses`)[0]?.query).get("client_id")).toBe(CLIENT);
+    await userEvent.click(screen.getByRole("button", { name: "Resume reminders" }));
+    await vi.waitFor(() => expect(called(`POST ${API}/reminder-pauses/${pause.id}/resume`)).toHaveLength(1));
   });
 
   it("shows the problem when the client cannot be loaded", async () => {

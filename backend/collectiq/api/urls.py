@@ -176,6 +176,11 @@ urlpatterns: list = [
         payments.TransactionDuplicateView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/reminders", reminders.ReminderCollectionView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/reminder-pauses", reminders.ReminderPauseCollectionView.as_view()),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/reminder-pauses/<uuid:pause_id>/resume",
+        reminders.ReminderPauseResumeView.as_view(),
+    ),
     path(f"{_V1}workspaces/<uuid:ws>/reminders/<uuid:reminder_id>", reminders.ReminderDetailView.as_view()),
     path(
         f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/reminders/evaluate",
@@ -201,6 +206,7 @@ urlpatterns: list = [
         inbox.NotificationReadView.as_view(),
     ),
     path(f"{_V1}workspaces/<uuid:ws>/ai/settings", ai.AiSettingsView.as_view()),
+    path(f"{_V1}workspaces/<uuid:ws>/invoices/<uuid:invoice_id>/ai/brief", ai.InvoiceBriefView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/audit-events", audit_history.AuditEventsView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/audit-events/exports", audit_history.AuditExportView.as_view()),
     path(f"{_V1}workspaces/<uuid:ws>/exports", privacy_views.ExportCollectionView.as_view()),

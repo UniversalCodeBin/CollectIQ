@@ -1170,14 +1170,28 @@ class InboxOut(serializers.Serializer):
 class AiSettingsIn(StrictSerializer):
     pdf_extraction_enabled = serializers.BooleanField(required=False)
     reply_interpretation_enabled = serializers.BooleanField(required=False)
+    invoice_brief_enabled = serializers.BooleanField(required=False)
     kill_switch = serializers.BooleanField(required=False)
 
 
 class AiSettingsOut(serializers.Serializer):
     pdf_extraction_enabled = serializers.BooleanField()
     reply_interpretation_enabled = serializers.BooleanField()
+    invoice_brief_enabled = serializers.BooleanField()
     kill_switch = serializers.BooleanField()
     provider_configured = serializers.BooleanField()
+
+
+class InvoiceBriefOut(serializers.Serializer):
+    """`facts` and `derived` are database values. `brief` is an AI reading and is never verified."""
+
+    status = serializers.CharField()
+    facts = serializers.DictField()
+    derived = serializers.DictField()
+    brief = serializers.DictField(allow_null=True)
+    wording_rejected = serializers.ListField(child=serializers.CharField(), required=False)
+    suggestions = serializers.ListField(child=serializers.DictField())
+    ai_derived = serializers.BooleanField()
 
 
 class ExtractionFieldsIn(StrictSerializer):
@@ -1312,3 +1326,26 @@ class AiPayloadOut(serializers.Serializer):
 class AiPayloadPageOut(serializers.Serializer):
     items = AiPayloadOut(many=True)
     note = serializers.CharField()
+
+
+class ReminderPauseIn(StrictSerializer):
+    scope = serializers.ChoiceField(choices=["CLIENT", "INVOICE"])
+    target_id = serializers.UUIDField()
+    reason = serializers.CharField(max_length=500, required=False, allow_blank=True, allow_null=True)
+
+
+class ReminderPauseOut(serializers.Serializer):
+    id = serializers.UUIDField()
+    scope = serializers.CharField()
+    client_id = serializers.UUIDField(allow_null=True)
+    invoice_id = serializers.UUIDField(allow_null=True)
+    reason = serializers.CharField(allow_null=True)
+    status = serializers.CharField()
+    paused_by = serializers.UUIDField()
+    paused_at = serializers.DateTimeField()
+    resumed_by = serializers.UUIDField(allow_null=True)
+    resumed_at = serializers.DateTimeField(allow_null=True)
+
+
+class ReminderPauseListOut(serializers.Serializer):
+    items = ReminderPauseOut(many=True)

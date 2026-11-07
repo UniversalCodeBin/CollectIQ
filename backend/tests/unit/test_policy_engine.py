@@ -66,6 +66,8 @@ GATE_CASES = [
     ("G12", {"draft_facts_valid": False}, {}, Outcome.PAUSE_FOR_REVIEW),
     ("G13", {}, {"paused": True}, Outcome.PAUSE_FOR_REVIEW),
     ("G13", {"sensitivity_satisfied": False}, {}, Outcome.PAUSE_FOR_REVIEW),
+    ("G13", {"hold_scope": "CLIENT"}, {}, Outcome.PAUSE_FOR_REVIEW),
+    ("G13", {"hold_scope": "INVOICE"}, {}, Outcome.PAUSE_FOR_REVIEW),
     ("G14", {"idempotency_key_used": True}, {}, Outcome.DENY),
     ("G15", {"integration_healthy": False}, {}, Outcome.PAUSE_FOR_REVIEW),
 ]

@@ -25,7 +25,7 @@ def _dispute_clear(s: StateSnapshot, *_: object) -> bool:
 
 
 def _automation_permits(s: StateSnapshot, p: PolicyVersion, automatic: bool) -> bool:
-    if p.paused or not s.sensitivity_satisfied:
+    if p.paused or s.hold_scope or not s.sensitivity_satisfied:
         return False
     return not (automatic and p.mode == "MANUAL")
 

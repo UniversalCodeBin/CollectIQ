@@ -5734,6 +5734,8 @@ paths:
                   type: boolean
                 reply_interpretation_enabled:
                   type: boolean
+                invoice_brief_enabled:
+                  type: boolean
                 kill_switch:
                   type: boolean
               additionalProperties: false
@@ -6096,6 +6098,195 @@ paths:
         '403':
           $ref: '#/components/responses/Problem4xx'
         '404':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/invoices/{invoice_id}/ai/brief:
+    post:
+      operationId: post_ws_invoices_invoice_id_ai_brief
+      tags:
+      - Privacy
+      summary: AI brief for one invoice (summary, next step, draft wording)
+      description: 'Endpoint E120. Status: PROPOSED-NEW (pilot preparation, SAD 7.9). Module M19. Roles: O, F. Priority P1. Needs the invoice_brief_enabled opt-in. The response keeps verified facts apart from the AI-derived brief; a suggested pause is only a suggestion; nothing is sent or changed.'
+      x-endpoint-id: E120
+      x-origin: proposed-new
+      x-priority: P1
+      x-module: M19
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        '200':
+          description: The verified facts and, when enabled and available, the AI-derived brief.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/reminder-pauses:
+    get:
+      operationId: get_ws_reminder_pauses
+      tags:
+      - Reminders
+      summary: List reminder pauses (active, or with history)
+      description: 'Endpoint E121. Status: PROPOSED-NEW (pilot preparation). Module M14. Roles: O, F, L. A pause stops reminder drafts, approvals and hand-offs for one client or one invoice.'
+      x-endpoint-id: E121
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M14
+      x-audited: false
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      - PROJECT_LEAD
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: invoice_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: client_id
+        in: query
+        required: false
+        schema:
+          type: string
+          format: uuid
+      - name: history
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Pauses, newest first.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+    post:
+      operationId: post_ws_reminder_pauses
+      tags:
+      - Reminders
+      summary: Pause reminders for a client or an invoice
+      description: 'Endpoint E122. Status: PROPOSED-NEW (pilot preparation). Module M14. Roles: O, F. Priority P0. Needs AUTOMATION_PAUSE. 409 when the target is already paused.'
+      x-endpoint-id: E122
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - scope
+              - target_id
+              properties:
+                scope:
+                  type: string
+                  enum:
+                  - CLIENT
+                  - INVOICE
+                target_id:
+                  type: string
+                  format: uuid
+                reason:
+                  type: string
+                  maxLength: 500
+              additionalProperties: false
+      responses:
+        '201':
+          description: The pause that was recorded.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '409':
+          $ref: '#/components/responses/Problem4xx'
+        '422':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/reminder-pauses/{pause_id}/resume:
+    post:
+      operationId: post_ws_reminder_pauses_pause_id_resume
+      tags:
+      - Reminders
+      summary: Resume reminders (end a pause)
+      description: 'Endpoint E123. Status: PROPOSED-NEW (pilot preparation). Module M14. Roles: O, F. Priority P0. 409 when the pause has already ended.'
+      x-endpoint-id: E123
+      x-origin: proposed-new
+      x-priority: P0
+      x-module: M14
+      x-audited: true
+      x-roles:
+      - OWNER
+      - FINANCE_ADMIN
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - name: pause_id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: The pause, now ended; the history is kept.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
+          $ref: '#/components/responses/Problem4xx'
+        '404':
+          $ref: '#/components/responses/Problem4xx'
+        '409':
           $ref: '#/components/responses/Problem4xx'
         '429':
           $ref: '#/components/responses/Problem4xx'

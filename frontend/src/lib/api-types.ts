@@ -917,6 +917,22 @@ export interface paths {
         patch: operations["E044"];
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/invoices/{invoice_id}/ai/brief": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E120"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/invoices/{invoice_id}/archive": {
         parameters: {
             query?: never;
@@ -1429,6 +1445,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/reminder-pauses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["E121"];
+        put?: never;
+        post: operations["E122"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/reminder-pauses/{pause_id}/resume": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E123"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/reminders": {
         parameters: {
             query?: never;
@@ -1637,11 +1685,13 @@ export interface components {
         AiSettingsInRequest: {
             pdf_extraction_enabled?: boolean;
             reply_interpretation_enabled?: boolean;
+            invoice_brief_enabled?: boolean;
             kill_switch?: boolean;
         };
         AiSettingsOut: {
             pdf_extraction_enabled: boolean;
             reply_interpretation_enabled: boolean;
+            invoice_brief_enabled: boolean;
             kill_switch: boolean;
             provider_configured: boolean;
         };
@@ -1713,7 +1763,7 @@ export interface components {
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         AttestationInRequest: {
-            scope: components["schemas"]["ScopeEnum"];
+            scope: components["schemas"]["AttestationInScopeEnum"];
             /** Format: uuid */
             account_id?: string;
             invoice_ids?: string[];
@@ -1721,6 +1771,12 @@ export interface components {
             as_of: string;
             note?: string;
         };
+        /**
+         * @description * `ACCOUNT` - ACCOUNT
+         *     * `INVOICE` - INVOICE
+         * @enum {string}
+         */
+        AttestationInScopeEnum: "ACCOUNT" | "INVOICE";
         AttestationOut: {
             scope: string;
             /** Format: date-time */
@@ -2567,6 +2623,24 @@ export interface components {
             /** Format: date-time */
             expires_at: string;
         };
+        /** @description `facts` and `derived` are database values. `brief` is an AI reading and is never verified. */
+        InvoiceBriefOut: {
+            status: string;
+            facts: {
+                [key: string]: unknown;
+            };
+            derived: {
+                [key: string]: unknown;
+            };
+            brief: {
+                [key: string]: unknown;
+            } | null;
+            wording_rejected?: string[];
+            suggestions: {
+                [key: string]: unknown;
+            }[];
+            ai_derived: boolean;
+        };
         InvoiceDetailOut: {
             version: number;
             facts: {
@@ -3236,6 +3310,41 @@ export interface components {
             next_cursor: string | null;
         };
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
+        ReminderPauseInRequest: {
+            scope: components["schemas"]["ReminderPauseInScopeEnum"];
+            /** Format: uuid */
+            target_id: string;
+            reason?: string | null;
+        };
+        /**
+         * @description * `CLIENT` - CLIENT
+         *     * `INVOICE` - INVOICE
+         * @enum {string}
+         */
+        ReminderPauseInScopeEnum: "CLIENT" | "INVOICE";
+        ReminderPauseListOut: {
+            items: components["schemas"]["ReminderPauseOut"][];
+        };
+        ReminderPauseOut: {
+            /** Format: uuid */
+            id: string;
+            scope: string;
+            /** Format: uuid */
+            client_id: string | null;
+            /** Format: uuid */
+            invoice_id: string | null;
+            reason: string | null;
+            status: string;
+            /** Format: uuid */
+            paused_by: string;
+            /** Format: date-time */
+            paused_at: string;
+            /** Format: uuid */
+            resumed_by: string | null;
+            /** Format: date-time */
+            resumed_at: string | null;
+        };
+        /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         ReminderRejectInRequest: {
             reason?: string;
         };
@@ -3270,12 +3379,6 @@ export interface components {
          * @enum {string}
          */
         RoleEnum: "OWNER" | "FINANCE_ADMIN";
-        /**
-         * @description * `ACCOUNT` - ACCOUNT
-         *     * `INVOICE` - INVOICE
-         * @enum {string}
-         */
-        ScopeEnum: "ACCOUNT" | "INVOICE";
         /**
          * @description * `STANDARD` - STANDARD
          *     * `LONG_TERM` - LONG_TERM
@@ -5204,6 +5307,28 @@ export interface operations {
             };
         };
     };
+    E120: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                invoice_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceBriefOut"];
+                };
+            };
+        };
+    };
     E046: {
         parameters: {
             query?: never;
@@ -6197,6 +6322,83 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ProposalRejectedOut"];
+                };
+            };
+        };
+    };
+    E121: {
+        parameters: {
+            query?: {
+                client_id?: string;
+                history?: boolean;
+                invoice_id?: string;
+            };
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderPauseListOut"];
+                };
+            };
+        };
+    };
+    E122: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReminderPauseInRequest"];
+                "multipart/form-data": components["schemas"]["ReminderPauseInRequest"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderPauseOut"];
+                };
+            };
+        };
+    };
+    E123: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                pause_id: string;
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReminderPauseOut"];
                 };
             };
         };

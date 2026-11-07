@@ -2092,6 +2092,32 @@ paths:
                 $ref: '#/components/schemas/InvoiceDetailOut'
           description: ''
       x-endpoint-id: E044
+  /api/v1/workspaces/{ws}/invoices/{invoice_id}/ai/brief:
+    post:
+      operationId: E120
+      parameters:
+      - in: path
+        name: invoice_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceBriefOut'
+          description: ''
+      x-endpoint-id: E120
   /api/v1/workspaces/{ws}/invoices/{invoice_id}/archive:
     post:
       operationId: E046
@@ -3393,6 +3419,104 @@ paths:
                 $ref: '#/components/schemas/ProposalRejectedOut'
           description: ''
       x-endpoint-id: E058
+  /api/v1/workspaces/{ws}/reminder-pauses:
+    get:
+      operationId: E121
+      parameters:
+      - in: query
+        name: client_id
+        schema:
+          type: string
+      - in: query
+        name: history
+        schema:
+          type: boolean
+      - in: query
+        name: invoice_id
+        schema:
+          type: string
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderPauseListOut'
+          description: ''
+      x-endpoint-id: E121
+    post:
+      operationId: E122
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReminderPauseInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ReminderPauseInRequest'
+        required: true
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderPauseOut'
+          description: ''
+      x-endpoint-id: E122
+  /api/v1/workspaces/{ws}/reminder-pauses/{pause_id}/resume:
+    post:
+      operationId: E123
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: pause_id
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReminderPauseOut'
+          description: ''
+      x-endpoint-id: E123
   /api/v1/workspaces/{ws}/reminders:
     get:
       operationId: E083
@@ -3875,6 +3999,8 @@ components:
           type: boolean
         reply_interpretation_enabled:
           type: boolean
+        invoice_brief_enabled:
+          type: boolean
         kill_switch:
           type: boolean
     AiSettingsOut:
@@ -3884,11 +4010,14 @@ components:
           type: boolean
         reply_interpretation_enabled:
           type: boolean
+        invoice_brief_enabled:
+          type: boolean
         kill_switch:
           type: boolean
         provider_configured:
           type: boolean
       required:
+      - invoice_brief_enabled
       - kill_switch
       - pdf_extraction_enabled
       - provider_configured
@@ -4055,7 +4184,7 @@ components:
         field left out.
       properties:
         scope:
-          $ref: '#/components/schemas/ScopeEnum'
+          $ref: '#/components/schemas/AttestationInScopeEnum'
         account_id:
           type: string
           format: uuid
@@ -4074,6 +4203,14 @@ components:
       required:
       - as_of
       - scope
+    AttestationInScopeEnum:
+      enum:
+      - ACCOUNT
+      - INVOICE
+      type: string
+      description: |-
+        * `ACCOUNT` - ACCOUNT
+        * `INVOICE` - INVOICE
     AttestationOut:
       type: object
       properties:
@@ -6044,6 +6181,41 @@ components:
       - id
       - role
       - status
+    InvoiceBriefOut:
+      type: object
+      description: '`facts` and `derived` are database values. `brief` is an AI reading
+        and is never verified.'
+      properties:
+        status:
+          type: string
+        facts:
+          type: object
+          additionalProperties: {}
+        derived:
+          type: object
+          additionalProperties: {}
+        brief:
+          type: object
+          additionalProperties: {}
+          nullable: true
+        wording_rejected:
+          type: array
+          items:
+            type: string
+        suggestions:
+          type: array
+          items:
+            type: object
+            additionalProperties: {}
+        ai_derived:
+          type: boolean
+      required:
+      - ai_derived
+      - brief
+      - derived
+      - facts
+      - status
+      - suggestions
     InvoiceDetailOut:
       type: object
       properties:
@@ -7699,6 +7871,86 @@ components:
       required:
       - items
       - next_cursor
+    ReminderPauseInRequest:
+      type: object
+      description: An unexpected field is refused, so a typo cannot pass as an optional
+        field left out.
+      properties:
+        scope:
+          $ref: '#/components/schemas/ReminderPauseInScopeEnum'
+        target_id:
+          type: string
+          format: uuid
+        reason:
+          type: string
+          nullable: true
+          maxLength: 500
+      required:
+      - scope
+      - target_id
+    ReminderPauseInScopeEnum:
+      enum:
+      - CLIENT
+      - INVOICE
+      type: string
+      description: |-
+        * `CLIENT` - CLIENT
+        * `INVOICE` - INVOICE
+    ReminderPauseListOut:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReminderPauseOut'
+      required:
+      - items
+    ReminderPauseOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        scope:
+          type: string
+        client_id:
+          type: string
+          format: uuid
+          nullable: true
+        invoice_id:
+          type: string
+          format: uuid
+          nullable: true
+        reason:
+          type: string
+          nullable: true
+        status:
+          type: string
+        paused_by:
+          type: string
+          format: uuid
+        paused_at:
+          type: string
+          format: date-time
+        resumed_by:
+          type: string
+          format: uuid
+          nullable: true
+        resumed_at:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+      - client_id
+      - id
+      - invoice_id
+      - paused_at
+      - paused_by
+      - reason
+      - resumed_at
+      - resumed_by
+      - scope
+      - status
     ReminderRejectInRequest:
       type: object
       description: An unexpected field is refused, so a typo cannot pass as an optional
@@ -7765,14 +8017,6 @@ components:
       description: |-
         * `OWNER` - OWNER
         * `FINANCE_ADMIN` - FINANCE_ADMIN
-    ScopeEnum:
-      enum:
-      - ACCOUNT
-      - INVOICE
-      type: string
-      description: |-
-        * `ACCOUNT` - ACCOUNT
-        * `INVOICE` - INVOICE
     SensitivityEnum:
       enum:
       - STANDARD

@@ -258,3 +258,15 @@ Open decisions that need the product owner (OD-04, 05, 08, 10, 11, 14) are in `C
 
 - OD-14: ClamAV (free, self-hosted clamd) is the implemented scan mechanism. `SCANNER_KIND=clamav` streams each upload over INSTREAM and fails closed (503 `SCAN_UNAVAILABLE`) when the scanner gives no clear answer. The default stays `none`, which records files as not scanned. Whether ClamAV is acceptable for the pilot is the owner's call; it has only been tested against a local fake server, not a real clamd.
 - Email: `EMAIL_BACKEND_KIND=smtp` delivers through any SMTP server configured by `SMTP_*` variables (STARTTLS, login, header-injection refused). Production refuses it without host and sender. No provider is chosen and no credentials exist; delivery has not been exercised against a real server. Every customer-facing message still needs human approval before it reaches the outbox.
+
+## Invoice brief agent (2026-11-07)
+- First domain agent is `comms/service_brief.py` (E120). Opt-in `invoice_brief_enabled`, default off; kill switch wins. Role: `DRAFT_CREATE` (Owner, Finance Admin) to limit cost and abuse.
+- The model sees no invoice number, client name, amount or message text. Wording uses server-filled placeholders and must pass `lint_reminder`; failures are dropped, not edited.
+- `suggest_pause` is a PROPOSE tool: it returns a suggestion only. Applying a pause is a separate audited action (per-client/per-invoice pause, next).
+- Known gaps: no token/cost metering, no per-workspace rate limit, no live-model evaluation.
+
+## Per-client and per-invoice pause (2026-11-07)
+- A pause reuses gate G13 through a new `StateSnapshot.hold_scope` field rather than adding a gate. Every reminder path builds its snapshot through `_snapshot`, so drafting, approval and mark-sent are all covered.
+- Existing drafts are left in place; they cannot be approved or recorded as sent until the pause is resumed. Nothing is deleted or rewritten.
+- One active pause per client and per invoice (partial unique index); the invoice's own pause wins in the reason shown. Ended pauses stay as history, and `reminders.paused` / `reminders.resumed` are audited with who and why.
+- Permission is `AUTOMATION_PAUSE` (Owner, Finance Admin); a Project Lead can read pauses but not change them. The AI's `suggest_pause` remains a suggestion.

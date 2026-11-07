@@ -218,10 +218,13 @@ describe("Preparing a reminder from an invoice", () => {
     recommended_action: null,
   };
   const evaluate = `POST ${API}/invoices/${INV}/reminders/evaluate`;
+  const pauses = `GET ${API}/reminder-pauses`;
+  const none = { status: 200, body: { items: [] } };
 
   it("creates a draft only when a person asks, then links to review it", async () => {
     stub({
       [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [pauses]: none,
       [evaluate]: { status: 200, body: { ...clear, invoice_id: INV, reminder: reminder() } },
     });
     open(`invoices/${INV}/followups`);
@@ -235,6 +238,7 @@ describe("Preparing a reminder from an invoice", () => {
   it("says in plain words why no draft was made", async () => {
     stub({
       [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [pauses]: none,
       [evaluate]: {
         status: 200,
         body: { outcome: "PAUSE_FOR_REVIEW", reasons: ["G4_DISPUTE"], gate_results: [{ gate: "G4", passed: false, reason: "G4_DISPUTE" }], invoice_id: INV, reminder: null },
@@ -245,5 +249,36 @@ describe("Preparing a reminder from an invoice", () => {
     expect(await screen.findByText(/dispute on this invoice that is not settled/i)).toBeInTheDocument();
     expect(screen.queryByRole("link", { name: "Review the draft" })).not.toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/\bG\d{1,2}\b|G4_DISPUTE/);
+  });
+  const PAUSE = "55555555-5555-4555-8555-555555555555";
+  const row = { id: PAUSE, scope: "INVOICE", client_id: null, invoice_id: INV, reason: "Dispute under review", status: "ACTIVE", paused_by: "u1", paused_at: "2026-10-01T10:00:00Z", resumed_by: null, resumed_at: null };
+
+  it("pauses reminders for the invoice with a reason, then shows the pause", async () => {
+    stub({
+      [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [pauses]: [none, { status: 200, body: { items: [row] } }],
+      [`POST ${API}/reminder-pauses`]: { status: 201, body: row },
+    });
+    open(`invoices/${INV}/followups`);
+    await userEvent.type(await screen.findByLabelText("Reason (optional)"), "Dispute under review");
+    await userEvent.click(screen.getByRole("button", { name: "Pause reminders" }));
+    expect(await screen.findByText(/Reminders are paused for this invoice/)).toBeInTheDocument();
+    expect(called(`POST ${API}/reminder-pauses`)[0]!.body).toEqual({ scope: "INVOICE", target_id: INV, reason: "Dispute under review" });
+    expect(called(`POST ${API}/reminder-pauses`)[0]!.headers.get("Idempotency-Key")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Resume reminders" })).toBeInTheDocument();
+  });
+
+  it("resumes an active pause and keeps ended ones as history", async () => {
+    const ended = { ...row, id: "66666666-6666-4666-8666-666666666666", status: "RESUMED", resumed_at: "2026-10-02T10:00:00Z", reason: "Old hold" };
+    stub({
+      [`GET ${API}/invoices/${INV}`]: { status: 200, body: invoice },
+      [pauses]: [{ status: 200, body: { items: [row, ended] } }, { status: 200, body: { items: [{ ...row, status: "RESUMED", resumed_at: "2026-10-03T10:00:00Z" }, ended] } }],
+      [`POST ${API}/reminder-pauses/${PAUSE}/resume`]: { status: 200, body: { ...row, status: "RESUMED" } },
+    });
+    open(`invoices/${INV}/followups`);
+    expect(await screen.findByText(/Old hold/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Resume reminders" }));
+    expect(await screen.findByRole("button", { name: "Pause reminders" })).toBeInTheDocument();
+    expect(called(`POST ${API}/reminder-pauses/${PAUSE}/resume`)).toHaveLength(1);
   });
 });

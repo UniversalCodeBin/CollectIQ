@@ -301,6 +301,10 @@ _SPECS = (
     _spec("E117", "POST", "/workspaces/{ws}/payments/{payment_id}/attachment", LEDGER_WRITE, "AI", "P0"),
     _spec("E118", "GET", "/workspaces/{ws}/payments/{payment_id}/attachment", FINANCE_READ, "", "P0"),
     _spec("E119", "GET", "/workspaces/{ws}/invoices/{invoice_id}/payments", FINANCE_READ, "", "P0"),
+    _spec("E120", "POST", "/workspaces/{ws}/invoices/{invoice_id}/ai/brief", DRAFT_CREATE, "A", "P1"),
+    _spec("E121", "GET", "/workspaces/{ws}/reminder-pauses", INVOICES_READ, "", "P0"),
+    _spec("E122", "POST", "/workspaces/{ws}/reminder-pauses", AUTOMATION_PAUSE, "IA", "P0"),
+    _spec("E123", "POST", "/workspaces/{ws}/reminder-pauses/{pause_id}/resume", AUTOMATION_PAUSE, "IA", "P0"),
 )
 
 ENDPOINTS: dict[str, EndpointSpec] = {spec.id: spec for spec in _SPECS}

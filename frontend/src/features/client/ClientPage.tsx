@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/Button";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { QueryState } from "../../components/ui/QueryState";
 import { apiRequest } from "../../lib/api";
+import { PausePanel } from "../followups/PausePanel";
 import { InvoiceTable } from "../receivables/InvoiceTable";
 import styles from "./ClientPage.module.css";
 
@@ -74,6 +75,8 @@ export function ClientPage() {
                 </ul>
               </section>
             )}
+
+            <PausePanel scope="CLIENT" targetId={id} />
 
             <section aria-labelledby="invoices-title" className={styles.card}>
               <h2 id="invoices-title" className={styles.heading}>

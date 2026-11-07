@@ -35,6 +35,7 @@ from collectiq.policy.domain import (
 )
 from collectiq.tenancy.permissions import DRAFT_APPROVE, DRAFT_CREATE, DRAFT_READ, authorize
 
+from . import service_pause
 from .domain.linter import lint_reminder
 
 DEFAULT_CADENCE_DAYS = (3, 10, 17)  # after the due date: the first, second and third reminder
@@ -224,6 +225,7 @@ def _snapshot(
         snap,
         coverage=invoice["evidence_coverage"],
         snooze_active=snoozed is not None,
+        hold_scope=service_pause.hold_scope(invoice_id, invoice["client_id"]),
         recipient_approved=_recipient_ok(contact_id),
         recipient_suppressed=False,
         contacts_in_window=sent["n"] if contact_checks else 0,
@@ -342,6 +344,18 @@ def _first_contact(client_id: UUID) -> dict[str, Any] | None:
     )
 
 
+def _record_evaluated(ctx: RequestContext, invoice_id: UUID, decision: PolicyDecision, result: str) -> None:
+    """An evaluation that makes no draft still leaves a trace: what the policy said and why."""
+    record(
+        ctx,
+        "reminder.evaluated",
+        "invoice",
+        str(invoice_id),
+        after={"outcome": str(decision.outcome), "result": result},
+        reason_codes=list(decision.reasons or [])[:10],
+    )
+
+
 def evaluate_invoice(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
     authorize(ctx, DRAFT_CREATE)
     with tenant_tx(ctx):
@@ -369,8 +383,10 @@ def evaluate_invoice(ctx: RequestContext, invoice_id: UUID) -> dict[str, Any]:
         result: dict[str, Any] = {**_decision_dto(decision), "invoice_id": invoice_id, "reminder": None}
         if existing is not None:  # TS-014: a retry returns the record that is already there
             result["reminder"] = _dto(_get_row(existing["id"]))
+            _record_evaluated(ctx, invoice_id, decision, "EXISTING")
             return result
         if decision.outcome != Outcome.REQUIRE_APPROVAL or contact is None:
+            _record_evaluated(ctx, invoice_id, decision, "NO_DRAFT")
             return result
         overdue = max((clock.today() - invoice["due_date"]).days, 0)
         subject, body = _template(facts, contact["name"], overdue)

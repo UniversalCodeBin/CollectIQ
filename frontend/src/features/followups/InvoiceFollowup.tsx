@@ -3,6 +3,7 @@ import { Button } from "../../components/ui/Button";
 import { MutationFeedback } from "../../components/ui/MutationFeedback";
 import { useApiMutation } from "../../lib/api";
 import styles from "./Followups.module.css";
+import { PausePanel } from "./PausePanel";
 import { plainReasons } from "./reasons";
 
 /** A reminder is only ever prepared when a person asks. Nothing here sends anything. */
@@ -12,6 +13,7 @@ export function InvoiceFollowup({ detail }: { detail: { facts: { id: string } } 
   const result = evaluate.status === "success" ? evaluate.data : undefined;
   const why = result && !result.reminder ? plainReasons(result.reasons) : [];
   return (
+    <>
     <section aria-labelledby="followup-title" className={styles.card}>
       <h2 id="followup-title" className={styles.heading}>
         Follow-up
@@ -29,5 +31,7 @@ export function InvoiceFollowup({ detail }: { detail: { facts: { id: string } } 
         </div>
       )}
     </section>
+    <PausePanel scope="INVOICE" targetId={detail.facts.id} />
+    </>
   );
 }
