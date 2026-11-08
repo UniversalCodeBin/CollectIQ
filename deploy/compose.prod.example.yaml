@@ -1,4 +1,4 @@
-# Example production layout. A starting point, not a hardened deployment: read docs/deployment.md first.
+# Example production layout. A starting point, not a hardened deployment: read docs/operations.md first.
 # Every ${...} value comes from an env file you create outside the repository. Nothing here is a real secret.
 #
 #   podman build -t collectiq-backend:local backend

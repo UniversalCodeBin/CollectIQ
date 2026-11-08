@@ -15,7 +15,9 @@ from tests.safety.audit_probe import PROBE, ProbeMiddleware
 from tests.support import API, idem, owner_workspace
 
 # Audited mutating endpoints that no test reaches with a 2xx, each with the reason.
-NOT_DRIVEN_TO_SUCCESS: dict[str, str] = {}
+NOT_DRIVEN_TO_SUCCESS: dict[str, str] = {
+    "E096": "Gmail monitoring is always refused with NOT_AVAILABLE, so it never succeeds.",
+}
 
 FULL_RUN_ENDPOINTS = 40  # below this the run was a subset and coverage is not judged
 

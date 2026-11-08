@@ -42,17 +42,25 @@ hardware. Several features listed under "Not built" below are still owed.
 Owed features: ending snoozes when their date passes; MATCH_REVIEW case type and allocation-driven case opening;
 closing verification tasks; N+1 history loading and cursor paging on E065; 90-day notification retention and
 notification preferences; PDF size/page limit and OCR; AI summaries and wording drafts; legal name and sender display
-name; E085 resume request; PayPal connect endpoint; token refresh; Gmail monitoring; webhook events as match
-candidates; a link from audit rows to the why-view; UI for FL-03, 08, 09, 10, 12, 13, 14, 16.
+name; E085 resume request; a link from audit rows to the why-view. Blocked on provider credentials and terms
+(OD-11): Gmail token refresh and thread ids, webhook events as match candidates (they stay EVIDENCE_ONLY).
 
 Built since: pause (E121-E123), invoice brief (E120), pending-interpretations list (E124) with its review screen,
 Gmail Connect/Disconnect, Send and Confirm-unknown buttons, SUBMITTING/SUBMITTED/SUBMISSION_UNKNOWN labels and the PDF
 import link. The send UI has Vitest coverage against stubbed responses; sending through a real Gmail account is not
 yet exercised (needs OD-05 and an authorised test mailbox).
 
-Not done: real email delivery (file and memory backends only), independent penetration test, screen-reader audit,
-live-AI evaluation, image scanning, break-glass process, off-database audit anchor, backup encryption and key
-rotation, load test on target hardware, restore timing at scale.
+Built in the final cycle: PayPal connect (E129) behind a merchant-check port, which has no live implementation and
+so connects nothing for real; Gmail monitoring (E096) refused with NOT_AVAILABLE; person-driven close of verification
+tasks (E128); commitments and snooze screens (FL-08, FL-09); encrypted backup with a recorded restore drill;
+`audit_anchor` command (chain heads to store off-host, with a check that detects a rewrite that also fixes hashes);
+break-glass and incident-response procedures; `scripts/check_deploy_env.py`; read-path timings on one machine
+(`docs/pilot/performance.md`); `docs/operations.md`.
+
+Not done: real email delivery by default (file and memory backends; SMTP adapter exists, untested against a real
+relay), independent penetration test, screen-reader audit, live-AI evaluation, image scanning (no scanner installed
+here), error-reporting service, key rotation, load test on target hardware, restore timing at scale, a multi-day
+scheduler soak, off-host storage of audit anchors (a deployment choice).
 
 Open decisions needing the owner: OD-04, 05, 08, 10, 11, 14 (see `docs/DECISIONS_LOG.md`). Legal review of
 data-protection applicability (SEC-22) has not happened.

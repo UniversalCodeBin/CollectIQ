@@ -214,3 +214,29 @@ def test_record_refuses_another_workspaces_context(pg) -> None:
     current, other = _ctx(), _ctx()
     with pytest.raises(ProgrammingError, match="row-level security"), tenant_tx(current):
         audit.record(other, "invoice.updated", "invoice", "inv-1")
+
+
+def test_stored_anchor_catches_a_rehashed_rewrite(pg, owner_db: psycopg.Connection, tmp_path) -> None:
+    """The chain alone misses a rewrite that also fixes the hashes; an off-host anchor catches it."""
+    from io import StringIO
+
+    from django.core.management import call_command
+    from django.core.management.base import CommandError
+
+    ctx = _ctx()
+    _write(ctx, count=2)
+    from collectiq.platform.management.commands.audit_anchor import _head
+
+    anchor = tmp_path / "anchor.jsonl"
+    anchor.write_text(json.dumps(_head(ctx.workspace_id)) + "\n")
+    call_command("audit_anchor", check=str(anchor), stdout=StringIO())  # untouched: passes
+
+    owner_db.execute("SELECT set_config('app.workspace_id', %s, false)", [str(ctx.workspace_id)])
+    owner_db.execute("ALTER TABLE audit_events DISABLE TRIGGER USER")
+    try:
+        owner_db.execute("UPDATE audit_events SET after_masked = '{\"edited\": true}'")
+        owner_db.execute("UPDATE audit_events e SET hash = audit_event_hash(e)")
+    finally:
+        owner_db.execute("ALTER TABLE audit_events ENABLE TRIGGER USER")
+    with pytest.raises(CommandError, match="no longer match"):
+        call_command("audit_anchor", check=str(anchor), stdout=StringIO())
