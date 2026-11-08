@@ -1,5 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { Button } from "../../components/ui/Button";
 import { TextField } from "../../components/ui/Field";
@@ -40,6 +40,11 @@ export function CommitmentsPanel({ invoiceId }: { invoiceId: string }) {
     void client.invalidateQueries({ queryKey: key });
     void client.invalidateQueries({ queryKey: ["invoice", ws, invoiceId] });
   };
+  const recordedOk = record.status === "success";
+  // The list must show what was just recorded; the proposal alone would hide it.
+  useEffect(() => {
+    if (recordedOk) void client.invalidateQueries({ queryKey: key });
+  }, [recordedOk]); // eslint-disable-line react-hooks/exhaustive-deps
   const recorded = record.status === "success" ? record.data : undefined;
   const proposal = recorded?.snooze ?? null;
   const approvalId = proposal?.approval_id ?? null;
