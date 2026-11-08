@@ -26,7 +26,7 @@ migrate:
 	cd backend && DJANGO_DB_ROLE=owner uv run python manage.py migrate
 
 seed:
-	cd backend && uv run python manage.py seed_sample
+	cd backend && uv run python manage.py seed_demo
 
 api:
 	cd backend && uv run python manage.py runserver 127.0.0.1:8000

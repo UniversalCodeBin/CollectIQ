@@ -15,7 +15,7 @@ Podman, [uv](https://docs.astral.sh/uv/), Node 24, make.
 ```bash
 make db-up     # creates .env with random local secrets, starts Postgres on 127.0.0.1:54329
 make migrate
-make seed      # optional, synthetic sample data, labelled as sample in the UI
+make seed      # optional: demo logins (owner/finance/lead @example.test) and labelled sample invoices
 make dev       # API :8000, worker, web :5173
 ```
 
