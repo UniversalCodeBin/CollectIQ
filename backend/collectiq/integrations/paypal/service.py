@@ -8,11 +8,13 @@ from uuid import UUID
 from django.conf import settings
 
 from collectiq.audit import record
+from collectiq.integrations import service as connections
 from collectiq.platform.context import RequestContext
 from collectiq.platform.db import execute, fetch_one, tenant_tx
 from collectiq.platform.errors import ProblemError
+from collectiq.tenancy.permissions import INTEGRATIONS_MANAGE, authorize
 
-from .verify import get_verifier
+from .verify import get_merchant_checker, get_verifier
 
 
 def receive(headers: Mapping[str, str], body: bytes) -> None:
@@ -46,3 +48,13 @@ def receive(headers: Mapping[str, str], body: bytes) -> None:
                 event_id,
                 after={"provider": "PAYPAL", "event_type": event_type, "status": "EVIDENCE_ONLY"},
             )
+
+
+def connect(ctx: RequestContext, merchant_id: str) -> dict:
+    """Records the merchant id used to route webhooks. Connected only if PayPal confirms it."""
+    authorize(ctx, INTEGRATIONS_MANAGE)
+    if not settings.FEATURE_PAYPAL_WEBHOOK:
+        raise ProblemError("FEATURE_DISABLED", 409, "PayPal events are not turned on.")
+    return connections.connect(
+        ctx, "PAYPAL", lambda: get_merchant_checker().confirm(merchant_id), external_account=merchant_id
+    )

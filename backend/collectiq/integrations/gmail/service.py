@@ -146,3 +146,13 @@ def send_reminder(ctx: RequestContext, reminder_id: UUID) -> dict[str, Any]:
             ctx, reminder_id, "UNKNOWN", error="The result of the submission is not known."
         )
     return service_send.finish(ctx, reminder_id, "SUBMITTED", message_id=message_id)
+
+
+def start_monitoring(ctx: RequestContext) -> dict[str, Any]:
+    """Reading replies needs a read permission this build never requests (send only). Refused, not faked."""
+    authorize(ctx, INTEGRATIONS_MANAGE)
+    raise ProblemError(
+        "NOT_AVAILABLE",
+        409,
+        "Watching Gmail for replies is not available. It needs read permission, which is not requested.",
+    )

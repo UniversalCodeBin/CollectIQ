@@ -1393,3 +1393,7 @@ class ReminderPauseOut(serializers.Serializer):
 
 class ReminderPauseListOut(serializers.Serializer):
     items = ReminderPauseOut(many=True)
+
+
+class PayPalConnectIn(serializers.Serializer):
+    merchant_id = serializers.RegexField(r"^[A-Za-z0-9]{6,32}$")

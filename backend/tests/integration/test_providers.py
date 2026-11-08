@@ -342,3 +342,39 @@ def test_an_unknown_merchant_is_ignored_without_a_trace_of_another_tenant(pp_env
     response = post_event(paypal_event("E-9", merchant="SOMEONE-ELSE"))
     assert response.status_code == 200
     assert pp_env.db.execute("SELECT count(*) FROM webhook_events").fetchone()[0] == 0
+
+
+# ---- PayPal connect and Gmail monitoring --------------------------------------------------------------
+
+
+def test_paypal_connect_is_verified_only_when_paypal_confirms(env: ReminderEnv, flags: None) -> None:
+    body = {"merchant_id": "FAKEMERCHANT1"}
+    refused = env.client.post(env.url("integrations/paypal/connect"), body, format="json", **idem())
+    assert refused.status_code == 200 and refused.json()["state"] == "NEEDS_CONFIGURATION"
+    paypal.set_merchant_checker(paypal.FakeMerchantChecker())
+    try:
+        ok = env.client.post(env.url("integrations/paypal/connect"), body, format="json", **idem())
+        assert ok.json()["state"] == "CONNECTED_VERIFIED"
+        wrong = env.client.post(
+            env.url("integrations/paypal/connect"), {"merchant_id": "OTHERMERCH1"}, format="json", **idem()
+        )
+        assert wrong.json()["state"] == "NEEDS_REAUTH"
+    finally:
+        paypal.set_merchant_checker(None)
+
+
+def test_paypal_connect_is_off_by_default_and_validates_the_id(env: ReminderEnv) -> None:
+    off = env.client.post(
+        env.url("integrations/paypal/connect"), {"merchant_id": "FAKEMERCHANT1"}, format="json", **idem()
+    )
+    assert off.status_code == 409
+    with override_settings(FEATURE_PAYPAL_WEBHOOK=True):
+        bad = env.client.post(
+            env.url("integrations/paypal/connect"), {"merchant_id": "x y"}, format="json", **idem()
+        )
+        assert bad.status_code == 422
+
+
+def test_gmail_monitoring_is_refused_rather_than_faked(env: ReminderEnv) -> None:
+    res = env.client.post(env.url("integrations/gmail/monitoring"), **idem())
+    assert res.status_code == 409 and res.json()["code"] == "NOT_AVAILABLE"

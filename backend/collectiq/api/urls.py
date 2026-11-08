@@ -227,6 +227,14 @@ urlpatterns: list = [
     path(
         f"{_V1}workspaces/<uuid:ws>/integrations/gmail/connect", integrations.GmailConnectView.as_view()
     ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/integrations/gmail/monitoring",
+        integrations.GmailMonitoringView.as_view(),
+    ),
+    path(
+        f"{_V1}workspaces/<uuid:ws>/integrations/paypal/connect",
+        integrations.PayPalConnectView.as_view(),
+    ),
     path(f"{_V1}integrations/gmail/callback", integrations.GmailCallbackView.as_view()),
     path(
         f"{_V1}workspaces/<uuid:ws>/integrations/<str:key>", integrations.IntegrationItemView.as_view()

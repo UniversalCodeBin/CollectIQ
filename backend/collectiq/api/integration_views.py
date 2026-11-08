@@ -21,6 +21,7 @@ from .serializers import (
     ConfirmUnknownIn,
     IntegrationItemOut,
     IntegrationListOut,
+    PayPalConnectIn,
     ReminderOut,
 )
 
@@ -52,6 +53,20 @@ class GmailCallbackView(APIView):
             str(request.query_params.get("code", "")),
         )
         return HttpResponseRedirect(f"/w/{workspace}/integrations")
+
+
+class GmailMonitoringView(APIView):
+    @endpoint("E096", responses={200: IntegrationItemOut})
+    def post(self, request: Any, ws: UUID) -> Response:
+        return Response(gmail.start_monitoring(request.ctx))
+
+
+class PayPalConnectView(APIView):
+    @endpoint("E129", request=PayPalConnectIn, responses={200: IntegrationItemOut})
+    @idempotent
+    def post(self, request: Any, ws: UUID) -> Response:
+        data = validated(PayPalConnectIn, request)
+        return Response(paypal.connect(request.ctx, data["merchant_id"]))
 
 
 class IntegrationItemView(APIView):

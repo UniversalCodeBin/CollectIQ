@@ -5110,7 +5110,7 @@ paths:
       tags:
       - Integrations
       summary: Enable reply monitoring (separate consent)
-      description: 'Endpoint E096. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: O. Priority P1. Implementation status: NOT IMPLEMENTED (no repository supplied).'
+      description: 'Endpoint E096. Status: CONFIRMED (SAD v0.1 §10.2). Module M16. Roles: O. Priority P1. Implementation status: refused with NOT_AVAILABLE; reading replies needs a read permission this build never requests.'
       x-endpoint-id: E096
       x-origin: confirmed
       x-priority: P1
@@ -6503,6 +6503,54 @@ paths:
         '403':
           $ref: '#/components/responses/Problem4xx'
         '404':
+          $ref: '#/components/responses/Problem4xx'
+        '409':
+          $ref: '#/components/responses/Problem4xx'
+        '422':
+          $ref: '#/components/responses/Problem4xx'
+        '429':
+          $ref: '#/components/responses/Problem4xx'
+  /workspaces/{ws}/integrations/paypal/connect:
+    post:
+      operationId: post_ws_integrations_paypal_connect
+      tags:
+      - Integrations
+      summary: Record the PayPal merchant id used to route payment events
+      description: 'Endpoint E129. Status: PROPOSED-NEW (pilot preparation). Module M16. Roles: O. Priority P1. The connection is verified only if PayPal confirms the merchant id; with no live checker it stays unverified. Events stay evidence only. Idempotent, audited.'
+      x-endpoint-id: E129
+      x-origin: proposed-new
+      x-priority: P1
+      x-module: M16
+      x-audited: true
+      x-roles:
+      - OWNER
+      parameters:
+      - $ref: '#/components/parameters/Workspace'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - merchant_id
+              properties:
+                merchant_id:
+                  type: string
+                  pattern: '^[A-Za-z0-9]{6,32}$'
+      responses:
+        '200':
+          description: The connection after the attempt (connected, or still needing configuration).
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Problem4xx'
+        '403':
           $ref: '#/components/responses/Problem4xx'
         '409':
           $ref: '#/components/responses/Problem4xx'

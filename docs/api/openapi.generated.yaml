@@ -1793,6 +1793,61 @@ paths:
                 $ref: '#/components/schemas/AuthorizationOut'
           description: ''
       x-endpoint-id: E094
+  /api/v1/workspaces/{ws}/integrations/gmail/monitoring:
+    post:
+      operationId: E096
+      parameters:
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationItemOut'
+          description: ''
+      x-endpoint-id: E096
+  /api/v1/workspaces/{ws}/integrations/paypal/connect:
+    post:
+      operationId: E129
+      parameters:
+      - in: header
+        name: Idempotency-Key
+        schema:
+          type: string
+          format: uuid
+        required: true
+      - in: path
+        name: ws
+        schema:
+          type: string
+          format: uuid
+        required: true
+      tags:
+      - workspaces
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PayPalConnectInRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PayPalConnectInRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IntegrationItemOut'
+          description: ''
+      x-endpoint-id: E129
   /api/v1/workspaces/{ws}/interpretations:
     get:
       operationId: E124
@@ -7042,6 +7097,15 @@ components:
           type: string
           minLength: 1
           maxLength: 500
+    PayPalConnectInRequest:
+      type: object
+      properties:
+        merchant_id:
+          type: string
+          minLength: 1
+          pattern: ^[A-Za-z0-9]{6,32}$
+      required:
+      - merchant_id
     PaymentAccountInKindEnum:
       enum:
       - BANK

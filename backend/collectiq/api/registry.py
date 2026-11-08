@@ -279,6 +279,7 @@ _SPECS = (
         "P1",
     ),
     _spec("E098", "POST", "/webhooks/paypal", "webhook", "A", "P1"),
+    _spec("E129", "POST", "/workspaces/{ws}/integrations/paypal/connect", INTEGRATIONS_MANAGE, "IA", "P1"),
     _spec("E099", "GET", "/workspaces/{ws}/audit-events", AUDIT_READ, "", "P0"),
     _spec("E100", "POST", "/workspaces/{ws}/audit-events/exports", EXPORT, "IA", "P0"),
     _spec("E101", "GET", "/workspaces/{ws}/policy-decisions/{decision_id}", AUDIT_INSPECT, "", "P0"),

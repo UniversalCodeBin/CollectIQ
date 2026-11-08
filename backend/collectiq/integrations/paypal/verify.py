@@ -30,3 +30,30 @@ def set_verifier(verifier: WebhookVerifier | None) -> None:
 
 def get_verifier() -> WebhookVerifier:
     return _verifier or UnconfiguredVerifier()
+
+
+class MerchantChecker(Protocol):
+    def confirm(self, merchant_id: str) -> bool:
+        """True only if PayPal confirms the merchant id belongs to the account being connected."""
+
+
+class UnconfiguredMerchantChecker:
+    def confirm(self, merchant_id: str) -> bool:
+        return False
+
+
+class FakeMerchantChecker:
+    def confirm(self, merchant_id: str) -> bool:
+        return merchant_id.startswith("FAKE")
+
+
+_checker: MerchantChecker | None = None
+
+
+def set_merchant_checker(checker: MerchantChecker | None) -> None:
+    global _checker
+    _checker = checker
+
+
+def get_merchant_checker() -> MerchantChecker:
+    return _checker or UnconfiguredMerchantChecker()

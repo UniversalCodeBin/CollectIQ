@@ -821,6 +821,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/workspaces/{ws}/integrations/gmail/monitoring": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E096"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/workspaces/{ws}/integrations/paypal/connect": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["E129"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/workspaces/{ws}/interpretations": {
         parameters: {
             query?: never;
@@ -2986,6 +3018,9 @@ export interface components {
         /** @description An unexpected field is refused, so a typo cannot pass as an optional field left out. */
         PauseInRequest: {
             reason?: string;
+        };
+        PayPalConnectInRequest: {
+            merchant_id: string;
         };
         /**
          * @description * `BANK` - BANK
@@ -5239,6 +5274,55 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["AuthorizationOut"];
+                };
+            };
+        };
+    };
+    E096: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrationItemOut"];
+                };
+            };
+        };
+    };
+    E129: {
+        parameters: {
+            query?: never;
+            header: {
+                "Idempotency-Key": string;
+            };
+            path: {
+                ws: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PayPalConnectInRequest"];
+                "multipart/form-data": components["schemas"]["PayPalConnectInRequest"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrationItemOut"];
                 };
             };
         };
