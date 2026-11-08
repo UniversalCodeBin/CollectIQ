@@ -680,3 +680,11 @@ def _on_allocation_reversed(ctx: RequestContext, payload: dict[str, Any]) -> Non
     _cancel_pending(
         ctx, payload["invoice_id"], "A payment was reversed after this was drafted.", only_stale=True
     )
+
+
+# FILE GUIDE
+# Lifecycle: evaluate_invoice (policy gate, then a draft) -> edit_reminder -> approve_reminder |
+# reject_reminder -> mark_sent (the person records that they sent it; the app sends nothing). Reads:
+# list_reminders, get_reminder. Gates: _snapshot builds the facts the policy engine sees (including
+# pauses from service_pause.hold_scope); _require_clear refuses when a gate blocks. _on_* handlers
+# cancel stale drafts on case, invoice and allocation events.

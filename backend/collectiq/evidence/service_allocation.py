@@ -779,3 +779,11 @@ def get_payment(ctx: RequestContext, transaction_id: UUID) -> dict[str, Any]:
             for m in matches
         ],
     }
+
+
+# FILE GUIDE
+# Writes: confirm_allocation / confirm_proposal (a person confirms each match), reverse_allocation,
+# record_payment, void_payment, mark_duplicate. Reads: list_payments, invoice_payment_history,
+# get_payment (the _dto helpers shape them). Helpers: _lock_* take row locks first, _apply_lines checks
+# amounts in integer minor units, _insert_* write ledger rows, _recompute refreshes invoice payment
+# state. Only this module writes allocations; nothing here marks an invoice paid by itself.

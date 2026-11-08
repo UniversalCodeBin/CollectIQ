@@ -687,3 +687,11 @@ def error_report(ctx: RequestContext, batch_id: UUID) -> str:
                 [row.number, _spreadsheet_safe(number), "total", "The total is not the subtotal plus tax."]
             )
     return out.getvalue()
+
+
+# FILE GUIDE
+# Flow: upload_invoices (parse and store) -> set_mapping (column mapping) -> get_import (preview with
+# row decisions) -> commit_import (_write inside one transaction) | discard_import. record_failure notes
+# a failed commit; error_report builds the downloadable CSV (_spreadsheet_safe guards against formula
+# injection). Helpers: _evaluate runs the pure rules in invoices/domain; _create_clients,
+# _insert_invoices, _apply_update and _apply_merge perform the writes for each row action.

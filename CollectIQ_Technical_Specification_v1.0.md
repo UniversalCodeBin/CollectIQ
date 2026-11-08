@@ -33,7 +33,7 @@
 | TC-1 | Brief lists 17 screens; UX defines 15 | Map SCR-01…15; hold SCR-16/17 until supplied (OD-01) |
 | TC-2 | Brief module list includes "notifications & review inbox"; SAD has `notifications` only | Review inbox specified as a **read model** (E108, proposed); no new table |
 | TC-3 | Brief wants per-endpoint contracts; SAD §10.2 is summarised | Contracts in YAML; body schemas schematic until M1/M2 DTO design |
-| TC-4 | UX DC-7 wants per-invoice/client pause; SAD has workspace pause only | Deferred; workspace pause only in MVP (OD-07) |
+| TC-4 | UX DC-7 wants per-invoice/client pause; SAD has workspace pause only | Deferred in this spec. **Update 2026-11-08:** built afterwards as E121-E123 (`reminder_pauses`, `comms/service_pause.py`); workspace pause remains and a client or invoice pause is checked in the same policy gate (G13). See `CollectIQ_API_Contracts.yaml` and `docs/DECISIONS_LOG.md` |
 
 ## 2. Technical Overview
 
@@ -915,6 +915,8 @@ REVOKE UPDATE, DELETE, TRUNCATE ON audit_events FROM app_role;
 | E111 | GET | `/health/live` | Liveness probe | Infra | — | P0 | **PROPOSED-NEW** | M20 |
 | E112 | GET | `/health/ready` | Readiness probe (DB, queue) | Infra | — | P0 | **PROPOSED-NEW** | M20 |
 
+*Update 2026-11-08:* this table stops at E112. Endpoints E113 onward were added during implementation and exist only in `CollectIQ_API_Contracts.yaml` (the authoritative list; `make check` compares it to the generated OpenAPI), each marked with its origin. Examples: E117-E119 payment proof and history, E120 invoice brief, E121-E123 pause, E128 close a payment-claim check, E129 PayPal connect behind a merchant-check port.
+
 
 **Representative contracts.** Full machine-readable shapes are in the YAML; the following are binding behaviours.
 
@@ -1014,7 +1016,7 @@ def authorize_execution(decision: PolicyDecision, tx: DbTx) -> AuthorizedAction 
 | Outlook | P2 | Graph sendMail | 202 = accepted, not delivered |
 | PayPal webhooks | P1 sandbox | Verify signature (headers, webhook ID, CRC32 of raw body, cert) or postback; dedupe by event ID; 2xx after durable store | Retries up to 25 times over 3 days |
 
-**Ingestion pipeline.** Upload → type/size/content sniff → store (private, hashed) → malware scan **[OD-14 pending]** → parse job → preview → human commit → transactions → reconcile job. **Failure handling.** Provider errors classified (transient/permanent/auth); transient → backoff; auth → `NEEDS_REAUTH` + Owner notification + dependent automation paused; webhook signature failure → 400, no state change, security event. No integration capability is assumed beyond the table; sandbox availability and provider approval timelines are unverified (OD-11).
+**Ingestion pipeline.** Upload → type/size/content sniff → store (private, hashed) → malware scan **[OD-14: ClamAV adapter built and fails closed, tested only against a fake server; production use is the owner's decision. Default `SCANNER_KIND=none` records files as not scanned]** → parse job → preview → human commit → transactions → reconcile job. **Failure handling.** Provider errors classified (transient/permanent/auth); transient → backoff; auth → `NEEDS_REAUTH` + Owner notification + dependent automation paused; webhook signature failure → 400, no state change, security event. No integration capability is assumed beyond the table; sandbox availability and provider approval timelines are unverified (OD-11).
 
 ## 15. Security and Privacy Specification
 

@@ -30,6 +30,7 @@ check, evidence integrity check and retention (`manage.py schedule_nightly`). Bu
 - Production refuses `AI_PROVIDER=fake` and any `change-me` secret.
 - TLS ends at a reverse proxy that sets `X-Forwarded-Proto: https`. The API redirects plain http and sets HSTS.
 - The proxy serves `frontend/dist` and must set its own Content-Security-Policy; the API sets one for JSON only.
-- Email is file or memory only. No message reaches a real mailbox, so invitations and resets are not delivered.
+- Email defaults to file or memory, so no message reaches a real mailbox. An SMTP backend (`EMAIL_BACKEND_KIND=smtp`, `SMTP_*` variables) exists but has never been exercised against a real server; until credentials are supplied, invitations and resets are not delivered.
+- Uploads are recorded as not scanned unless `SCANNER_KIND=clamav` is set; the ClamAV adapter has only been tested against a fake server.
 - Backup and restore: [docs/runbooks/backup-restore.md](docs/runbooks/backup-restore.md).
 - What was and was not verified: [docs/acceptance-report.md](docs/acceptance-report.md).
