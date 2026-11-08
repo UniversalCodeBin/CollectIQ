@@ -5,7 +5,24 @@ What is backed up: the PostgreSQL database (all business data, the audit chain, 
 `COLLECTIQ_MASTER_KEY`, which must be kept separately and safely. Losing the key makes stored files and
 tokens unreadable.
 
-## Back up
+## Encrypted backup and drill (scripted)
+
+`scripts/backup_encrypted.sh` encrypts the dump with GnuPG (AES-256, passphrase from a file you keep apart
+from the backup and from `COLLECTIQ_MASTER_KEY`), writes a SHA-256 beside it, and can restore into a scratch
+database and compare row counts. It never touches the live database.
+
+```bash
+export DB_CONTAINER=<db-container> BACKUP_PASSPHRASE_FILE=/secure/path/passphrase
+scripts/backup_encrypted.sh backup collectiq-$(date +%F).dump.gpg
+scripts/backup_encrypted.sh drill  collectiq-YYYY-MM-DD.dump.gpg
+```
+
+Drill run on 2026-11-08 against the local development database (402 users, 10,863 invoices, 3,683 audit
+events): backup 1.8 MB, restore and comparison 5 s, every compared table matched. That is one small dataset
+on one machine, not a statement about production sizes. Offsite copy and passphrase custody are the owner's
+(OD-04); the script does not copy the file anywhere.
+
+## Back up (manual, unencrypted)
 
 ```bash
 podman exec <db-container> pg_dump -U postgres -Fc collectiq > collectiq-$(date +%F).dump
