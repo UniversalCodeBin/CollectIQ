@@ -73,7 +73,7 @@ target hardware, legal review.
 
 ## Requirement classification
 - Implemented and verified: core receivables, evidence, matching, cases, conversations, reminders (human-approved),
-  audit, RLS, FL-08/09 screens (Vitest and e2e); FL-03/10/12/13/14/16 have Vitest coverage against stubbed responses, and I did not separately re-verify each against the live backend, E128, E129 (as a port), backup drill.
+  audit, RLS, FL-08/09 screens (Vitest and e2e); E128, E129 (as a port), backup drill. FL-03/10/12/13/14/16 were re-run on 2026-11-08: Vitest 262/262 and Playwright 30/30 on the live local backend. `frontend/e2e/fl-live.spec.ts` drives only the live-capable slices (FL-03 invoice correction with a reason, FL-12 no payment shown without evidence, FL-10 cases screen, FL-13/16 Gmail never shown connected). The AI-dependent starts (a reply classified as a dispute, a reading to correct in FL-14), the PDF extraction review in FL-03, Gmail reconnect (FL-13, OD-11) and disconnect of a real connection (FL-16) are not driven live; they stay covered by stubbed Vitest only.
 - Implemented but not fully verified: SMTP adapter, ClamAV adapter, Gmail send (no real mailbox), nightly scheduler soak.
 - Not implemented: Gmail monitoring and token refresh, PayPal events as match candidates, key rotation, error reporting.
 - Blocked by external dependency: Gmail/PayPal live use, live AI, image scan.
