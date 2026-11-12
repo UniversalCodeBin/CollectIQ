@@ -36,7 +36,9 @@ class GmailConnectView(APIView):
     @endpoint("E094", responses={200: AuthorizationOut})
     @idempotent
     def post(self, request: Any, ws: UUID) -> Response:
-        return Response(gmail.start(request.ctx))
+        response = Response(gmail.start(request.ctx))
+        response._no_mutation = True
+        return response
 
 
 class GmailCallbackView(APIView):
@@ -66,7 +68,7 @@ class PayPalConnectView(APIView):
     @idempotent
     def post(self, request: Any, ws: UUID) -> Response:
         data = validated(PayPalConnectIn, request)
-        return Response(paypal.connect(request.ctx, data["merchant_id"]))
+        return Response(paypal.connect(request.ctx, data.get("merchant_id")))
 
 
 class IntegrationItemView(APIView):
@@ -81,8 +83,11 @@ class IntegrationItemView(APIView):
 class PayPalWebhookView(APIView):
     @endpoint("E098", responses={200: None})
     def post(self, request: Any) -> Response:
-        paypal.receive({k: v for k, v in request.headers.items()}, request.body)
-        return Response({"received": True})
+        res = paypal.receive({k: v for k, v in request.headers.items()}, request.body)
+        response = Response(res or {"received": True})
+        if res and res.get("status") == "IGNORED":
+            response._no_mutation = True
+        return response
 
 
 class ReminderSendView(APIView):

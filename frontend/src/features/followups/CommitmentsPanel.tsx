@@ -32,10 +32,22 @@ export function CommitmentsPanel({ invoiceId }: { invoiceId: string }) {
       ),
   });
   const record = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/commitments" }, { idempotent: true });
-  const decide = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/approvals/{approval_id}/decide" }, { idempotent: true });
-  const start = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/approve" }, { idempotent: true });
-  const undo = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/undo" }, { idempotent: true });
-  const change = useApiMutation({ method: "patch", path: "/api/v1/workspaces/{ws}/commitments/{commitment_id}" }, { ifMatch: true });
+  const decide = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/approvals/{approval_id}/decide" },
+    { idempotent: true },
+  );
+  const start = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/approve" },
+    { idempotent: true },
+  );
+  const undo = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/snooze/undo" },
+    { idempotent: true },
+  );
+  const change = useApiMutation(
+    { method: "patch", path: "/api/v1/workspaces/{ws}/commitments/{commitment_id}" },
+    { ifMatch: true },
+  );
   const refresh = () => {
     void client.invalidateQueries({ queryKey: key });
     void client.invalidateQueries({ queryKey: ["invoice", ws, invoiceId] });
@@ -57,7 +69,12 @@ export function CommitmentsPanel({ invoiceId }: { invoiceId: string }) {
     setProblem(null);
     record.submit({
       path: { ws },
-      body: { invoice_id: invoiceId, strength, ...(date ? { date } : {}), ...(note.trim() ? { note: note.trim() } : {}) },
+      body: {
+        invoice_id: invoiceId,
+        strength,
+        ...(date ? { date } : {}),
+        ...(note.trim() ? { note: note.trim() } : {}),
+      },
     });
   }
 
@@ -82,13 +99,25 @@ export function CommitmentsPanel({ invoiceId }: { invoiceId: string }) {
                   {" "}
                   <Button
                     variant="secondary"
-                    onClick={() => change.submit({ path: { ws, commitment_id: item.id }, body: { status: "WITHDRAWN" }, version: item.version })}
+                    onClick={() =>
+                      change.submit({
+                        path: { ws, commitment_id: item.id },
+                        body: { status: "WITHDRAWN" },
+                        version: item.version,
+                      })
+                    }
                   >
                     Withdraw
                   </Button>{" "}
                   <Button
                     variant="secondary"
-                    onClick={() => change.submit({ path: { ws, commitment_id: item.id }, body: { status: "BROKEN" }, version: item.version })}
+                    onClick={() =>
+                      change.submit({
+                        path: { ws, commitment_id: item.id },
+                        body: { status: "BROKEN" },
+                        version: item.version,
+                      })
+                    }
                   >
                     Mark as not kept
                   </Button>
@@ -126,13 +155,21 @@ export function CommitmentsPanel({ invoiceId }: { invoiceId: string }) {
       {proposal && !proposal.approval_id && (
         <div role="status">
           <p>Reminders will not be paused automatically.</p>
-          <ul>{plainReasons(proposal.reasons).map((line) => <li key={line}>{line}</li>)}</ul>
+          <ul>
+            {plainReasons(proposal.reasons).map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
         </div>
       )}
       {pendingApproval && !active && (
         <div className={styles.actions}>
           {decide.status !== "success" ? (
-            <Button onClick={() => decide.submit({ path: { ws, approval_id: pendingApproval }, body: { decision: "APPROVED" } })}>
+            <Button
+              onClick={() =>
+                decide.submit({ path: { ws, approval_id: pendingApproval }, body: { decision: "APPROVED" } })
+              }
+            >
               Approve pausing reminders
             </Button>
           ) : (

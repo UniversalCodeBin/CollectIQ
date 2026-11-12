@@ -7,7 +7,13 @@ export type ClientDecision = components["schemas"]["ImportClientDecisionInReques
 export type CommitDecisions = components["schemas"]["ImportDecisionsInRequest"];
 
 export type FieldDiff = { field: string; current: unknown; incoming: unknown; kept: boolean };
-export type LedgerMatch = { invoice_id: string; invoice_number: string; issue_date: string | null; gross_minor: number; currency: string };
+export type LedgerMatch = {
+  invoice_id: string;
+  invoice_number: string;
+  issue_date: string | null;
+  gross_minor: number;
+  currency: string;
+};
 export type TotalConflict = { total_minor: number; sum_minor: number };
 
 /** The rows that need a person's attention. The server sends diffs, matches and conflict loosely typed. */

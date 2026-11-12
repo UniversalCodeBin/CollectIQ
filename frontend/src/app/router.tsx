@@ -1,32 +1,11 @@
-import type { ComponentType } from "react";
+// FILE GUIDE: every route in the app. Each screen is its own chunk, fetched the first time its route opens, so the
+// first load carries only the shell and the screen in view. A route with no screen answers not-found.
+import { type ComponentType, Suspense, use } from "react";
 import type { RouteObject } from "react-router";
-import { AcceptInvitationPage } from "../features/auth/AcceptInvitationPage";
-import { LoginPage } from "../features/auth/LoginPage";
-import { ForgotPasswordPage, ResetPasswordPage } from "../features/auth/PasswordPages";
-import { RootPage } from "../features/auth/RootPage";
-import { SignupPage } from "../features/auth/SignupPage";
-import { VerifyEmailPage } from "../features/auth/VerifyEmailPage";
-import { CasesPage } from "../features/cases/CasesPage";
-import { ConversationsPage } from "../features/conversations/ConversationsPage";
-import { MessagePage } from "../features/conversations/MessagePage";
-import { PendingInterpretationsPage } from "../features/conversations/PendingInterpretationsPage";
-import { FollowupsPage } from "../features/followups/FollowupsPage";
-import { ReminderPage } from "../features/followups/ReminderPage";
-import { InboxPage } from "../features/inbox/InboxPage";
-import { ClientPage } from "../features/client/ClientPage";
-import { DashboardPage } from "../features/dashboard/DashboardPage";
-import { PdfExtractionPage } from "../features/ai/PdfExtractionPage";
-import { ImportPage } from "../features/import/ImportPage";
-import { InvoicePage } from "../features/invoice/InvoicePage";
-import { OnboardingPage } from "../features/onboarding/OnboardingPage";
-import { IntegrationsPage } from "../features/integrations/IntegrationsPage";
-import { AuditPage } from "../features/audit/AuditPage";
-import { AutomationPage } from "../features/automation/AutomationPage";
-import { AccountsPage } from "../features/accounts/AccountsPage";
-import { ReconciliationPage } from "../features/reconciliation/ReconciliationPage";
-import { ReceivablesPage } from "../features/receivables/ReceivablesPage";
 import { NotFoundPage } from "./NotFoundPage";
 import { WorkspaceLayout } from "./WorkspaceLayout";
+
+type Loader = () => Promise<ComponentType>;
 
 const PUBLIC_ROUTES = [
   "/",
@@ -60,38 +39,93 @@ const WORKSPACE_ROUTES = [
   "settings/:tab",
 ];
 
-/** Screens built so far, by route. A route with no screen yet answers not-found, never a placeholder. */
-export const BUILT_SCREENS: Record<string, ComponentType> = {
-  "/": RootPage,
-  "/signup": SignupPage,
-  "/login": LoginPage,
-  "/verify-email": VerifyEmailPage,
-  "/forgot-password": ForgotPasswordPage,
-  "/reset-password": ResetPasswordPage,
-  "/invitations/accept": AcceptInvitationPage,
-  "/onboarding/:step": OnboardingPage,
-  dashboard: DashboardPage,
-  "import/invoices": ImportPage,
-  "import/pdf": PdfExtractionPage,
-  receivables: ReceivablesPage,
-  "invoices/:id/:tab": InvoicePage,
-  "clients/:id": ClientPage,
-  "reconciliation/:tab": ReconciliationPage,
-  accounts: AccountsPage,
-  conversations: ConversationsPage,
-  "messages/:id": MessagePage,
-  interpretations: PendingInterpretationsPage,
-  cases: CasesPage,
-  followups: FollowupsPage,
-  "reminders/:id": ReminderPage,
-  inbox: InboxPage,
-  integrations: IntegrationsPage,
-  audit: AuditPage,
-  "settings/:tab": AutomationPage,
+/** Where the code for each screen lives. */
+const SCREEN_LOADERS: Record<string, Loader> = {
+  "/": () => import("../features/auth/RootPage").then((m) => m.RootPage),
+  "/signup": () => import("../features/auth/SignupPage").then((m) => m.SignupPage),
+  "/login": () => import("../features/auth/LoginPage").then((m) => m.LoginPage),
+  "/verify-email": () => import("../features/auth/VerifyEmailPage").then((m) => m.VerifyEmailPage),
+  "/forgot-password": () => import("../features/auth/PasswordPages").then((m) => m.ForgotPasswordPage),
+  "/reset-password": () => import("../features/auth/PasswordPages").then((m) => m.ResetPasswordPage),
+  "/invitations/accept": () => import("../features/auth/AcceptInvitationPage").then((m) => m.AcceptInvitationPage),
+  "/onboarding/:step": () => import("../features/onboarding/OnboardingPage").then((m) => m.OnboardingPage),
+  dashboard: () => import("../features/dashboard/DashboardPage").then((m) => m.DashboardPage),
+  "import/invoices": () => import("../features/import/ImportPage").then((m) => m.ImportPage),
+  "import/pdf": () => import("../features/ai/PdfExtractionPage").then((m) => m.PdfExtractionPage),
+  receivables: () => import("../features/receivables/ReceivablesPage").then((m) => m.ReceivablesPage),
+  "invoices/:id/:tab": () => import("../features/invoice/InvoicePage").then((m) => m.InvoicePage),
+  "clients/:id": () => import("../features/client/ClientPage").then((m) => m.ClientPage),
+  "reconciliation/:tab": () =>
+    import("../features/reconciliation/ReconciliationPage").then((m) => m.ReconciliationPage),
+  accounts: () => import("../features/accounts/AccountsPage").then((m) => m.AccountsPage),
+  conversations: () => import("../features/conversations/ConversationsPage").then((m) => m.ConversationsPage),
+  "messages/:id": () => import("../features/conversations/MessagePage").then((m) => m.MessagePage),
+  interpretations: () =>
+    import("../features/conversations/PendingInterpretationsPage").then((m) => m.PendingInterpretationsPage),
+  cases: () => import("../features/cases/CasesPage").then((m) => m.CasesPage),
+  followups: () => import("../features/followups/FollowupsPage").then((m) => m.FollowupsPage),
+  "reminders/:id": () => import("../features/followups/ReminderPage").then((m) => m.ReminderPage),
+  inbox: () => import("../features/inbox/InboxPage").then((m) => m.InboxPage),
+  integrations: () => import("../features/integrations/IntegrationsPage").then((m) => m.IntegrationsPage),
+  audit: () => import("../features/audit/AuditPage").then((m) => m.AuditPage),
+  "settings/:tab": () => import("../features/automation/AutomationPage").then((m) => m.AutomationPage),
 };
 
+/** Screens whose code has arrived, and the one request in flight for each that has not. */
+const requests = new Map<string, Promise<ComponentType>>();
+
+/** One request per route, kept for good, so the same promise comes back every time it is asked for. */
+function remember(route: string, load: Loader): Loader {
+  return () => {
+    let request = requests.get(route);
+    if (!request) {
+      const pending = load();
+      request = pending;
+      // React reads these two fields from a promise it has not seen yet, so a screen already loaded renders at once.
+      const tracked = pending as Promise<ComponentType> & { status?: string; value?: ComponentType };
+      pending.then(
+        (component) => {
+          tracked.status = "fulfilled";
+          tracked.value = component;
+        },
+        () => requests.delete(route),
+      );
+      requests.set(route, pending);
+    }
+    return request;
+  };
+}
+
+/** Screens built so far, by route, each fetched the first time it opens. A route with no screen answers not-found. */
+export const BUILT_SCREENS: Record<string, Loader> = Object.fromEntries(
+  Object.entries(SCREEN_LOADERS).map(([route, load]) => [route, remember(route, load)]),
+);
+
+/** Shown in place of a screen for the moment its code is on the way. Quiet, and announced once. */
+function ScreenLoading() {
+  return (
+    <p role="status" className="visually-hidden">
+      Loading…
+    </p>
+  );
+}
+
+/** A screen waits under Suspense the first time its code is fetched, and renders at once after that. */
 function screen(route: string): ComponentType {
-  return BUILT_SCREENS[route] ?? NotFoundPage;
+  const found = BUILT_SCREENS[route];
+  if (!found) return NotFoundPage;
+  const load: Loader = found;
+  function Resolved() {
+    const Component = use(load());
+    return <Component />;
+  }
+  return function LoadedScreen() {
+    return (
+      <Suspense fallback={<ScreenLoading />}>
+        <Resolved />
+      </Suspense>
+    );
+  };
 }
 
 export const ROUTE_PATHS = [...PUBLIC_ROUTES, ...WORKSPACE_ROUTES.map((route) => `/w/:ws/${route}`)];

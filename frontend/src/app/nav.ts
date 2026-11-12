@@ -35,5 +35,5 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Integrations", route: "integrations", to: "integrations", icon: Plug },
   { label: "Payment Accounts", route: "accounts", to: "accounts", icon: Landmark },
   { label: "Audit History", route: "audit", to: "audit", icon: History },
-  { label: "Settings", route: "settings/:tab", to: "settings/automation", icon: Settings },
+  { label: "Settings", route: "settings/:tab", to: "settings/business", icon: Settings },
 ];

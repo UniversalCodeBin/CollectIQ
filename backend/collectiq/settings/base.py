@@ -140,6 +140,13 @@ FEATURE_PDF_EXTRACTION = env_bool("FEATURE_PDF_EXTRACTION")
 FEATURE_GMAIL_SEND = env_bool("FEATURE_GMAIL_SEND")
 FEATURE_PAYPAL_WEBHOOK = env_bool("FEATURE_PAYPAL_WEBHOOK")
 
+# PayPal configuration
+PAYPAL_ENVIRONMENT = env("PAYPAL_ENVIRONMENT", "sandbox").lower()
+PAYPAL_BASE_URL = env("PAYPAL_BASE_URL", "https://api-m.sandbox.paypal.com")
+PAYPAL_CLIENT_ID = env("PAYPAL_CLIENT_ID", "")
+PAYPAL_CLIENT_SECRET = env("PAYPAL_CLIENT_SECRET", "")
+PAYPAL_WEBHOOK_ID = env("PAYPAL_WEBHOOK_ID", "")
+
 # Provisional defaults (OD-16, OD-17). Workspace policy overrides these where the spec allows it.
 MAX_UPLOAD_BYTES = 5 * 1024 * 1024
 MAX_IMPORT_ROWS = 10_000

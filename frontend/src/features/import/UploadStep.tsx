@@ -10,11 +10,20 @@ import type { ImportBatch } from "./types";
 const isCsv = (file: File) => /\.csv$/i.test(file.name);
 
 function localProblem(message: string): ApiProblem {
-  return new ApiProblem({ status: 400, code: "VALIDATION_FAILED", detail: "", correlationId: null, errors: [{ field: "file", message }] });
+  return new ApiProblem({
+    status: 400,
+    code: "VALIDATION_FAILED",
+    detail: "",
+    correlationId: null,
+    errors: [{ field: "file", message }],
+  });
 }
 
 export function UploadStep({ workspace, onUploaded }: { workspace: string; onUploaded: (batch: ImportBatch) => void }) {
-  const upload = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/imports/invoices" }, { idempotent: true, secretBody: true });
+  const upload = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/imports/invoices" },
+    { idempotent: true, secretBody: true },
+  );
   const [file, setFile] = useState<File | null>(null);
   const [refusal, setRefusal] = useState<ApiProblem | null>(null);
   const handed = useRef(false);
@@ -29,6 +38,7 @@ export function UploadStep({ workspace, onUploaded }: { workspace: string; onUpl
 
   function submit(event: FormEvent) {
     event.preventDefault();
+    if (upload.status === "pending") return;
     if (!file) return setRefusal(localProblem("Choose a CSV file to upload."));
     if (!isCsv(file)) return setRefusal(localProblem("Choose a CSV file. Other kinds of file can't be imported."));
     setRefusal(null);
@@ -37,12 +47,13 @@ export function UploadStep({ workspace, onUploaded }: { workspace: string; onUpl
     upload.submit({ path: { ws: workspace }, body });
   }
 
+  const pending = upload.status === "pending";
   return (
     <form onSubmit={submit} className={styles.card} noValidate>
       <h2 className={styles.heading}>Upload your invoices</h2>
       <p className={styles.lead}>
-        Export your invoices from your accounting tool as a CSV file and upload it here. Nothing is added until you review it and
-        choose Commit Invoices.
+        Export your invoices from your accounting tool as a CSV file and upload it here. Nothing is added until you
+        review it and choose Commit Invoices.
       </p>
       <TextField
         label="Choose a CSV file"
@@ -55,8 +66,8 @@ export function UploadStep({ workspace, onUploaded }: { workspace: string; onUpl
         }}
       />
       {refusal ? <ProblemMessage problem={refusal} /> : <MutationFeedback mutation={upload} />}
-      <div>
-        <Button variant="primary" type="submit" aria-disabled={upload.status === "pending" || undefined}>
+      <div className={styles.actions}>
+        <Button variant="primary" type="submit" busy={pending} aria-disabled={pending || undefined}>
           Upload file
         </Button>
       </div>

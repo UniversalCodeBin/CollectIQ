@@ -5,16 +5,20 @@
 }
 
 html {
-  scroll-padding-top: var(--space-16);
+  scroll-padding-top: var(--space-20);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
+  min-width: 320px;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
   font-size: var(--type-body-size);
   line-height: var(--type-body-line);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 h1,
@@ -24,8 +28,39 @@ p {
   margin: 0;
 }
 
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+}
+
 a {
-  color: var(--color-primary);
+  color: var(--color-link);
+  text-underline-offset: 2px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* The browser's own "Choose file" button, drawn as a secondary button so file pickers match the rest of the form. */
+input[type="file"]::file-selector-button {
+  margin-right: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+input[type="file"]:hover::file-selector-button {
+  border-color: var(--color-secondary);
 }
 
 :focus-visible {
@@ -33,10 +68,62 @@ a {
   outline-offset: 2px;
 }
 
+::selection {
+  background: var(--color-primary-soft);
+}
+
+/* Money and counts line up in columns; identifiers read as identifiers. */
+.u-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+}
+
+.u-mono {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  letter-spacing: 0;
+}
+
+.u-muted {
+  color: var(--color-secondary);
+}
+
+.u-small {
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+/* Route change: one short settle, never a slide that suggests numbers are moving. It moves only; fading text
+   in would make its contrast change while it is read. */
+@keyframes ciq-enter {
+  from {
+    transform: translateY(4px);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes ciq-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.u-enter {
+  animation: ciq-enter var(--motion-base) var(--motion-ease) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *,
+  *::before,
+  *::after {
     transition: none !important;
     animation: none !important;
+    scroll-behavior: auto !important;
   }
 }
 

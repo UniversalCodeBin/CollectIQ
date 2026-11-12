@@ -17,7 +17,8 @@ export type Group = { transaction: Proposal["transaction"]; candidates: Proposal
 /** One card per payment: a payment with several possible invoices is one decision, not several. */
 export function groupProposals(items: Proposal[]): Group[] {
   const byTransaction = new Map<string, Proposal[]>();
-  for (const item of items) byTransaction.set(item.transaction.id, [...(byTransaction.get(item.transaction.id) ?? []), item]);
+  for (const item of items)
+    byTransaction.set(item.transaction.id, [...(byTransaction.get(item.transaction.id) ?? []), item]);
   return [...byTransaction.values()].map((candidates) => ({
     transaction: candidates[0]!.transaction,
     candidates,
@@ -74,11 +75,16 @@ function SplitDialog({
           Payment {formatMinor(proposal.transaction.amount_minor, currency)}; invoice balance{" "}
           {formatMinor(proposal.invoice.outstanding_minor, currency)}.
         </p>
-        <TextField label={`Amount to apply (${currency})`} inputMode="decimal" value={text} onChange={(event) => setText(event.target.value)} />
+        <TextField
+          label={`Amount to apply (${currency})`}
+          inputMode="decimal"
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+        />
         {minor !== null && minor <= limit && (
           <p role="status" className={styles.note}>
-            Invoice balance after this: {formatMinor(proposal.invoice.outstanding_minor - minor, currency)}. Left on the payment:{" "}
-            {formatMinor(proposal.transaction.amount_minor - minor, currency)}.
+            Invoice balance after this: {formatMinor(proposal.invoice.outstanding_minor - minor, currency)}. Left on the
+            payment: {formatMinor(proposal.transaction.amount_minor - minor, currency)}.
           </p>
         )}
         {refusal && <ProblemMessage problem={refusal} />}
@@ -99,8 +105,14 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
   const [chosen, setChosen] = useState<string | null>(group.ambiguous ? null : group.candidates[0]!.id);
   const [splitting, setSplitting] = useState(false);
   const [needChoice, setNeedChoice] = useState(false);
-  const confirm = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/confirm" }, { idempotent: true });
-  const reject = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/reject" }, { idempotent: true });
+  const confirm = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/confirm" },
+    { idempotent: true },
+  );
+  const reject = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/reconciliation/proposals/{proposal_id}/reject" },
+    { idempotent: true },
+  );
   useRefreshOnSuccess(confirm.status);
   useRefreshOnSuccess(reject.status);
   useEffect(() => {
@@ -120,15 +132,18 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
   const full = (proposal: Proposal) => Math.min(proposal.transaction.amount_minor, proposal.invoice.outstanding_minor);
 
   return (
-    <li className={styles.card}>
-      <div className={styles.row}>
-        <div>
+    <li className={styles.card} data-suggested>
+      <div className={styles.cardHead}>
+        <div className={styles.money}>
+          <span className={styles.caption}>Payment received</span>
           <p className={styles.amount}>{formatMinor(group.transaction.amount_minor, currency)}</p>
-          <p className={styles.muted}>
-            {group.transaction.payer_descriptor ?? "Unknown payer"} · {formatDate(group.transaction.value_date)}
-            {group.transaction.reference ? ` · ${group.transaction.reference}` : ""}
+          <p className={styles.meta}>
+            <span>{group.transaction.payer_descriptor ?? "Unknown payer"}</span>
+            <span>{formatDate(group.transaction.value_date)}</span>
+            {group.transaction.reference && <span className={styles.ref}>{group.transaction.reference}</span>}
           </p>
         </div>
+        <p className={styles.pending}>Suggested match. Nothing is applied until you confirm.</p>
       </div>
       {group.ambiguous && (
         <p className={styles.note}>More than one invoice could match this payment. Choose the one it belongs to.</p>
@@ -136,10 +151,14 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
       <fieldset className={styles.candidates}>
         <legend className="visually-hidden">Possible invoices</legend>
         {group.candidates.map((candidate) => (
-          <div key={candidate.id} className={styles.candidate}>
-            <div className={styles.row}>
+          <div
+            key={candidate.id}
+            className={styles.candidate}
+            data-chosen={(group.ambiguous && chosen === candidate.id) || undefined}
+          >
+            <div className={styles.candidateHead}>
               {group.ambiguous ? (
-                <label>
+                <label className={styles.choice}>
                   <input
                     type="radio"
                     name={`choice-${group.transaction.id}`}
@@ -149,19 +168,25 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
                       setNeedChoice(false);
                     }}
                   />
-                  {candidate.invoice.invoice_number}
+                  <span className={styles.invoiceNumber}>{candidate.invoice.invoice_number}</span>
                   <span className="visually-hidden"> Select this candidate</span>
                 </label>
               ) : (
-                <strong>{candidate.invoice.invoice_number}</strong>
+                <strong className={styles.invoiceNumber}>{candidate.invoice.invoice_number}</strong>
               )}
-              <span className={styles.label}>{candidate.label}</span>
+              <span className={styles.label} data-strength={candidate.label}>
+                {candidate.label}
+              </span>
             </div>
-            <p className={styles.muted}>
-              {candidate.invoice.client_name} · due {formatDate(candidate.invoice.due_date)} · balance{" "}
-              {formatMinor(candidate.invoice.outstanding_minor, currency)}
+            <p className={styles.meta}>
+              <span>{candidate.invoice.client_name}</span>
+              <span>Due {formatDate(candidate.invoice.due_date)}</span>
+              <span>
+                Balance{" "}
+                <span className={styles.figure}>{formatMinor(candidate.invoice.outstanding_minor, currency)}</span>
+              </span>
             </p>
-            <ul className={styles.reasons}>
+            <ul className={styles.reasons} aria-label="Why it was suggested">
               {candidate.reasons.map((reason) => (
                 <li key={reason.code}>{reason.text}</li>
               ))}
@@ -169,7 +194,11 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
           </div>
         ))}
       </fieldset>
-      {needChoice && <p role="alert">Select the invoice this payment belongs to first.</p>}
+      {needChoice && (
+        <p role="alert" className={styles.error}>
+          Select the invoice this payment belongs to first.
+        </p>
+      )}
       <div className={styles.actions}>
         <Button
           variant="primary"
@@ -202,7 +231,12 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
       <MutationFeedback mutation={confirm} />
       <MutationFeedback mutation={reject} />
       {splitting && selected && (
-        <SplitDialog proposal={selected} pending={busy} onClose={() => setSplitting(false)} onApply={(minor) => apply(selected, minor)} />
+        <SplitDialog
+          proposal={selected}
+          pending={busy}
+          onClose={() => setSplitting(false)}
+          onApply={(minor) => apply(selected, minor)}
+        />
       )}
     </li>
   );
@@ -211,7 +245,12 @@ function Suggestion({ workspace, group }: { workspace: string; group: Group }) {
 export function ReviewTab({ workspace, items }: { workspace: string; items: Proposal[] }) {
   const groups = groupProposals(items);
   if (groups.length === 0) {
-    return <EmptyState title="Nothing to review" body="When a payment looks like it belongs to an invoice, the suggestion appears here for you to confirm." />;
+    return (
+      <EmptyState
+        title="Nothing to review"
+        body="When a payment looks like it belongs to an invoice, the suggestion appears here for you to confirm."
+      />
+    );
   }
   return (
     <ul className={styles.list}>

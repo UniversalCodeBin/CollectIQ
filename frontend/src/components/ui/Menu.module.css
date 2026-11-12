@@ -1,0 +1,76 @@
+.root {
+  position: relative;
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  z-index: 40;
+  display: grid;
+  min-width: 260px;
+  max-width: min(320px, calc(100vw - var(--space-8)));
+  padding: var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  animation: ciq-fade var(--motion-fast) var(--motion-ease);
+}
+
+.panel[data-align="end"] {
+  right: 0;
+}
+
+.panel[data-align="start"] {
+  left: 0;
+}
+
+.header {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  margin-bottom: var(--space-1);
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--type-body-sm-size);
+  overflow-wrap: anywhere;
+}
+
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.item svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-primary);
+}
+
+.item:hover,
+.item:focus-visible {
+  background: var(--color-sunken);
+}
+
+.item:focus-visible {
+  outline-offset: -2px;
+}
+
+.separator {
+  height: 1px;
+  margin: var(--space-1) 0;
+  background: var(--color-border-subtle);
+}

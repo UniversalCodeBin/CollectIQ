@@ -16,8 +16,8 @@ test("a logged-out visitor is sent to sign in and returned afterwards", async ({
 
   await page.goto(dashboard);
   await expect(page).toHaveURL(/\/login\?next=/);
-  await page.getByLabel("Email").fill(address);
-  await page.getByLabel("Password").fill("correct horse battery");
+  await page.getByLabel("Email", { exact: true }).fill(address);
+  await page.getByLabel("Password", { exact: true }).fill("correct horse battery");
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(dashboard);
 });

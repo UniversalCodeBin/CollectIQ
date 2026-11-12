@@ -1,48 +1,98 @@
-.page {
-  display: grid;
-  gap: var(--space-4);
-}
+/* Client profile. Page, PageHeader, Split and Section set the frame; this file styles the meta line and the rail lists. */
 
-.header {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.title {
-  margin: 0;
-  font-size: var(--type-h2-size);
-  line-height: var(--type-h2-line);
-  font-weight: var(--type-h2-weight);
-}
-
-.sub,
-.quiet {
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
   margin: 0;
 }
 
-.card {
-  display: grid;
+.meta > div {
+  display: flex;
   gap: var(--space-2);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
 }
 
-.heading {
+.meta dt {
+  color: var(--color-secondary);
+}
+
+.meta dd {
   margin: 0;
-  font-size: var(--type-h3-size);
-  line-height: var(--type-h3-line);
-  font-weight: var(--type-h3-weight);
+  color: var(--color-text);
+  font-weight: 600;
 }
 
-.list {
+.contacts,
+.aliases {
   display: grid;
-  gap: var(--space-1);
   margin: 0;
-  padding-left: var(--space-5);
+  padding: 0;
+  list-style: none;
+}
+
+.contact {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) 0;
+  border-top: 1px solid var(--color-border-subtle);
+  min-width: 0;
+}
+
+.contact:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.email {
+  color: var(--color-text);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.contact[data-suppressed] .email {
+  color: var(--color-secondary);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
 }
 
 .suppressed {
+  justify-self: start;
+  margin-top: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--status-disputed-bg);
+  color: var(--status-disputed-fg);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
   font-weight: 600;
+}
+
+.aliases {
+  grid-auto-flow: row;
+  gap: var(--space-2);
+}
+
+.alias {
+  justify-self: start;
+  padding: 2px var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  overflow-wrap: anywhere;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--space-4);
 }

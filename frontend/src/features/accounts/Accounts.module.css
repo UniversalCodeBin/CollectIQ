@@ -1,9 +1,175 @@
-.page { display: grid; gap: var(--space-4); }
-.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
-.toolbar { display: flex; justify-content: flex-end; }
-.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-2); }
-.row { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: space-between; align-items: baseline; }
-.muted { color: var(--color-secondary); margin: 0; }
-.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; }
-.form { display: grid; gap: var(--space-3); }
+/* Payment accounts. Page and PageHeader set the layout; this file styles the account list and its dialogs. */
+
+.list {
+  display: grid;
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.account {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.name {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+  font-weight: var(--type-h3-weight);
+  overflow-wrap: anywhere;
+}
+
+.kind {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.inactive {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+/* How recent the account's evidence is, in words. The tint only supports the words. */
+.coverage {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.coverage[data-coverage="SUPPORTED"] {
+  border-color: var(--status-verified-icon);
+  background: var(--status-verified-bg);
+  color: var(--status-verified-fg);
+}
+
+.coverage[data-coverage="STALE"] {
+  border-color: var(--status-awaiting-icon);
+  background: var(--status-awaiting-bg);
+  color: var(--status-awaiting-fg);
+}
+
+.facts {
+  display: grid;
+  gap: var(--space-1);
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.facts p {
+  margin: 0;
+}
+
+.gaps ul {
+  display: grid;
+  gap: 2px;
+  margin: var(--space-1) 0 0;
+  padding-left: var(--space-5);
+  color: var(--color-secondary);
+}
+
+.date {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+@media (max-width: 479px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- Dialogs ---------- */
+
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 600;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  gap: var(--space-3);
+}
+
+.invalidList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--status-disputed-fg);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}

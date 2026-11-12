@@ -1,8 +1,101 @@
-.page { display: grid; gap: var(--space-4); max-width: 48rem; }
-.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
-.heading { margin: 0; font-size: var(--type-h3-size, 1.1rem); }
-.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-3); }
-.count { font-weight: 400; color: var(--color-secondary); }
-.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; }
-.muted { color: var(--color-secondary); margin: 0; }
+/* Review inbox. Page, PageHeader and Section set the layout; this file styles the waiting items and notifications. */
+
+.summary {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 600;
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.list {
+  display: grid;
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+/* An unread notification carries a primary edge; the word "Unread" says it, the edge only supports it. */
+.row[data-unread] {
+  padding-left: var(--space-3);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.rowMain {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+  flex: 1 1 16rem;
+}
+
+.actionLink {
+  color: var(--color-link);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  text-underline-offset: 3px;
+}
+
+.actionLink:not(:hover) {
+  text-decoration: none;
+}
+
+.rowMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+.date {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.unread {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.feedback:empty {
+  display: none;
+}
+
+.feedback {
+  flex: 1 1 100%;
+}

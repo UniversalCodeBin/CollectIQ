@@ -1,11 +1,350 @@
-.page { display: grid; gap: var(--space-4); }
-.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
-.heading { margin: 0; font-size: var(--type-h3-size, 1.1rem); }
-.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-3); }
-.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.muted { color: var(--color-secondary); margin: 0; }
-.form { display: grid; gap: var(--space-3); }
-.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.statement { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-family: inherit; }
-.tag { background: var(--status-neutral-bg); color: var(--status-neutral-fg); border-radius: 4px; padding: 0 var(--space-2); font-size: 0.85em; margin-right: var(--space-1); }
-.row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; justify-content: space-between; }
+/* Customer replies, one reply, AI readings to review, and the invoice's conversation timeline.
+   Page, PageHeader and Section set the layout; this file styles what sits inside them. */
+
+.plain,
+.muted,
+.preview {
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.plain,
+.preview {
+  color: var(--color-text);
+}
+
+.muted {
+  color: var(--color-secondary);
+}
+
+.preview {
+  overflow-wrap: anywhere;
+}
+
+.date {
+  color: var(--color-secondary);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.textLink {
+  color: var(--color-link);
+  font-size: var(--type-body-sm-size);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+/* ---------- Forms ---------- */
+
+.form,
+.check {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 44rem;
+}
+
+.check {
+  margin-top: var(--space-2);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 479px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+/* ---------- Invoice-number and label tags ---------- */
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+/* ---------- Reply list (ConversationsPage) ---------- */
+
+.replies,
+.readings,
+.timeline,
+.links {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.replies,
+.timeline,
+.links {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.reply,
+.event,
+.linkRow {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.replyLine,
+.eventLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.replyLink,
+.invoiceLink {
+  min-width: 0;
+  color: var(--color-link);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  text-underline-offset: 3px;
+}
+
+.replyLink:not(:hover),
+.invoiceLink:not(:hover) {
+  text-decoration: none;
+}
+
+.replyLink {
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+}
+
+/* ---------- One reply: the three layers (MessagePage) ---------- */
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.layers {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 52rem;
+}
+
+.layer {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.layer[data-layer="recorded"] {
+  border-left-color: var(--color-secondary);
+}
+
+.layer[data-layer="verified"] {
+  border-left-color: var(--color-primary);
+}
+
+.layerTitle {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+  font-weight: var(--type-h3-weight);
+}
+
+.layerNote {
+  margin: calc(var(--space-2) * -1) 0 0;
+  color: var(--color-secondary);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+.statement {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--type-body-size);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.linkRow {
+  grid-template-columns: minmax(6rem, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+}
+
+.linkRow .invoiceLink {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 479px) {
+  .layer {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .linkRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.claim {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--status-awaiting-bg);
+  color: var(--status-awaiting-fg);
+}
+
+.claimIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--status-awaiting-icon);
+}
+
+.claimText {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+/* ---------- AI readings to review (PendingInterpretationsPage) ---------- */
+
+.readings {
+  gap: var(--space-4);
+  max-width: 52rem;
+}
+
+.reading {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+  border: 1px dashed var(--status-ai-icon);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+@media (max-width: 479px) {
+  .reading {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+.readingHead,
+.readingLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  margin: 0;
+}
+
+.readingLine {
+  justify-content: flex-start;
+}
+
+.readingLabel {
+  color: var(--color-text);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: 600;
+}
+
+/* The word carries the level; the border style only supports it. */
+.confidence {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--status-ai-icon);
+  border-radius: var(--radius-pill);
+  background: var(--status-ai-bg);
+  color: var(--status-ai-fg);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+.confidence[data-level="LOW"] {
+  border-style: dashed;
+}
+
+.quote {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  border-left: 3px solid var(--color-border-strong);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Invoice conversation timeline (Timeline.tsx) ---------- */
+
+.event {
+  gap: var(--space-2);
+  padding-left: var(--space-4);
+  border-left: 2px solid var(--color-border-subtle);
+}
+
+.event[data-type="MESSAGE"] {
+  border-left-color: var(--color-border-strong);
+}
+
+.event[data-type="CASE"] {
+  border-left-color: var(--status-awaiting-icon);
+}
+
+.event .statement {
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}

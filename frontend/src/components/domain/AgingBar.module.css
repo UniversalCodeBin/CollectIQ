@@ -1,0 +1,121 @@
+.aging {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+}
+
+/* The 2px gaps between parts show the sheet underneath; no part is outlined. */
+.bar {
+  display: flex;
+  gap: 2px;
+  height: var(--space-2);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  transform-origin: left center;
+  animation: grow var(--motion-slow) var(--motion-ease) both;
+}
+
+@keyframes grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.segment {
+  flex: 1 1 0;
+  min-width: var(--space-1);
+  transition: opacity var(--motion-fast) var(--motion-ease);
+}
+
+.segment[data-dim] {
+  opacity: 0.35;
+}
+
+.segment[data-step="1"],
+.swatch[data-step="1"] {
+  background: var(--chart-aging-1);
+}
+
+.segment[data-step="2"],
+.swatch[data-step="2"] {
+  background: var(--chart-aging-2);
+}
+
+.segment[data-step="3"],
+.swatch[data-step="3"] {
+  background: var(--chart-aging-3);
+}
+
+.segment[data-step="4"],
+.swatch[data-step="4"] {
+  background: var(--chart-aging-4);
+}
+
+.segment[data-step="5"],
+.swatch[data-step="5"] {
+  background: var(--chart-aging-5);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) 0 var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+  text-align: left;
+  font-weight: 400;
+}
+
+.table th:first-child {
+  padding-left: 0;
+}
+
+.table thead th {
+  color: var(--color-secondary);
+  font-size: var(--type-label-size);
+  line-height: var(--type-label-line);
+  font-weight: var(--type-label-weight);
+}
+
+.table tbody tr:last-child th,
+.table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.table tbody tr[data-active] {
+  background: var(--color-surface-muted);
+}
+
+.table .num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.table tbody td:nth-child(3) {
+  font-weight: 600;
+}
+
+.swatch {
+  display: inline-block;
+  width: var(--space-3);
+  height: var(--space-3);
+  margin-right: var(--space-2);
+  border-radius: var(--radius-sm);
+  vertical-align: -1px;
+}
+
+@media (max-width: 479px) {
+  .table th:nth-child(4),
+  .table td:nth-child(4) {
+    display: none;
+  }
+}

@@ -1,11 +1,169 @@
-.page { display: grid; gap: var(--space-4); }
-.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
-.heading { margin: 0; font-size: var(--type-h3-size, 1.1rem); }
-.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-3); }
-.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.muted { color: var(--color-secondary); margin: 0; }
-.form { display: grid; gap: var(--space-3); }
-.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.statement { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-family: inherit; }
-.tag { background: var(--status-neutral-bg); color: var(--status-neutral-fg); border-radius: 4px; padding: 0 var(--space-2); font-size: 0.85em; margin-right: var(--space-1); }
-.row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; justify-content: space-between; }
+/* Disputes and questions. Page, PageHeader and Tabs set the layout; this file styles the case list and dialogs. */
+
+.muted,
+.summary,
+.status {
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.muted {
+  color: var(--color-secondary);
+}
+
+.summary {
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.date {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- Case list ---------- */
+
+.cases {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+/* A dispute carries the dispute colour; other cases keep the neutral edge. The words, not the colour, say which is which. */
+.case[data-type="DISPUTE"] {
+  border-left-color: var(--status-disputed-icon);
+}
+
+.case[data-resolved] {
+  border-left-color: var(--color-border-subtle);
+}
+
+@media (max-width: 479px) {
+  .case {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+.caseHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.caseTitle {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+.caseMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.invoiceLink {
+  color: var(--color-link);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.invoiceLink:not(:hover) {
+  text-decoration: none;
+}
+
+.aiNotice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--status-ai-fg);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+.outcome {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--color-border-subtle);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.outcome > div {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.outcome dt {
+  color: var(--color-secondary);
+}
+
+.outcome dd {
+  margin: 0;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Dialogs ---------- */
+
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+@media (max-width: 479px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}

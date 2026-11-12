@@ -124,3 +124,74 @@ describe("Gmail connection controls", () => {
     expect(await screen.findByRole("button", { name: "Disconnect Gmail" })).toBeInTheDocument();
   });
 });
+
+describe("PayPal Sandbox controls", () => {
+  const paypal = (overrides: Record<string, unknown> = {}) => ({
+    status: 200,
+    body: {
+      items: [
+        {
+          key: "PAYPAL",
+          label: "PayPal",
+          kind: "PROVIDER",
+          state: "NEEDS_CONFIGURATION",
+          note: "PayPal REST API Sandbox integration.",
+          verified_at: null,
+          last_error: "PayPal credentials not configured (PAYPAL_CLIENT_ID / PAYPAL_CLIENT_SECRET).",
+          environment: "sandbox",
+          external_account: null,
+          webhook_status: "Awaiting credentials",
+          last_event_received_at: null,
+          last_event_status: null,
+          ...overrides,
+        },
+      ],
+    },
+  });
+
+  it("shows Sandbox badge, meaningful status, and verification form when unconfigured", async () => {
+    stub({ [`GET ${API}/integrations`]: paypal() });
+    open("integrations");
+
+    expect(await screen.findByText("Environment: SANDBOX")).toBeInTheDocument();
+    expect(screen.getAllByText("Credentials missing")).toHaveLength(2); // In header badge + detail grid
+    expect(screen.getByText("Awaiting credentials")).toBeInTheDocument();
+    expect(screen.getByText(/PayPal credentials not configured/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Verify connection" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Disconnect PayPal" })).not.toBeInTheDocument();
+  });
+
+  it("submits connection verification to backend when clicking verify", async () => {
+    stub({
+      [`GET ${API}/integrations`]: paypal(),
+      [`POST ${API}/integrations/paypal/connect`]: {
+        status: 200,
+        body: { ok: true, provider: "PAYPAL", merchant_id: "SB_MERCHANT_1" },
+      },
+    });
+    open("integrations");
+
+    const verifyBtn = await screen.findByRole("button", { name: "Verify connection" });
+    verifyBtn.click();
+
+    await waitFor(() => expect(called(`POST ${API}/integrations/paypal/connect`)).toHaveLength(1));
+  });
+
+  it("shows Disconnect PayPal and connected status when verified", async () => {
+    stub({
+      [`GET ${API}/integrations`]: paypal({
+        state: "CONNECTED_VERIFIED",
+        last_error: null,
+        external_account: "M123456",
+        webhook_status: "Registered",
+        verified_at: "2026-11-12T12:00:00Z",
+      }),
+    });
+    open("integrations");
+
+    expect(await screen.findByRole("button", { name: "Disconnect PayPal" })).toBeInTheDocument();
+    expect(screen.getAllByText("Connected and verified")).toHaveLength(2);
+    expect(screen.getByText("Registered")).toBeInTheDocument();
+  });
+});
+

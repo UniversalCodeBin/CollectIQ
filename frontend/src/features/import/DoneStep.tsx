@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Button, ButtonLink } from "../../components/ui/Button";
 import styles from "./ImportPage.module.css";
 import type { ImportBatch } from "./types";
 
@@ -11,7 +11,15 @@ const LINES: [string, string, string][] = [
   ["skipped_invalid", "invalid row skipped", "invalid rows skipped"],
 ];
 
-export function DoneStep({ batch, workspace, onAnother }: { batch: ImportBatch; workspace: string; onAnother: () => void }) {
+export function DoneStep({
+  batch,
+  workspace,
+  onAnother,
+}: {
+  batch: ImportBatch;
+  workspace: string;
+  onAnother: () => void;
+}) {
   return (
     <section className={styles.card} aria-labelledby="done-title">
       <h2 id="done-title" className={styles.heading}>
@@ -24,10 +32,13 @@ export function DoneStep({ batch, workspace, onAnother }: { batch: ImportBatch; 
         })}
       </ul>
       <div className={styles.actions}>
-        <Link to={`/w/${workspace}/dashboard`}>Go to the dashboard</Link>
-        <button type="button" className={styles.linkButton} onClick={onAnother}>
+        <ButtonLink to={`/w/${workspace}/receivables`} variant="primary">
+          See your receivables
+        </ButtonLink>
+        <ButtonLink to={`/w/${workspace}/dashboard`}>Go to the dashboard</ButtonLink>
+        <Button variant="quiet" onClick={onAnother}>
           Import another file
-        </button>
+        </Button>
       </div>
     </section>
   );

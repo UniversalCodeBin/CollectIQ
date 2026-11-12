@@ -1,111 +1,232 @@
-.page {
-  display: grid;
-  gap: var(--space-4);
-}
+/* One invoice. Page, PageHeader, Section, Split and MetricStrip set the layout; this file styles what sits inside.
+   Shared with History.tsx and Dialogs.tsx. */
 
-.header {
-  display: grid;
-  gap: var(--space-2);
-}
-
-.title {
-  margin: 0;
-  font-size: var(--type-h2-size);
-  line-height: var(--type-h2-line);
-  font-weight: var(--type-h2-weight);
-}
-
-.sub {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: center;
-  margin: 0;
-}
-
-.actions,
-.dialogActions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-2);
-  align-items: flex-start;
-}
-
-.tabs {
-  display: flex;
-  gap: var(--space-3);
-}
-
-.tabs a[aria-current="page"] {
-  font-weight: 700;
-}
-
-.card {
-  display: grid;
-  gap: var(--space-2);
-  padding: var(--space-4);
-  border: 1px solid var(--color-border-subtle);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
-}
-
-.heading {
-  margin: 0;
-  font-size: var(--type-h3-size);
-  line-height: var(--type-h3-line);
-  font-weight: var(--type-h3-weight);
-}
-
-.facts {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  gap: var(--space-1) var(--space-4);
-  margin: 0;
-}
-
-.facts dt {
-  font-weight: 600;
-}
-
-.facts dd {
-  margin: 0;
+.number {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
   overflow-wrap: anywhere;
 }
 
-.hint,
-.note {
-  margin: 0;
+.clientLink {
+  color: var(--color-link);
+  font-weight: 600;
+  text-underline-offset: 3px;
 }
 
-.action {
+.clientLink:not(:hover) {
+  text-decoration: none;
+}
+
+/* ---------- Why routine follow-up is held ---------- */
+
+.hold {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border-subtle);
+  border-left: 3px solid var(--status-paused-icon);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.hold[data-tone="disputed"] {
+  border-left-color: var(--status-disputed-icon);
+}
+
+.hold[data-tone="awaiting"] {
+  border-left-color: var(--status-awaiting-icon);
+}
+
+.holdIcon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--status-paused-icon);
+}
+
+.hold[data-tone="disputed"] .holdIcon {
+  color: var(--status-disputed-icon);
+}
+
+.hold[data-tone="awaiting"] .holdIcon {
+  color: var(--status-awaiting-icon);
+}
+
+.holdText {
   margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+/* ---------- Fact lists ---------- */
+
+.facts {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.fact {
+  display: grid;
+  grid-template-columns: minmax(8rem, 2fr) minmax(0, 3fr);
+  gap: var(--space-4);
+  align-items: baseline;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.fact dt {
+  color: var(--color-secondary);
+}
+
+.fact dd {
+  margin: 0;
+  min-width: 0;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.inline {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  color: var(--color-secondary);
+}
+
+@media (max-width: 479px) {
+  .fact {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+}
+
+/* ---------- Text ---------- */
+
+.plain,
+.muted,
+.note,
+.warning,
+.nextAction {
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.plain {
+  color: var(--color-text);
+}
+
+.muted {
+  color: var(--color-secondary);
+}
+
+.note {
+  margin-top: var(--space-3);
+  color: var(--color-secondary);
+}
+
+.warning {
+  margin-top: var(--space-3);
+  padding-left: var(--space-3);
+  border-left: 3px solid var(--indicator-warning);
+  color: var(--color-text);
+}
+
+.nextAction {
+  color: var(--color-text);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
   font-weight: 600;
 }
 
 .reasons {
-  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
   padding-left: var(--space-5);
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
 }
 
-@media (max-width: 30rem) {
-  .facts {
-    grid-template-columns: 1fr;
-  }
+.textLink {
+  display: inline-block;
+  margin-top: var(--space-3);
+  color: var(--color-link);
+  font-size: var(--type-body-sm-size);
+  font-weight: 600;
+  text-underline-offset: 3px;
 }
+
+/* ---------- Payment history (History.tsx) ---------- */
 
 .history {
-  list-style: none;
+  display: grid;
   margin: 0;
   padding: 0;
-  display: grid;
-  gap: var(--space-3);
-}
-
-.history li {
   border-top: 1px solid var(--color-border-subtle);
-  padding-top: var(--space-3);
+  list-style: none;
 }
 
-.history p {
+.historyRow {
+  display: grid;
+  gap: 2px;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.historyLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
   margin: 0;
+  color: var(--color-text);
+}
+
+.historyMeta {
+  margin: 0;
+  color: var(--color-secondary);
+  overflow-wrap: anywhere;
+}
+
+.historyKind {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.historyRow[data-reversal] .historyKind {
+  color: var(--color-error);
+}
+
+/* ---------- Dialogs (Dialogs.tsx) ---------- */
+
+.dialogActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 479px) {
+  .dialogActions {
+    flex-direction: column-reverse;
+  }
+
+  .dialogActions > * {
+    width: 100%;
+  }
 }

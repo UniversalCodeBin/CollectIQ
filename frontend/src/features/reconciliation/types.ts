@@ -17,4 +17,7 @@ export type Proposal = {
 };
 
 export type Payment = ResponseOf<{ method: "get"; path: "/api/v1/workspaces/{ws}/payments" }>["items"][number];
-export type Unmatched = ResponseOf<{ method: "get"; path: "/api/v1/workspaces/{ws}/transactions/unmatched" }>["items"][number];
+export type Unmatched = ResponseOf<{
+  method: "get";
+  path: "/api/v1/workspaces/{ws}/transactions/unmatched";
+}>["items"][number];

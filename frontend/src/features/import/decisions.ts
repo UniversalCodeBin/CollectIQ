@@ -15,7 +15,9 @@ export function invalidCount(batch: ImportBatch): number {
 export function isDecided(row: ReviewRow, decisions: Decisions): boolean {
   const decision = decisions.rows[row.row];
   if (!decision) return false;
-  return row.status === "CONFLICT" ? decision.action === "IGNORE" || decision.total_source !== undefined : decision.action !== undefined;
+  return row.status === "CONFLICT"
+    ? decision.action === "IGNORE" || decision.total_source !== undefined
+    : decision.action !== undefined;
 }
 
 export function undecidedClients(batch: ImportBatch, decisions: Decisions): ClientMatch[] {
@@ -38,7 +40,9 @@ export function commitBlockers(batch: ImportBatch, decisions: Decisions): string
   if (waiting) reasons.push(`Choose which client ${plural(waiting, "row belongs", "rows belong")} to.`);
   const conflicts = rows.filter((row) => row.status === "CONFLICT" && !isDecided(row, decisions)).length;
   if (conflicts) reasons.push(`Choose the total to keep for ${plural(conflicts, "row", "rows")}.`);
-  const matches = rows.filter((row) => row.status !== "INVALID" && row.status !== "CONFLICT" && !isDecided(row, decisions)).length;
+  const matches = rows.filter(
+    (row) => row.status !== "INVALID" && row.status !== "CONFLICT" && !isDecided(row, decisions),
+  ).length;
   if (matches) {
     reasons.push(`Decide what to do with ${plural(matches, "row that matches", "rows that match")} an invoice.`);
   }

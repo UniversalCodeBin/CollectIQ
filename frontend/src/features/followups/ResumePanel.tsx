@@ -15,9 +15,18 @@ export function ResumePanel({ invoiceId, onChanged }: { invoiceId: string; onCha
   const { ws = "" } = useParams();
   const client = useQueryClient();
   const [approved, setApproved] = useState(false);
-  const ask = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume-request" }, { idempotent: true });
-  const decide = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/approvals/{approval_id}/decide" }, { idempotent: true });
-  const resume = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume" }, { idempotent: true });
+  const ask = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume-request" },
+    { idempotent: true },
+  );
+  const decide = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/approvals/{approval_id}/decide" },
+    { idempotent: true },
+  );
+  const resume = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/followups/resume" },
+    { idempotent: true },
+  );
   const answer = ask.status === "success" ? ask.data : undefined;
   const approvalId = answer?.approval_id ?? null;
   const resumed = resume.status === "success";
@@ -33,25 +42,32 @@ export function ResumePanel({ invoiceId, onChanged }: { invoiceId: string; onCha
       <h2 id="resume-title" className={styles.heading}>
         Bring reminders back
       </h2>
-      <p className={styles.muted}>The dispute on this invoice is resolved. Reminders stay off until you choose to bring them back. This sends nothing.</p>
+      <p className={styles.muted}>
+        The dispute on this invoice is resolved. Reminders stay off until you choose to bring them back. This sends
+        nothing.
+      </p>
       {!resumed && (
         <div className={styles.actions}>
-          <Button onClick={() => ask.submit({ path: { ws, invoice_id: invoiceId } })}>Check whether reminders can resume</Button>
+          <Button onClick={() => ask.submit({ path: { ws, invoice_id: invoiceId } })}>
+            Check whether reminders can resume
+          </Button>
         </div>
       )}
       <MutationFeedback mutation={ask} />
       {answer && !approvalId && (
         <div role="status">
           <p>Not yet.</p>
-          <ul>{plainReasons(answer.reasons).map((line) => <li key={line}>{line}</li>)}</ul>
+          <ul>
+            {plainReasons(answer.reasons).map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
         </div>
       )}
       {approvalId && !ready && !resumed && (
         <div className={styles.actions}>
           <Button
-            onClick={() =>
-              decide.submit({ path: { ws, approval_id: approvalId }, body: { decision: "APPROVED" } })
-            }
+            onClick={() => decide.submit({ path: { ws, approval_id: approvalId }, body: { decision: "APPROVED" } })}
           >
             Approve bringing reminders back
           </Button>
@@ -73,7 +89,10 @@ export function ResumePanel({ invoiceId, onChanged }: { invoiceId: string; onCha
       <MutationFeedback mutation={resume} />
       {resumed && (
         <p role="status">
-          Reminders are back on for this invoice. <Button variant="secondary" onClick={finish}>Done</Button>
+          Reminders are back on for this invoice.{" "}
+          <Button variant="secondary" onClick={finish}>
+            Done
+          </Button>
         </p>
       )}
     </section>

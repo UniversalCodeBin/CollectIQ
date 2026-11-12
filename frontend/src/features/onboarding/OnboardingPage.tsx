@@ -49,7 +49,10 @@ function WorkspaceStep() {
   }
 
   return (
-    <AuthPage title="Set up your workspace">
+    <AuthPage
+      title="Set up your workspace"
+      lead="A workspace holds one business's customers, invoices and follow-ups. You can invite your team later."
+    >
       <form className={authStyles.form} onSubmit={submit}>
         <TextField
           label="Business name"
@@ -100,7 +103,14 @@ function WorkspaceStep() {
         </SelectField>
         <MutationFeedback mutation={create} />
         {create.status !== "unknown" && (
-          <Button type="submit" variant="primary" disabled={create.status === "pending" || Boolean(created)}>
+          <Button
+            type="submit"
+            variant="primary"
+            size="lg"
+            block
+            busy={create.status === "pending"}
+            disabled={create.status === "pending" || Boolean(created)}
+          >
             Create workspace
           </Button>
         )}

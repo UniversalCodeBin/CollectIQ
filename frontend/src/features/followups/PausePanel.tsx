@@ -8,7 +8,14 @@ import { apiRequest, useApiMutation } from "../../lib/api";
 import { formatDate } from "../../lib/format";
 import styles from "./Followups.module.css";
 
-type Pause = { id: string; scope: string; reason: string | null; status: string; paused_at: string; resumed_at: string | null };
+type Pause = {
+  id: string;
+  scope: string;
+  reason: string | null;
+  status: string;
+  paused_at: string;
+  resumed_at: string | null;
+};
 
 /**
  * Pause or resume reminders for one client or one invoice, with the history of earlier pauses.
@@ -22,10 +29,17 @@ export function PausePanel({ scope, targetId }: { scope: "CLIENT" | "INVOICE"; t
   const query = scope === "CLIENT" ? { client_id: targetId, history: true } : { invoice_id: targetId, history: true };
   const found = useQuery({
     queryKey: key,
-    queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/reminder-pauses" }, { path: { ws }, query }),
+    queryFn: () =>
+      apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/reminder-pauses" }, { path: { ws }, query }),
   });
-  const pause = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reminder-pauses" }, { idempotent: true });
-  const resume = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/reminder-pauses/{pause_id}/resume" }, { idempotent: true });
+  const pause = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/reminder-pauses" },
+    { idempotent: true },
+  );
+  const resume = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/reminder-pauses/{pause_id}/resume" },
+    { idempotent: true },
+  );
   const items = (found.data?.items ?? []) as Pause[];
   const active = items.find((entry) => entry.status === "ACTIVE");
   const ended = items.filter((entry) => entry.status !== "ACTIVE");
@@ -47,19 +61,31 @@ export function PausePanel({ scope, targetId }: { scope: "CLIENT" | "INVOICE"; t
       {active ? (
         <>
           <p role="status">
-            Reminders are paused for {active.scope === "CLIENT" ? "this client" : "this invoice"} since {formatDate(active.paused_at)}
-            {active.reason ? `: ${active.reason}` : ""}. No reminder can be approved or recorded as sent until you resume.
+            Reminders are paused for {active.scope === "CLIENT" ? "this client" : "this invoice"} since{" "}
+            {formatDate(active.paused_at)}
+            {active.reason ? `: ${active.reason}` : ""}. No reminder can be approved or recorded as sent until you
+            resume.
           </p>
           <Button onClick={() => resume.submit({ path: { ws, pause_id: active.id } })}>Resume reminders</Button>
           <MutationFeedback mutation={resume} />
         </>
       ) : (
         <>
-          <p className={styles.muted}>Stop reminders for {noun} until you resume them. Nothing is sent or changed besides that.</p>
-          <TextField label="Reason (optional)" value={reason} onChange={(event) => setReason(event.target.value)} maxLength={500} />
+          <p className={styles.muted}>
+            Stop reminders for {noun} until you resume them. Nothing is sent or changed besides that.
+          </p>
+          <TextField
+            label="Reason (optional)"
+            value={reason}
+            onChange={(event) => setReason(event.target.value)}
+            maxLength={500}
+          />
           <Button
             onClick={() =>
-              pause.submit({ path: { ws }, body: { scope, target_id: targetId, ...(reason.trim() ? { reason: reason.trim() } : {}) } })
+              pause.submit({
+                path: { ws },
+                body: { scope, target_id: targetId, ...(reason.trim() ? { reason: reason.trim() } : {}) },
+              })
             }
           >
             Pause reminders
@@ -73,7 +99,8 @@ export function PausePanel({ scope, targetId }: { scope: "CLIENT" | "INVOICE"; t
           <ul>
             {ended.map((entry) => (
               <li key={entry.id}>
-                {entry.scope === "CLIENT" ? "Client" : "Invoice"}: {formatDate(entry.paused_at)} to {entry.resumed_at ? formatDate(entry.resumed_at) : "now"}
+                {entry.scope === "CLIENT" ? "Client" : "Invoice"}: {formatDate(entry.paused_at)} to{" "}
+                {entry.resumed_at ? formatDate(entry.resumed_at) : "now"}
                 {entry.reason ? ` (${entry.reason})` : ""}
               </li>
             ))}

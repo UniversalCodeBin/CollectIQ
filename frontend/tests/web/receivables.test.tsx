@@ -338,6 +338,43 @@ describe("Invoice details (SCR-04)", () => {
     expect(within(source).getByText(/row 2/i)).toBeInTheDocument();
   });
 
+  it("says routine reminders are paused only when the server holds them", async () => {
+    const base = detail().derived;
+    stub({ [DETAIL]: { status: 200, body: detail({ derived: { ...base, reminder_status: "SUPPRESSED" } }) } });
+    open(`invoices/${INV}/overview`);
+    expect(await screen.findByText("Routine reminders are paused for this invoice.")).toBeInTheDocument();
+  });
+
+  it("names an open dispute as the reason reminders are held", async () => {
+    const base = detail().derived;
+    stub({
+      [DETAIL]: {
+        status: 200,
+        body: detail({ derived: { ...base, dispute_status: "OPEN", reminder_status: "SUPPRESSED" } }),
+      },
+    });
+    open(`invoices/${INV}/overview`);
+    expect(await screen.findByText("A dispute is open on this invoice.")).toBeInTheDocument();
+    expect(screen.getByText(/Routine reminders are paused meanwhile/)).toBeInTheDocument();
+  });
+
+  it("keeps a customer's payment claim unpaid until bank evidence is checked", async () => {
+    const base = detail().derived;
+    stub({ [DETAIL]: { status: 200, body: detail({ derived: { ...base, payment_status: "AWAITING_VERIFICATION" } }) } });
+    open(`invoices/${INV}/overview`);
+    expect(await screen.findByText("The customer says this has been paid.")).toBeInTheDocument();
+    expect(screen.getByText(/stays unpaid until someone checks the bank evidence/)).toBeInTheDocument();
+    expect(screen.queryByText(/reminders are paused/i)).not.toBeInTheDocument();
+  });
+
+  it("shows no hold notice for an ordinary outstanding invoice", async () => {
+    stub({ [DETAIL]: { status: 200, body: detail() } });
+    open(`invoices/${INV}/overview`);
+    await screen.findByRole("heading", { name: "Invoice INV-2041" });
+    expect(screen.queryByText(/reminders are paused/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/dispute is open/i)).not.toBeInTheDocument();
+  });
+
   it("shows the recommended action, who performs it and why", async () => {
     stub({ [DETAIL]: { status: 200, body: detail() } });
     open(`invoices/${INV}/overview`);

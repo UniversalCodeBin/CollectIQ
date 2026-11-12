@@ -1,27 +1,63 @@
 .button {
-  min-height: var(--space-10);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
   padding: var(--space-2) var(--space-4);
-  border: 1px solid var(--color-border-control);
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
   font: inherit;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
   font-weight: 500;
+  white-space: nowrap;
   cursor: pointer;
-  transition: background var(--motion-fast);
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    border-color var(--motion-fast) var(--motion-ease),
+    transform var(--motion-fast) var(--motion-ease);
 }
 
 .button:hover {
-  background: var(--color-sunken);
+  border-color: var(--color-border-control);
+  background: var(--color-surface-muted);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button svg {
+  flex-shrink: 0;
+}
+
+.button[data-size="sm"] {
+  min-height: 36px;
+  padding: var(--space-1) var(--space-3);
+}
+
+.button[data-size="lg"] {
+  min-height: 48px;
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--type-body-size);
+}
+
+.button[data-block] {
+  width: 100%;
 }
 
 .button[data-variant="primary"] {
   border-color: var(--color-primary);
   background: var(--color-primary);
   color: var(--color-on-primary);
+  font-weight: 600;
 }
 
 .button[data-variant="primary"]:hover {
+  border-color: var(--color-primary-hover);
   background: var(--color-primary-hover);
 }
 
@@ -30,15 +66,78 @@
   color: var(--color-error);
 }
 
+.button[data-variant="danger"]:hover {
+  background: var(--status-error-bg);
+}
+
 .button[data-variant="quiet"] {
   border-color: transparent;
   background: transparent;
+  color: var(--color-text);
+}
+
+.button[data-variant="quiet"]:hover {
+  background: var(--color-sunken);
 }
 
 .button[aria-disabled="true"],
 .button:disabled {
-  border-color: var(--color-border-control);
+  border-color: var(--color-border-subtle);
   background: var(--color-sunken);
   color: var(--color-secondary);
   cursor: not-allowed;
+}
+
+.button[data-busy]:disabled {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  cursor: progress;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 720ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-secondary);
+  cursor: pointer;
+  transition:
+    background var(--motion-fast) var(--motion-ease),
+    color var(--motion-fast) var(--motion-ease);
+}
+
+.icon:hover {
+  background: var(--color-sunken);
+  color: var(--color-text);
+}
+
+.icon[aria-expanded="true"] {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+/* ButtonLink: a link dressed as a button. */
+.link {
+  text-decoration: none;
 }

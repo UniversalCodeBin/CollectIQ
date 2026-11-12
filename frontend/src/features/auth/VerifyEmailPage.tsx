@@ -1,3 +1,4 @@
+import { CircleCheck, Mail, MailOpen } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router";
 import { Button } from "../../components/ui/Button";
@@ -5,27 +6,40 @@ import { fieldError, TextField } from "../../components/ui/Field";
 import { MutationFeedback } from "../../components/ui/MutationFeedback";
 import { useApiMutation } from "../../lib/api";
 import { AuthPage, authStyles } from "./AuthPage";
+import { checkEmail, clearError, type FieldErrors, focusFirstError } from "./validation";
 
 function SendAgain({ initialEmail }: { initialEmail: string }) {
   const [email, setEmail] = useState(initialEmail);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const resend = useApiMutation({ method: "post", path: "/api/v1/auth/verify-email/resend" });
+  const pending = resend.status === "pending";
 
-  function submit(event: FormEvent) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (pending) return;
+    const found: FieldErrors = { email: checkEmail(email) };
+    setErrors(found);
+    if (found.email) return focusFirstError(event.currentTarget, found);
     resend.submit({ body: { email } });
   }
 
   return (
-    <form className={authStyles.form} onSubmit={submit}>
+    <form className={authStyles.form} onSubmit={submit} noValidate>
       <TextField
         label="Email"
         type="email"
         name="email"
+        icon={Mail}
         autoComplete="username"
+        inputMode="email"
         required
+        hint="Didn't get it? Check spam, or send it again."
         value={email}
-        onChange={(event) => setEmail(event.target.value)}
-        error={fieldError(resend.problem, "email")}
+        onChange={(event) => {
+          setEmail(event.target.value);
+          setErrors(clearError("email"));
+        }}
+        error={errors.email ?? fieldError(resend.problem, "email")}
       />
       <MutationFeedback mutation={resend} />
       {resend.status === "success" && (
@@ -33,7 +47,7 @@ function SendAgain({ initialEmail }: { initialEmail: string }) {
           If this address needs confirming, we've sent another email. It can take a few minutes.
         </p>
       )}
-      <Button type="submit" disabled={resend.status === "pending"}>
+      <Button type="submit" block busy={pending} disabled={pending}>
         Send it again
       </Button>
     </form>
@@ -42,25 +56,33 @@ function SendAgain({ initialEmail }: { initialEmail: string }) {
 
 function Confirm({ token, email }: { token: string; email: string }) {
   const verify = useApiMutation({ method: "post", path: "/api/v1/auth/verify-email" });
+  const pending = verify.status === "pending";
 
   if (verify.status === "success") {
     return (
       <AuthPage title="Email confirmed">
-        <p className={authStyles.note}>Your email address is confirmed. Sign in to set up your workspace.</p>
-        <Link to="/login">Sign in</Link>
+        <div className={authStyles.outcome}>
+          <CircleCheck size={20} aria-hidden="true" />
+          <p>Your email address is confirmed. Sign in to set up your workspace.</p>
+        </div>
+        <Link className={authStyles.back} to="/login">
+          Sign in
+        </Link>
       </AuthPage>
     );
   }
   return (
-    <AuthPage title="Confirm your email">
-      <p className={authStyles.note}>Press the button to confirm this email address belongs to you.</p>
+    <AuthPage title="Confirm your email" lead="Press the button to confirm this email address belongs to you.">
       <MutationFeedback mutation={verify} />
       {verify.status === "problem" ? (
         <SendAgain initialEmail={email} />
       ) : (
         <Button
           variant="primary"
-          disabled={verify.status === "pending"}
+          size="lg"
+          block
+          busy={pending}
+          disabled={pending}
           onClick={() => verify.submit({ body: { token } })}
         >
           Confirm my email
@@ -79,9 +101,14 @@ export function VerifyEmailPage() {
   if (token) return <Confirm token={token} email={email} />;
   return (
     <AuthPage title="Check your email">
-      <p className={authStyles.note}>We sent a link to confirm your address. Open it to continue.</p>
+      <div className={authStyles.outcome}>
+        <MailOpen size={20} aria-hidden="true" />
+        <p>We sent a link to confirm your address. Open it to continue. The link works once.</p>
+      </div>
       <SendAgain initialEmail={email} />
-      <Link to="/login">Back to sign in</Link>
+      <Link className={authStyles.back} to="/login">
+        Back to sign in
+      </Link>
     </AuthPage>
   );
 }

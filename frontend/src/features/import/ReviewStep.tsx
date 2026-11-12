@@ -8,7 +8,14 @@ import { formatMinor } from "../../lib/format";
 import { type Choice, ChoiceGroup } from "./ChoiceGroup";
 import { commitBlockers, invalidCount, isDecided, rowsOf, toCommitBody, undecidedClients } from "./decisions";
 import styles from "./ImportPage.module.css";
-import { type ClientMatch, type Decisions, type ImportBatch, NO_DECISIONS, type ReviewRow, type RowDecision } from "./types";
+import {
+  type ClientMatch,
+  type Decisions,
+  type ImportBatch,
+  NO_DECISIONS,
+  type ReviewRow,
+  type RowDecision,
+} from "./types";
 
 const ROW_CHOICES: Record<string, Choice> = {
   UPDATE: { value: "UPDATE", label: "Update the existing invoice" },
@@ -25,7 +32,15 @@ const STATUS_TEXT: Record<string, string> = {
 
 const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
 
-function RowDecisionControl({ row, decisions, onChoose }: { row: ReviewRow; decisions: Decisions; onChoose: (decision: RowDecision) => void }) {
+function RowDecisionControl({
+  row,
+  decisions,
+  onChoose,
+}: {
+  row: ReviewRow;
+  decisions: Decisions;
+  onChoose: (decision: RowDecision) => void;
+}) {
   const name = `${row.row}, ${row.invoice_number ?? "no invoice number"}`;
   const current = decisions.rows[row.row];
   if (row.status === "CONFLICT" && row.conflict) {
@@ -40,11 +55,15 @@ function RowDecisionControl({ row, decisions, onChoose }: { row: ReviewRow; deci
         label={`Which total to keep for row ${name}`}
         choices={choices}
         value={current?.total_source ?? current?.action}
-        onChange={(value) => onChoose(value === "IGNORE" ? { action: "IGNORE" } : { total_source: value as "TOTAL" | "SUM" })}
+        onChange={(value) =>
+          onChoose(value === "IGNORE" ? { action: "IGNORE" } : { total_source: value as "TOTAL" | "SUM" })
+        }
       />
     );
   }
-  const choices = row.allowed_decisions.map((decision) => ROW_CHOICES[decision]).filter((choice): choice is Choice => Boolean(choice));
+  const choices = row.allowed_decisions
+    .map((decision) => ROW_CHOICES[decision])
+    .filter((choice): choice is Choice => Boolean(choice));
   if (choices.length === 0) return null;
   return (
     <ChoiceGroup
@@ -56,7 +75,15 @@ function RowDecisionControl({ row, decisions, onChoose }: { row: ReviewRow; deci
   );
 }
 
-function RowCard({ row, decisions, onChoose }: { row: ReviewRow; decisions: Decisions; onChoose: (decision: RowDecision) => void }) {
+function RowCard({
+  row,
+  decisions,
+  onChoose,
+}: {
+  row: ReviewRow;
+  decisions: Decisions;
+  onChoose: (decision: RowDecision) => void;
+}) {
   return (
     <li className={styles.row} data-decided={isDecided(row, decisions) || undefined}>
       <p className={styles.rowTitle}>
@@ -95,14 +122,31 @@ function RowCard({ row, decisions, onChoose }: { row: ReviewRow; decisions: Deci
   );
 }
 
-function ClientCard({ match, decisions, onChoose }: { match: ClientMatch; decisions: Decisions; onChoose: (choice: string) => void }) {
+function ClientCard({
+  match,
+  decisions,
+  onChoose,
+}: {
+  match: ClientMatch;
+  decisions: Decisions;
+  onChoose: (choice: string) => void;
+}) {
   const choices: Choice[] = [
-    ...match.candidates.map((candidate) => ({ value: `LINK:${candidate.client_id}`, label: `Same client as ${candidate.display_name}` })),
+    ...match.candidates.map((candidate) => ({
+      value: `LINK:${candidate.client_id}`,
+      label: `Same client as ${candidate.display_name}`,
+    })),
     ...match.in_file.map((other) => ({ value: `SAME_AS:${other}`, label: `Same client as “${other}” in this file` })),
     { value: "NEW", label: "A new client" },
   ];
   const current = decisions.clients[match.name];
-  const value = !current ? undefined : current.action === "LINK" ? `LINK:${current.client_id}` : current.action === "SAME_AS" ? `SAME_AS:${current.name}` : "NEW";
+  const value = !current
+    ? undefined
+    : current.action === "LINK"
+      ? `LINK:${current.client_id}`
+      : current.action === "SAME_AS"
+        ? `SAME_AS:${current.name}`
+        : "NEW";
   return (
     <li className={styles.row}>
       <p className={styles.rowTitle}>
@@ -122,13 +166,22 @@ function download(text: string) {
   URL.revokeObjectURL(url);
 }
 
-type Props = { workspace: string; batch: ImportBatch; onChanged: (batch: ImportBatch) => void; onDiscarded: () => void; onChangeColumns: () => void };
+type Props = {
+  workspace: string;
+  batch: ImportBatch;
+  onChanged: (batch: ImportBatch) => void;
+  onDiscarded: () => void;
+  onChangeColumns: () => void;
+};
 
 export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeColumns }: Props) {
   const [decisions, setDecisions] = useState<Decisions>(NO_DECISIONS);
   const [confirming, setConfirming] = useState(false);
   const [reportProblem, setReportProblem] = useState<ApiProblem | null>(null);
-  const commit = useApiMutation({ method: "post", path: "/api/v1/workspaces/{ws}/imports/{import_id}/commit" }, { idempotent: true });
+  const commit = useApiMutation(
+    { method: "post", path: "/api/v1/workspaces/{ws}/imports/{import_id}/commit" },
+    { idempotent: true },
+  );
   const discard = useApiMutation({ method: "delete", path: "/api/v1/workspaces/{ws}/imports/{import_id}" });
   const blockersId = useId();
   const path = { ws: workspace, import_id: batch.id };
@@ -147,27 +200,40 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
     if (discard.status === "success") onDiscarded();
   }, [discard.status, onDiscarded]);
 
-  const setRow = (row: number, decision: RowDecision) => setDecisions((now) => ({ ...now, rows: { ...now.rows, [row]: decision } }));
+  const setRow = (row: number, decision: RowDecision) =>
+    setDecisions((now) => ({ ...now, rows: { ...now.rows, [row]: decision } }));
   const setClient = (match: ClientMatch, choice: string) =>
     setDecisions((now) => {
       const [action, rest] = choice.split(/:(.*)/s) as [string, string | undefined];
       const decision =
-        action === "LINK" ? { action: "LINK" as const, client_id: rest } : action === "SAME_AS" ? { action: "SAME_AS" as const, name: rest } : { action: "NEW" as const };
+        action === "LINK"
+          ? { action: "LINK" as const, client_id: rest }
+          : action === "SAME_AS"
+            ? { action: "SAME_AS" as const, name: rest }
+            : { action: "NEW" as const };
       return { ...now, clients: { ...now.clients, [match.name]: decision } };
     });
 
   async function downloadReport() {
     setReportProblem(null);
     try {
-      download(await apiText({ method: "get", path: "/api/v1/workspaces/{ws}/imports/{import_id}/error-report" }, { path }));
+      download(
+        await apiText({ method: "get", path: "/api/v1/workspaces/{ws}/imports/{import_id}/error-report" }, { path }),
+      );
     } catch (error) {
-      setReportProblem(error instanceof ApiProblem ? error : new ApiProblem({ status: 0, code: "NETWORK", detail: "", correlationId: null }));
+      setReportProblem(
+        error instanceof ApiProblem
+          ? error
+          : new ApiProblem({ status: 0, code: "NETWORK", detail: "", correlationId: null }),
+      );
     }
   }
 
   const serverFailed = commit.status === "unknown" && commit.problem !== null && commit.problem.status >= 500;
   const counts = batch.counts;
   const waiting = undecidedClients(batch, decisions).length;
+  const committing = commit.status === "pending";
+  const discarding = discard.status === "pending";
 
   return (
     <div className={styles.stack}>
@@ -178,13 +244,21 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
         <p className={styles.lead}>
           <span>{batch.file_name}</span>: {plural(counts.total_rows ?? 0, "row", "rows")}. Nothing has been added yet.
         </p>
-        <ul className={styles.counts}>
-          <li>{counts.new ?? 0} new</li>
-          <li>{counts.updated ?? 0} matching an existing invoice</li>
-          <li>{counts.duplicate ?? 0} already in your ledger</li>
-          <li>{counts.possible_duplicate ?? 0} possible copies</li>
-          <li>{counts.conflict ?? 0} with a total to settle</li>
-          <li>{invalid} with problems</li>
+        <ul className={styles.tally} aria-label="Rows by what will happen">
+          {(
+            [
+              [counts.new ?? 0, "new", "new"],
+              [counts.updated ?? 0, "matches an existing invoice", "match an existing invoice"],
+              [counts.duplicate ?? 0, "already imported", "already imported"],
+              [counts.possible_duplicate ?? 0, "possible copy", "possible copies"],
+              [counts.conflict ?? 0, "with a total to settle", "with a total to settle"],
+              [invalid, "with problems", "with problems"],
+            ] as const
+          ).map(([count, one, many]) => (
+            <li key={many} data-zero={count === 0 || undefined}>
+              <span className={styles.tallyNum}>{count}</span> <span>{count === 1 ? one : many}</span>
+            </li>
+          ))}
         </ul>
         {batch.failure_reason && (
           <p role="alert" className={styles.failure}>
@@ -202,7 +276,12 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
             {batch.client_matches
               .filter((match) => match.decision_required)
               .map((match) => (
-                <ClientCard key={match.name} match={match} decisions={decisions} onChoose={(choice) => setClient(match, choice)} />
+                <ClientCard
+                  key={match.name}
+                  match={match}
+                  decisions={decisions}
+                  onChoose={(choice) => setClient(match, choice)}
+                />
               ))}
           </ul>
         </section>
@@ -215,7 +294,12 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
           </h3>
           <ul className={styles.list}>
             {rows.map((row) => (
-              <RowCard key={row.row} row={row} decisions={decisions} onChoose={(decision) => setRow(row.row, decision)} />
+              <RowCard
+                key={row.row}
+                row={row}
+                decisions={decisions}
+                onChoose={(decision) => setRow(row.row, decision)}
+              />
             ))}
           </ul>
         </section>
@@ -245,7 +329,12 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
       <div className={styles.actions}>
         <div className={styles.commit}>
           {blockers.length === 0 ? (
-            <Button variant="primary" onClick={() => commit.submit({ path, body: toCommitBody(decisions) })}>
+            <Button
+              variant="primary"
+              busy={committing}
+              aria-disabled={committing || undefined}
+              onClick={() => !committing && commit.submit({ path, body: toCommitBody(decisions) })}
+            >
               Commit Invoices
             </Button>
           ) : (
@@ -271,7 +360,10 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
 
       {serverFailed ? (
         <div role="alert" className={styles.failure}>
-          <p>Nothing was created. Something went wrong while saving this import. Your choices are kept, so you can try again.</p>
+          <p>
+            Nothing was created. Something went wrong while saving this import. Your choices are kept, so you can try
+            again.
+          </p>
           <Button variant="secondary" onClick={commit.checkStatus}>
             Try again
           </Button>
@@ -280,14 +372,19 @@ export function ReviewStep({ workspace, batch, onChanged, onDiscarded, onChangeC
         <MutationFeedback mutation={commit} />
       )}
 
-      <Dialog open={confirming} onClose={() => setConfirming(false)} title="Discard this import?">
+      <Dialog open={confirming} onClose={() => !discarding && setConfirming(false)} title="Discard this import?">
         <p>The uploaded file and your choices are removed. Nothing has been added to your invoices.</p>
         <MutationFeedback mutation={discard} />
         <div className={styles.actions}>
-          <Button variant="secondary" onClick={() => setConfirming(false)}>
+          <Button variant="secondary" data-cancel onClick={() => !discarding && setConfirming(false)}>
             Keep import
           </Button>
-          <Button variant="danger" onClick={() => discard.submit({ path })}>
+          <Button
+            variant="danger"
+            busy={discarding}
+            aria-disabled={discarding || undefined}
+            onClick={() => !discarding && discard.submit({ path })}
+          >
             Discard import
           </Button>
         </div>

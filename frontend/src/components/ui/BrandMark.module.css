@@ -1,0 +1,58 @@
+.mark {
+  flex-shrink: 0;
+}
+
+.tile {
+  fill: var(--color-primary);
+}
+
+.bar {
+  fill: var(--color-on-primary);
+}
+
+.accent {
+  fill: var(--color-brand-gold);
+}
+
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text);
+}
+
+.words {
+  display: grid;
+  line-height: 1.1;
+}
+
+.name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.tag {
+  color: var(--color-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.lockup[data-tone="inverse"] {
+  color: var(--color-on-primary);
+}
+
+.lockup[data-tone="inverse"] .tag {
+  color: var(--color-on-primary);
+  opacity: 0.82;
+}
+
+.lockup[data-tone="inverse"] .tile {
+  fill: var(--color-on-primary);
+}
+
+.lockup[data-tone="inverse"] .bar {
+  fill: var(--color-primary);
+}

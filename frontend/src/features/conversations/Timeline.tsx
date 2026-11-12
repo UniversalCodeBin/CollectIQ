@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { useParams } from "react-router";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { Section } from "../../components/ui/Page";
 import { QueryState } from "../../components/ui/QueryState";
 import { apiRequest } from "../../lib/api";
 import { formatDate } from "../../lib/format";
@@ -17,15 +18,17 @@ const text = (value: unknown) => (typeof value === "string" ? value : "");
 export const TIMELINE_RENDERERS: Record<string, Renderer> = {
   MESSAGE: (e) => (
     <>
-      <p className={styles.muted}>Customer statement{text(e.sender) ? ` from ${text(e.sender)}` : ""} · not verified</p>
+      <p className={styles.muted}>Customer statement{text(e.sender) ? ` from ${text(e.sender)}` : ""}, not verified</p>
       {text(e.excerpt) && <p className={styles.statement}>{text(e.excerpt)}</p>}
-      <p>
-        {(Array.isArray(e.labels) ? (e.labels as string[]) : []).map((label) => (
-          <span key={label} className={styles.tag}>
-            {labelText(label)}
-          </span>
-        ))}
-      </p>
+      {Array.isArray(e.labels) && e.labels.length > 0 && (
+        <p className={styles.tags}>
+          {(e.labels as string[]).map((label) => (
+            <span key={label} className={styles.tag}>
+              {labelText(label)}
+            </span>
+          ))}
+        </p>
+      )}
     </>
   ),
   COMMITMENT: (e) => (
@@ -52,24 +55,33 @@ export function InvoiceTimeline({ detail }: { detail: { facts: { id: string } } 
   const id = detail.facts.id;
   const found = useQuery({
     queryKey: ["invoice", ws, id, "timeline"],
-    queryFn: () => apiRequest({ method: "get", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/messages" }, { path: { ws, invoice_id: id } }),
+    queryFn: () =>
+      apiRequest(
+        { method: "get", path: "/api/v1/workspaces/{ws}/invoices/{invoice_id}/messages" },
+        { path: { ws, invoice_id: id } },
+      ),
   });
   const items = (found.data?.items ?? []) as TimelineEvent[];
   return (
-    <section aria-labelledby="timeline-title" className={styles.card}>
-      <h2 id="timeline-title" className={styles.heading}>
-        Conversation
-      </h2>
+    <Section
+      title="Conversation"
+      description="What the customer said, what was promised or disputed, and when follow-up was paused, oldest first."
+    >
       <QueryState query={found} label="the conversation">
         {items.length === 0 ? (
-          <EmptyState title="Nothing said or decided yet" body="Customer replies, promises, disputes and pauses for this invoice appear here." />
+          <EmptyState
+            title="Nothing said or decided yet"
+            body="Customer replies, promises, disputes and pauses for this invoice appear here."
+          />
         ) : (
-          <ol aria-label="Conversation timeline" className={styles.list}>
+          <ol aria-label="Conversation timeline" className={styles.timeline}>
             {items.map((event) => (
-              <li key={`${event.type}-${event.id}`}>
-                <p className={styles.row}>
+              <li key={`${event.type}-${event.id}`} className={styles.event} data-type={event.type}>
+                <p className={styles.eventLine}>
                   <strong>{event.title}</strong>
-                  <span className={styles.muted}>{formatDate(event.at)}</span>
+                  <time className={styles.date} dateTime={event.at}>
+                    {formatDate(event.at)}
+                  </time>
                 </p>
                 {TIMELINE_RENDERERS[event.type]?.(event)}
               </li>
@@ -77,6 +89,6 @@ export function InvoiceTimeline({ detail }: { detail: { facts: { id: string } } 
           </ol>
         )}
       </QueryState>
-    </section>
+    </Section>
   );
 }

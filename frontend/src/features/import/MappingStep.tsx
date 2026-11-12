@@ -29,8 +29,14 @@ const OPTIONAL = [
 type Props = { workspace: string; batch: ImportBatch; onMapped: (batch: ImportBatch) => void };
 
 export function MappingStep({ workspace, batch, onMapped }: Props) {
-  const save = useApiMutation({ method: "put", path: "/api/v1/workspaces/{ws}/imports/{import_id}/mapping" }, { idempotent: false });
-  const [mapping, setMapping] = useState<Record<string, string>>(() => ({ ...batch.suggested_mapping, ...batch.mapping }));
+  const save = useApiMutation(
+    { method: "put", path: "/api/v1/workspaces/{ws}/imports/{import_id}/mapping" },
+    { idempotent: false },
+  );
+  const [mapping, setMapping] = useState<Record<string, string>>(() => ({
+    ...batch.suggested_mapping,
+    ...batch.mapping,
+  }));
   const [dateFormat, setDateFormat] = useState(batch.date_format ?? batch.date_format_options[0] ?? "");
   const [missing, setMissing] = useState<string[]>([]);
   const handed = useRef<unknown>(null);
@@ -45,11 +51,15 @@ export function MappingStep({ workspace, batch, onMapped }: Props) {
 
   function submit(event: FormEvent) {
     event.preventDefault();
+    if (save.status === "pending") return;
     const absent = REQUIRED.filter(([target]) => !mapping[target]).map(([target]) => target);
     setMissing(absent);
     if (absent.length) return;
     const chosen = Object.fromEntries(Object.entries(mapping).filter(([, header]) => header));
-    save.submit({ path: { ws: workspace, import_id: batch.id }, body: { mapping: chosen, date_format: dateFormat || null } });
+    save.submit({
+      path: { ws: workspace, import_id: batch.id },
+      body: { mapping: chosen, date_format: dateFormat || null },
+    });
   }
 
   function field([target, label]: readonly [string, string], required: boolean) {
@@ -75,7 +85,8 @@ export function MappingStep({ workspace, batch, onMapped }: Props) {
     <form onSubmit={submit} className={styles.card} noValidate>
       <h2 className={styles.heading}>Match your columns</h2>
       <p className={styles.lead}>
-        <span>{batch.file_name}</span> has {batch.counts.total_rows ?? 0} rows. Tell us which column holds each detail.
+        <span>{batch.file_name}</span> has {batch.counts.total_rows ?? 0} rows. Choose the column that holds each
+        detail.
       </p>
       <div className={styles.grid}>
         {REQUIRED.map((entry) => field(entry, true))}
@@ -92,8 +103,13 @@ export function MappingStep({ workspace, batch, onMapped }: Props) {
         <div className={styles.grid}>{OPTIONAL.map((entry) => field(entry, false))}</div>
       </details>
       <MutationFeedback mutation={save} />
-      <div>
-        <Button variant="primary" type="submit" aria-disabled={save.status === "pending" || undefined}>
+      <div className={styles.actions}>
+        <Button
+          variant="primary"
+          type="submit"
+          busy={save.status === "pending"}
+          aria-disabled={save.status === "pending" || undefined}
+        >
           Continue to preview
         </Button>
       </div>

@@ -1,12 +1,267 @@
-.page { display: grid; gap: var(--space-4); }
-.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
-.heading { margin: 0; font-size: var(--type-h3-size, 1.1rem); }
-.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-3); }
-.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.muted { color: var(--color-secondary); margin: 0; }
-.form { display: grid; gap: var(--space-3); }
-.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.statement { white-space: pre-wrap; overflow-wrap: anywhere; margin: 0; font-family: inherit; }
-.tag { background: var(--status-neutral-bg); color: var(--status-neutral-fg); border-radius: 4px; padding: 0 var(--space-2); font-size: 0.85em; margin-right: var(--space-1); }
-.row { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: baseline; justify-content: space-between; }
-.statusLine { font-weight: 600; margin: 0; }
+/* Follow-ups: the reminder list, one reminder, and the follow-up panels on the invoice page (InvoiceFollowup,
+   PausePanel, ResumePanel, CommitmentsPanel, and ai/InvoiceBrief share .card, .heading, .muted, .actions, .statement
+   and .statusLine). Page, PageHeader, Section and Split set the layout. */
+
+.muted,
+.plain,
+.reason,
+.footnote {
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.muted,
+.reason,
+.footnote {
+  color: var(--color-secondary);
+}
+
+.plain {
+  color: var(--color-text);
+}
+
+.reason {
+  overflow-wrap: anywhere;
+}
+
+.number,
+.date,
+.amount {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  white-space: nowrap;
+}
+
+.amount {
+  font-weight: 600;
+}
+
+.textLink {
+  color: var(--color-link);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Rejecting is kept apart from the forward actions so it is not pressed by mistake. */
+.pushEnd {
+  margin-left: auto;
+}
+
+@media (max-width: 479px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+
+  .pushEnd {
+    margin-left: 0;
+  }
+}
+
+/* ---------- Reminder list (FollowupsPage) ---------- */
+
+.reminders {
+  display: grid;
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.reminder {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.reminderLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.reminderLink {
+  min-width: 0;
+  color: var(--color-link);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+  text-underline-offset: 3px;
+}
+
+.reminderLink:not(:hover) {
+  text-decoration: none;
+}
+
+.when {
+  color: var(--color-secondary);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+/* ---------- One reminder (ReminderPage) ---------- */
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-4);
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.standing {
+  display: grid;
+  justify-items: start;
+  gap: var(--space-2);
+  max-width: 52rem;
+}
+
+/* Where the reminder stands, in words. The tint only supports the words. */
+.statusLine {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 600;
+}
+
+.statusLine[data-status="DRAFT"],
+.statusLine[data-status="SUBMITTING"],
+.statusLine[data-status="SUBMITTED"] {
+  border-color: var(--status-awaiting-icon);
+  background: var(--status-awaiting-bg);
+  color: var(--status-awaiting-fg);
+}
+
+.statusLine[data-status="APPROVED"],
+.statusLine[data-status="MARKED_SENT"] {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.statusLine[data-status="SUBMISSION_UNKNOWN"] {
+  border-color: var(--status-disputed-icon);
+  background: var(--status-disputed-bg);
+  color: var(--status-disputed-fg);
+}
+
+.reasons {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding-left: var(--space-5);
+}
+
+.facts {
+  display: grid;
+  margin: 0;
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.facts > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.facts dt {
+  color: var(--color-secondary);
+}
+
+.facts dd {
+  margin: 0;
+  color: var(--color-text);
+  text-align: right;
+}
+
+.footnote {
+  max-width: 44rem;
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+}
+
+/* ---------- Follow-up panels on the invoice page ---------- */
+
+.card {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+@media (max-width: 479px) {
+  .card {
+    padding: var(--space-3) var(--space-4);
+  }
+}
+
+.heading {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+  font-weight: var(--type-h3-weight);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.statement {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

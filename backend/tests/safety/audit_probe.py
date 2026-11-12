@@ -99,6 +99,8 @@ class ProbeMiddleware:
         spec = ENDPOINTS[endpoint_id]
         if not spec.mutates:
             return
+        if getattr(response, "_no_mutation", False):
+            return
         key = request.headers.get("Idempotency-Key")
         if key and f"{endpoint_id}:{key}" in PROBE.keys:
             return  # a replay returns the stored response and writes nothing

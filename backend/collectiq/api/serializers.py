@@ -1284,6 +1284,11 @@ class IntegrationItemOut(serializers.Serializer):
     note = serializers.CharField()
     verified_at = serializers.CharField(allow_null=True)
     last_error = serializers.CharField(allow_null=True)
+    environment = serializers.CharField(allow_null=True, required=False)
+    external_account = serializers.CharField(allow_null=True, required=False)
+    webhook_status = serializers.CharField(allow_null=True, required=False)
+    last_event_received_at = serializers.CharField(allow_null=True, required=False)
+    last_event_status = serializers.CharField(allow_null=True, required=False)
 
 
 class IntegrationListOut(serializers.Serializer):
@@ -1396,4 +1401,4 @@ class ReminderPauseListOut(serializers.Serializer):
 
 
 class PayPalConnectIn(serializers.Serializer):
-    merchant_id = serializers.RegexField(r"^[A-Za-z0-9]{6,32}$")
+    merchant_id = serializers.RegexField(r"^[A-Za-z0-9]{6,32}$", required=False, allow_null=True)

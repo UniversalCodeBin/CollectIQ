@@ -7,6 +7,8 @@ export type Column<Row> = {
   rowHeader?: boolean;
   numeric?: boolean;
   sortable?: boolean;
+  /** Takes the whole card width when rows turn into cards on narrow screens. */
+  wide?: boolean;
   render?: (row: Row) => ReactNode;
 };
 
@@ -71,6 +73,7 @@ export function DataTable<Row>({ caption, columns, rows, rowKey, empty, sort, on
                     role="cell"
                     data-label={column.header}
                     data-numeric={column.numeric || undefined}
+                    data-wide={column.wide || undefined}
                   >
                     {cellValue(column, row)}
                   </td>

@@ -1,0 +1,176 @@
+/* Integrations. Page, PageHeader and Section set the layout; this file styles each listed path in or out. */
+
+.list {
+  display: grid;
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.item {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-4) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.itemHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.label {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+/* The state in words. Tint only supports the words; a connection is green only once verified. */
+.state {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.state[data-state="CONNECTED_VERIFIED"] {
+  border-color: var(--status-verified-icon);
+  background: var(--status-verified-bg);
+  color: var(--status-verified-fg);
+}
+
+.state[data-state="NEEDS_CONFIGURATION"],
+.state[data-state="SANDBOX_ONLY"],
+.state[data-state="NEEDS_REAUTH"] {
+  border-color: var(--status-awaiting-icon);
+  background: var(--status-awaiting-bg);
+  color: var(--status-awaiting-fg);
+}
+
+.state[data-state="DEGRADED"],
+.state[data-state="DISCONNECTED"] {
+  border-color: var(--status-disputed-icon);
+  background: var(--status-disputed-bg);
+  color: var(--status-disputed-fg);
+}
+
+.note,
+.muted,
+.error {
+  max-width: 44rem;
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.note {
+  color: var(--color-text);
+}
+
+.muted {
+  color: var(--color-secondary);
+}
+
+.error {
+  color: var(--status-disputed-fg);
+  overflow-wrap: anywhere;
+}
+
+.date {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.controls {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding-top: var(--space-1);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+@media (max-width: 479px) {
+  .controls {
+    justify-items: stretch;
+  }
+
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}
+
+.sandboxBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--color-sunken);
+  border: 1px dashed var(--color-border);
+  font-size: var(--type-caption-size);
+  font-weight: 600;
+  color: var(--color-secondary);
+}
+
+.detailsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) 0;
+  font-size: var(--type-body-sm-size);
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.detailLabel {
+  font-size: var(--type-caption-size);
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.detailValue {
+  color: var(--color-text);
+  font-family: var(--font-mono);
+}
+
+.connectForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 32rem;
+}
+
+.inputWrapper {
+  flex: 1 1 14rem;
+}

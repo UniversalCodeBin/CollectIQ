@@ -15,7 +15,14 @@ export const tokens = {
     "borderControl": "#7A808C",
     "focus": "#1D4ED8",
     "success": "#14532D",
-    "error": "#9B1C1C"
+    "error": "#9B1C1C",
+    "surfaceMuted": "#FAF9F6",
+    "borderStrong": "#CFC9BC",
+    "primarySoft": "#E6F1F4",
+    "primaryStrong": "#083E4A",
+    "brandGold": "#C9962B",
+    "link": "#0E5A6B",
+    "textMuted": "#5F6877"
   },
   "status": {
     "verified": {
@@ -133,6 +140,21 @@ export const tokens = {
       "size": "14px",
       "line": "20px",
       "weight": "400"
+    },
+    "h1": {
+      "size": "26px",
+      "line": "34px",
+      "weight": "600"
+    },
+    "title": {
+      "size": "20px",
+      "line": "28px",
+      "weight": "600"
+    },
+    "label": {
+      "size": "13px",
+      "line": "18px",
+      "weight": "500"
     }
   },
   "space": {
@@ -146,7 +168,9 @@ export const tokens = {
     "8": "32px",
     "10": "40px",
     "12": "48px",
-    "16": "64px"
+    "14": "56px",
+    "16": "64px",
+    "20": "80px"
   },
   "radius": {
     "sm": "4px",
@@ -164,6 +188,38 @@ export const tokens = {
   },
   "motion": {
     "fast": "120ms",
-    "base": "200ms"
+    "base": "200ms",
+    "slow": "320ms",
+    "ease": "cubic-bezier(0.2, 0, 0, 1)"
+  },
+  "indicator": {
+    "success": "#22C55E",
+    "warning": "#F59E0B",
+    "danger": "#DC2626",
+    "ai": "#8B5CF6",
+    "info": "#0E5A6B",
+    "neutral": "#8A919C"
+  },
+  "layout": {
+    "sidebar": "248px",
+    "rail": "72px",
+    "appbar": "64px",
+    "evidenceRail": "360px",
+    "drawer": "480px",
+    "contentMax": "1320px",
+    "contentNarrow": "760px"
+  },
+  "chart": {
+    "aging": {
+      "1": "#9CC6CF",
+      "2": "#5E9FAD",
+      "3": "#2F7F90",
+      "4": "#0E5A6B",
+      "5": "#06343E"
+    }
+  },
+  "shadow": {
+    "sm": "0 1px 2px rgba(27, 31, 39, 0.06)",
+    "md": "0 6px 20px rgba(27, 31, 39, 0.08)"
   }
 } as const;

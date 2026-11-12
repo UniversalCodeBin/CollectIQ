@@ -11,7 +11,12 @@ export function WorkspaceLayout() {
         const workspace = session.workspaces.find((candidate) => candidate.id === ws);
         if (!workspace) return <NotFoundPage />;
         return (
-          <Shell workspaceId={workspace.id} workspaceName={workspace.name}>
+          <Shell
+            workspaceId={workspace.id}
+            workspaceName={workspace.name}
+            workspaces={session.workspaces}
+            email={session.user.email}
+          >
             <Outlet />
           </Shell>
         );

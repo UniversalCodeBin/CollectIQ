@@ -1,22 +1,306 @@
-.page { display: grid; gap: var(--space-4); }
-.title { margin: 0; font-size: var(--type-h2-size); line-height: var(--type-h2-line); font-weight: var(--type-h2-weight); }
-.tabs { display: flex; flex-wrap: wrap; gap: var(--space-3); border-bottom: 1px solid var(--color-border-subtle); padding-bottom: var(--space-2); }
-.tabs a { display: inline-flex; gap: var(--space-1); align-items: center; text-decoration: none; padding: var(--space-1) var(--space-2); }
-.tabs a[aria-current="page"] { font-weight: 700; background: var(--color-selected); border-radius: 6px; }
-.count { background: var(--status-neutral-bg); color: var(--status-neutral-fg); border-radius: 999px; padding: 0 var(--space-2); font-size: 0.85em; }
-.toolbar { display: flex; justify-content: flex-end; }
-.list { display: grid; gap: var(--space-3); margin: 0; padding: 0; list-style: none; }
-.card { background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 8px; padding: var(--space-4); display: grid; gap: var(--space-3); }
-.row { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: baseline; justify-content: space-between; }
-.amount { font-weight: 700; font-variant-numeric: tabular-nums; }
-.muted { color: var(--color-secondary); margin: 0; }
-.label { background: var(--status-partial-bg, var(--status-neutral-bg)); color: var(--status-partial-fg, var(--status-neutral-fg)); border-radius: 4px; padding: 0 var(--space-2); font-size: 0.85em; }
-.candidates { display: grid; gap: var(--space-2); margin: 0; padding: 0; border: 0; }
-.candidate { display: grid; gap: var(--space-1); border: 1px solid var(--color-border-subtle); border-radius: 6px; padding: var(--space-3); }
-.candidate label { display: flex; gap: var(--space-2); align-items: center; font-weight: 600; }
-.reasons { margin: 0; padding-left: var(--space-4); }
-.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
-.note { margin: 0; color: var(--color-secondary); }
-.history { display: grid; gap: var(--space-2); margin: 0; padding: 0; list-style: none; }
-.reversal { color: var(--color-error); }
-.form { display: grid; gap: var(--space-3); }
+/* Reconciliation. Page, header and tabs come from the shared primitives; this file styles the payment cards.
+   A suggested match keeps a dashed frame: it is a proposal, not a fact, until a person confirms it. */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+}
+
+.toolbar .muted {
+  flex: 1 1 320px;
+  max-width: 64ch;
+}
+
+.list {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Card ---------- */
+
+.card {
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+  padding: var(--space-5);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.card[data-suggested] {
+  border: 1px dashed var(--color-border-strong);
+}
+
+.cardHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+}
+
+.money {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.caption {
+  color: var(--color-secondary);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  font-weight: 600;
+}
+
+.amount {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-metric-size);
+  line-height: var(--type-title-line);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.amountNote {
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.figure {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* Facts in a row, separated by a hairline instead of punctuation. Every fact carries its own leading rule; the
+   row is pulled left and clipped by that much, so a line that wraps never starts with a stray rule. */
+.meta {
+  --meta-gap: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  row-gap: var(--space-1);
+  margin: 0 0 0 calc(-1 * (var(--meta-gap) + 1px));
+  clip-path: inset(0 0 0 calc(var(--meta-gap) + 1px));
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.meta > span {
+  min-width: 0;
+  margin-right: var(--meta-gap);
+  padding-left: var(--meta-gap);
+  border-left: 1px solid var(--color-border-subtle);
+  overflow-wrap: anywhere;
+}
+
+.ref,
+.invoiceNumber {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.invoiceNumber {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.pending {
+  margin: 0;
+  max-width: 30ch;
+  color: var(--color-secondary);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  text-align: right;
+}
+
+.muted {
+  margin: 0;
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.note {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-left: 3px solid var(--status-uncertain-fg);
+  border-radius: var(--radius-sm);
+  background: var(--status-uncertain-bg);
+  color: var(--status-uncertain-fg);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 500;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: var(--type-body-sm-size);
+  font-weight: 600;
+}
+
+/* ---------- Candidate invoices ---------- */
+
+.candidates {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.candidate {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  background: var(--color-surface-muted);
+}
+
+.candidate + .candidate {
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.candidate[data-chosen] {
+  background: var(--color-primary-soft);
+}
+
+.candidateHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 32px;
+  cursor: pointer;
+}
+
+.choice input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--color-primary);
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 0 var(--space-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-secondary);
+  font-size: var(--type-caption-size);
+  font-weight: 600;
+}
+
+.label[data-strength="Strong"] {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.reasons {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.reasons li::marker {
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+/* ---------- Allocation history ---------- */
+
+.history {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.historyRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  font-size: var(--type-body-sm-size);
+}
+
+.historyText {
+  display: grid;
+  flex: 1 1 240px;
+  gap: 2px;
+  min-width: 0;
+}
+
+.historyLine {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+}
+
+.historyKind {
+  color: var(--color-secondary);
+  font-weight: 600;
+}
+
+.historyRow[data-reversal] .historyKind {
+  color: var(--color-error);
+}
+
+.form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 479px) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .pending {
+    max-width: none;
+    text-align: left;
+  }
+
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}

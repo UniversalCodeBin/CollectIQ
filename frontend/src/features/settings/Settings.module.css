@@ -1,0 +1,338 @@
+/* Settings. PageHeader sets the title; this file lays out the section list beside the open panel and styles the panels. */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(11rem, 13rem) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-6);
+}
+
+.nav {
+  position: sticky;
+  top: var(--space-4);
+}
+
+.navList {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-secondary);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.navLink:hover {
+  background: var(--color-sunken);
+  color: var(--color-text);
+}
+
+.navLink[aria-current="page"] {
+  background: var(--color-surface);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+  color: var(--color-text);
+  font-weight: 600;
+}
+
+.panel {
+  display: grid;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+/* Below tablet width the section list becomes a wrapping row of links above the panel. */
+@media (max-width: 899px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-4);
+  }
+
+  .nav {
+    position: static;
+  }
+
+  .navList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .navLink {
+    min-height: 32px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+  }
+
+  .navLink[aria-current="page"] {
+    border-color: var(--color-primary);
+    box-shadow: none;
+    background: var(--color-primary);
+    color: var(--color-surface);
+  }
+}
+
+/* ---------- Panels ---------- */
+
+.form {
+  display: grid;
+  gap: var(--space-4);
+  max-width: 36rem;
+}
+
+.formWide {
+  max-width: 44rem;
+}
+
+.muted,
+.note {
+  max-width: 44rem;
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.muted {
+  color: var(--color-secondary);
+}
+
+.note {
+  color: var(--color-text);
+}
+
+.done {
+  max-width: 44rem;
+  margin: 0;
+  color: var(--status-verified-fg);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.fieldset {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.legend {
+  margin-bottom: var(--space-2);
+  padding: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+  font-weight: 600;
+}
+
+/* The one AI option that turns everything off sits apart from the opt-ins. */
+.stop {
+  display: grid;
+  gap: var(--space-2);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+.list {
+  display: grid;
+  max-width: 52rem;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.row {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.memberRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-width: 0;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.who {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.email {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.select {
+  min-height: 36px;
+  min-width: 10rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--color-border-control);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: var(--type-body-sm-size);
+}
+
+.select:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 599px) {
+  .memberRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .memberRow .who {
+    grid-column: 1 / -1;
+  }
+
+  .select {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+.history {
+  display: grid;
+  gap: 0;
+  max-width: 36rem;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--color-border-subtle);
+  list-style: none;
+}
+
+.history li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-text);
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.date,
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.date {
+  color: var(--color-secondary);
+  white-space: nowrap;
+}
+
+.mono {
+  overflow-wrap: anywhere;
+}
+
+.payloadHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+}
+
+.payloadTitle {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  font-weight: 600;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 2px var(--space-3);
+  margin: 0;
+  font-size: var(--type-body-sm-size);
+  line-height: var(--type-body-sm-line);
+}
+
+.facts dt {
+  color: var(--color-secondary);
+}
+
+.facts dd {
+  min-width: 0;
+  margin: 0;
+  color: var(--color-text);
+}
+
+.pre {
+  max-width: 100%;
+  max-height: 20rem;
+  margin: 0;
+  padding: var(--space-3);
+  overflow: auto;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--color-sunken);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.danger {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 36rem;
+  padding: var(--space-4);
+  border: 1px solid var(--status-disputed-icon);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+}
+
+.dialogBody {
+  display: grid;
+  gap: var(--space-3);
+}
+
+@media (max-width: 479px) {
+  .actions > * {
+    flex: 1 1 100%;
+  }
+}

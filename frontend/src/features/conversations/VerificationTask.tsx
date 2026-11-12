@@ -21,19 +21,23 @@ export function VerificationTask({ taskId, open }: { taskId: string; open: boole
   );
   if (!open) return <p className={styles.muted}>Checked by a person</p>;
   return (
-    <div>
-      <p className={styles.muted}>Waiting for a person to check. The invoice stays unpaid until payment evidence is confirmed.</p>
+    <div className={styles.check}>
+      <p className={styles.muted}>
+        Waiting for a person to check. The invoice stays unpaid until payment evidence is confirmed.
+      </p>
       <TextField label="What did you find?" value={note} onChange={(event) => setNote(event.target.value)} />
-      <Button
-        variant="secondary"
-        disabled={!note.trim()}
-        onClick={() => {
-          close.submit({ path: { ws, invoice_id: id, task_id: taskId }, body: { note: note.trim() } });
-          void client.invalidateQueries({ queryKey: ["invoice", ws, id] });
-        }}
-      >
-        Close this check
-      </Button>
+      <div className={styles.actions}>
+        <Button
+          variant="secondary"
+          disabled={!note.trim()}
+          onClick={() => {
+            close.submit({ path: { ws, invoice_id: id, task_id: taskId }, body: { note: note.trim() } });
+            void client.invalidateQueries({ queryKey: ["invoice", ws, id] });
+          }}
+        >
+          Close this check
+        </Button>
+      </div>
       <MutationFeedback mutation={close} />
     </div>
   );
