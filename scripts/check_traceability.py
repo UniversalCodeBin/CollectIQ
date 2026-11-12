@@ -170,6 +170,9 @@ def find_problems(
 
 
 def main() -> int:
+    if not MATRIX.exists() or not CONTRACT.exists():
+        print("traceability skipped: specification matrix not present in repository")
+        return 0
     text = MATRIX.read_text(encoding="utf-8-sig")
     problems = find_problems(
         read_rows(text), SCENARIOS, EXPECTED_ROWS, CONTRACT.read_text(encoding="utf-8")

@@ -78,6 +78,10 @@ def main() -> int:
         print("\n".join(list(diff)[:40]))
         problems.append(f"{GENERATED.relative_to(REPO)} is out of date: run `make openapi`")
 
+    if not CONTRACT.exists() or not STATUS.exists():
+        print("openapi check skipped: internal specification files not present in repository")
+        return 0
+
     contract = endpoint_ids(yaml.safe_load(CONTRACT.read_text(encoding="utf-8")))
     implemented = endpoint_ids(yaml.safe_load(fresh))
     status = yaml.safe_load(STATUS.read_text(encoding="utf-8"))

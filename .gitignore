@@ -26,4 +26,14 @@ frontend/playwright-report/
 .superpowers/
 # source archive that duplicates the stitch folder
 stitch_collectiq_receivables_copilot.zip
+stitch_collectiq_receivables_copilot/
 backend/.test-storage/
+
+# internal documentation, specs, reports, and mockups
+docs/
+CLAUDE.md
+CollectIQ_*.md
+CollectIQ_*.pdf
+CollectIQ_*.csv
+CollectIQ_*.yaml
+*.png
